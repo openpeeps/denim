@@ -1,6 +1,17 @@
-import os
-import strutils
+import os, strutils, macros
 from clymene/util import cmd
+
+macro `?`* (a: bool, body: untyped): untyped =
+    # Create a macro for a short hand conditional
+    # value == expected ? "do something" ! "not yet"
+    # https://nim-lang.org/docs/sugar.html
+    let x = body[1]
+    let y = body[2]
+    result = quote:
+        if `a`: `x` else: `y`
+
+#https://nim-lang.org/docs/manual.html#pragmas
+proc printf*(formatstr: cstring) {.importc: "printf", varargs, header: "<stdio.h>".}
 
 proc getNimPath*(knownPath: string = ""): string =
     # Determine absolute path to Nim by executing "which nim"
