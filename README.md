@@ -1,6 +1,6 @@
 **Build native NodeJS addons powered by Nim.**
 
-**Denim is a CLI tool for building native NodeJS addons powered by Clymene CLI Framework**. Also, Denim contains some work from Napi Nim from Andrei Rosca.
+**Denim is a CLI toolkit for building native NodeJS addons**. Denim contains some work from Napi Nim by Andrei Rosca.
 
 For using Denim you will need <code>node-gyp</code> module installed globally.
 ```bash
