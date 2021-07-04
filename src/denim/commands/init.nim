@@ -1,5 +1,5 @@
 # import os
-import strutils, tables, marshal
+import strutils, tables
 from clymene/cli import confirm
 
 proc runNewCmd*(args: Table[system.string, system.any]): string =

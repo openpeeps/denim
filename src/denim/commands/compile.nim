@@ -1,16 +1,7 @@
-import os, json, tables, strutils
+import os, json, tables
 import ../utils
-import macros
-from clymene/util import cmd
-
-macro `?`(a: bool, body: untyped): untyped =
-    # Create a macro for a short hand conditional
-    # value == expected ? "do something" ! "not yet"
-    # https://nim-lang.org/docs/sugar.html
-    let x = body[1]
-    let y = body[2]
-    result = quote:
-        if `a`: `x` else: `y`
+from clymene/util import cmd, isEmptyDir
+from clymene/cli import confirm, printInfo
 
 proc getNodeGypConfig(release: bool = false): JsonNode = 
     # Create a configuration for node gyp
@@ -27,15 +18,18 @@ proc getNodeGypConfig(release: bool = false): JsonNode =
 
     return config
 
-#https://nim-lang.org/docs/manual.html#pragmas
-# proc printf(formatstr: cstring) {.importc: "printf", varargs, header: "<stdio.h>".}
-# let t = printf("This works %s %s", "as expected")
-
-# https://livebook.manning.com/concept/nim/await
 proc runCompileCmd*(args: Table[system.string, system.any]): string =
     # Compile project to source code by using Nim compiler
     # https://nim-lang.org/docs/nimc.html
     let current_dir = os.getCurrentDir()
+    let cachePathDirectory = utils.getPath(current_dir, "/example")
+    # checking if cache directory contains any files from previous compilation
+    if isEmptyDir(cachePathDirectory) == false:
+        echo printInfo("Directory is not empty: " & cachePathDirectory)
+        let confirmedDeletion = cli.confirm("Do you want to remove previously compiled files?")
+        if confirmedDeletion == false:
+            return
+
     # for project in @(args["<project>"]): 
         # echo "Creating a new Denim project for $#" % project
 
@@ -53,7 +47,7 @@ proc runCompileCmd*(args: Table[system.string, system.any]): string =
     # nimcache to be used by node-gyp for building the node addon
     cmd("nim", [
         "c",
-        "--nimcache:"&utils.getPath(current_dir, "/example"),
+        "--nimcache:"&cachePathDirectory,
         build_flag,
         "--compileOnly",
         "--noMain",
