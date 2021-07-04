@@ -9,9 +9,24 @@ npm i -g node-gyp
 yarn global add node-gyp
 ```
 
-On the Nim side, get Denim with Nimble
+Get the compiled version of Denim from latest release, or install the package from Nimble and compile it yourself
 ```bash
 nimble install denim
+```
+
+Once you have Denim installed on your system and set in your `PATH` you can simply call `denim -h` in your terminal and you get
+```bash
+Denim 🧿 Write native NodeJS addons powered by Nim.
+
+Usage:
+    denim new <project>...  # Create a new Denim project invoking "nimble init" #
+    denim build             # Compile Nim project to native NodeJS addon #
+    denim (-h | --help)
+    denim --version
+
+Options:
+    -h --help     Show this screen.
+    --version     Show version.
 ```
 
 # License
