@@ -25,7 +25,7 @@ proc getNimPath*(knownPath: string = ""): string =
     # normalize the symlink and get the absolute path of the main symlink
     # right now, we can simply normalize the path and get directly into
     # nim's "lib" source directory.
-    return os.normalizedPath(os.normalizedPath(slink & exSlink).replace("nim", "") & "/../nim/lib")
+    return os.normalizedPath(os.normalizedPath(slink & exSlink).replace("bin", "") & "/../nim/lib")
 
 proc getPath*(currentPath:string, toDirName:string, relative:string=""): string = 
     # Return path based on given current directory 
