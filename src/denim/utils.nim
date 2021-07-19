@@ -10,7 +10,6 @@ macro `?`* (a: bool, body: untyped): untyped =
     result = quote:
         if `a`: `x` else: `y`
 
-#https://nim-lang.org/docs/manual.html#pragmas
 proc printf*(formatstr: cstring) {.importc: "printf", varargs, header: "<stdio.h>".}
 
 proc getNimPath*(knownPath: string = ""): string =

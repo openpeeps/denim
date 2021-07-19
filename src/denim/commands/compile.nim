@@ -18,7 +18,7 @@ proc getNodeGypConfig(release: bool = false): JsonNode =
     return config
 
 proc runCompileCmd*(args: Table[system.string, system.any]): string =
-    # Compile project to source code by using Nim compiler
+    ## Compile project to source code by using Nim compiler
     # https://nim-lang.org/docs/nimc.html
     var current_dir = os.getCurrentDir()
     var addonPathDirectory = utils.getPath(current_dir, "/example")
@@ -50,6 +50,7 @@ proc runCompileCmd*(args: Table[system.string, system.any]): string =
         build_flag,
         "--compileOnly",
         "--noMain",
+        "--warnings:off",
         utils.getPath(current_dir, "/src/denim/$#".format(entryFile))
     ])
 

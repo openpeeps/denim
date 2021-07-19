@@ -2,9 +2,12 @@ import strutils
 import clymene
 import denim/commands/[init, compile]
 
+# Denim is a CLI tool for creating native NodeJS addons written in Nim.
+# Fully written in Nim, powered by Klymene CLI Toolkit (a fork of docopt nim).
+# Released "as it is" under MIT license.
+
 let sheet = """
-Denim 🔥 Write native NodeJS addons powered by Nim.
-For more info https://github.com/georgelemon/denim
+Denim 🔥 Create powerful native NodeJS addons powered by Nim.
 
 Usage:
     denim new <project>...                  # Create a new Denim project by invoking "nimble init" #
