@@ -4,7 +4,7 @@
 # 
 # Copyright (c) 2021 George Lemon from OpenPeep
 #
-#
+
 import klymene
 import denim/commands/[init, compile]
 from strutils import `%`
@@ -16,8 +16,8 @@ let sheet = """
 Denim 🔥 Create powerful native NodeJS addons powered by Nim language.
 
 Usage:
-    $1 new <project>...                  # Create a new Denim project by invoking "nimble init" #
-    $1 build <entry> [--release]         # Compile your Nim project to a native NodeJS addon. Use "release" for compiling release version. #
+    $1 new <project>...                  # Invoke "nimble init" #
+    $1 build <entry> [--release]         # Compile Nim project to a native NodeJS addon #
 
 Options:
     -h --help        Show this screen.
