@@ -1,11 +1,10 @@
-import os, json, tables, strutils, sequtils
+import os, json, tables, strutils
 import ../utils
-from clymene/util import cmd, isEmptyDir
-from clymene/cli import confirm, printInfo
+from klymene/util import cmd, cmdExec, isEmptyDir
+from klymene/cli import promptConfirm, displayInfo
+from klymene import Value, `$`
 
 proc getNodeGypConfig(release: bool = false): JsonNode = 
-    # Create a configuration for node gyp
-    # https://nim-by-example.github.io/json/
     let config = %* {
         "target_name": "main",
         "include_dirs": [
@@ -17,25 +16,26 @@ proc getNodeGypConfig(release: bool = false): JsonNode =
 
     return config
 
-proc runCompileCmd*(args: Table[system.string, system.any]): string =
+proc runCommand*(inputFile: Value) =
     ## Compile project to source code by using Nim compiler
     # https://nim-lang.org/docs/nimc.html
     var current_dir = os.getCurrentDir()
-    var addonPathDirectory = utils.getPath(current_dir, "/example")
+    var addonPathDirectory = utils.getPath(current_dir, "/denim_build")
     var cachePathDirectory = addonPathDirectory&"/nimcache"
-    var entryFile = $(args["<entry>"])
+    var entryFile = $inputFile
 
     if not entryFile.endsWith(".nim"):
-        echo cli.printInfo("Entry file should be the main '.nim' file of your project", "ℹ")
+        cli.displayInfo("Entry file should be the main '.nim' file of your project", "ℹ")
         return
-    else:
-        echo "Start compiling $#...".format(entryFile)
+    cli.displayInfo("Start compiling $#...".format(entryFile))
 
     # checking if cache directory contains any files from previous compilation
     if isEmptyDir(addonPathDirectory) == false:
-        echo printInfo("Directory is not empty: " & addonPathDirectory)
-        var confirmedDeletion = cli.confirm("Do you want to remove previous compilation?")
+        cli.displayInfo("Directory is not empty: " & addonPathDirectory)
+        var confirmedDeletion = cli.promptConfirm("Are you sure you want to remove contents?")
+        
         if confirmedDeletion == false:
+            cli.displayInfo("Canceled compilation")
             return
 
     var isRelease = false
@@ -58,8 +58,8 @@ proc runCompileCmd*(args: Table[system.string, system.any]): string =
     # We care about the source C files that node-gyp will
     # have to know about. We can get them from the json file's
     # compile property that has a list of the C files.
-    echo cli.printInfo("Denim sucessfully compiled your Nim project to C")
-    echo cli.printInfo("Now, invoke node-gyp and compile source code to native NodeJS")
+    cli.displayInfo("Denim sucessfully compiled your Nim project to C")
+    cli.displayInfo("Invoke node-gyp and compile source code to native .node addon")
 
     var gyp = %* {
         "targets": [getNodeGypConfig()]
@@ -73,8 +73,26 @@ proc runCompileCmd*(args: Table[system.string, system.any]): string =
         jarr.add(newJString(elem[0].getStr().replace(addonPathDirectory&"/", "")))
     gyp["targets"][0]["sources"] = %* jarr
 
-    writeFile(addonPathDirectory & "/binding.gyp", $(gyp))
+    writeFile(addonPathDirectory & "/binding.gyp", pretty(gyp, 4))
 
-    cmd("node-gyp", [
+    # Inoke Node Gyp library for bundling to Node
+    echo cmd("node-gyp", [
         "rebuild", "--directory="&addonPathDirectory
     ])
+
+    # Once bundled, we can navigate to release directory, retrieve the .node file
+    # and bring to build directory from root project.
+    let binaryNodePath = utils.getPath(current_dir, "/denim_build/build/Release/main.node")
+    let buildsDirectory = current_dir & "/examples/builds"
+    let binaryTargetPath = buildsDirectory & "/" & entryFile.replace(".nim", ".node")
+
+    # Bail if .node file path could not be found
+    if os.fileExists(binaryNodePath) == false:
+        echo "Could not find the .node file. Try build again"
+    else:
+        # Create 'builds' to place the .node addon
+        # Once built, will move .node addon from source to 'builds' dir
+        if os.existsOrCreateDir(buildsDirectory):
+            echo "Creating builds directory"
+        os.moveFile(binaryNodePath, binaryTargetPath)
+        echo "Done!"

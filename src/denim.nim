@@ -1,28 +1,30 @@
-import strutils
-import clymene
+#
+# Denim is CLI toolkit for creating powerful
+# native NodeJS addons written in Nim language.
+# 
+# Copyright (c) 2021 George Lemon from OpenPeep
+#
+#
+import klymene
 import denim/commands/[init, compile]
+from strutils import `%`
 
-# Denim is a CLI tool for creating native NodeJS addons written in Nim.
-# Fully written in Nim, powered by Klymene CLI Toolkit (a fork of docopt nim).
-# Released "as it is" under MIT license.
+const version = "0.1.0"
+const binName = "psy"
 
 let sheet = """
-Denim 🔥 Create powerful native NodeJS addons powered by Nim.
+Denim 🔥 Create powerful native NodeJS addons powered by Nim language.
 
 Usage:
-    denim new <project>...                  # Create a new Denim project by invoking "nimble init" #
-    denim build <entry> [--release]         # Compile your Nim project to a native NodeJS addon. Use "release" for compiling release version. #
-    denim (-h | --help)
-    denim (-v | --version)
+    $1 new <project>...                  # Create a new Denim project by invoking "nimble init" #
+    $1 build <entry> [--release]         # Compile your Nim project to a native NodeJS addon. Use "release" for compiling release version. #
 
 Options:
     -h --help        Show this screen.
     -v --version     Show version.
-"""
+""" % [binName, version, "\e[1mUsage:\e[0m", "\e[1mOptions:\e[0m"]
 
-let args = docopt(sheet, version = "Denim 0.1.0")
+let args = docopt(sheet, version=version, binaryName=binName)
 
-if args["new"]:
-    echo init.runNewCmd(args)
-elif args["build"]:
-    echo compile.runCompileCmd(args)
+if isCommand("new", args):          init.runCommand()
+elif isCommand("build", args):      compile.runCommand(args["<entry>"])
