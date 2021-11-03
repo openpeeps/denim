@@ -1,4 +1,4 @@
-<p align="center"><img src=".github/denim.png" height="415px" alt="DENIM - CLI Toolkit to build cool NodeJS addons Powered by NIM language"><br>
+<p align="center"><img src=".github/denim.png" height="242px" alt="DENIM - CLI Toolkit to build cool NodeJS addons Powered by NIM language"><br>
     <strong>Denim is CLI toolkit for creating powerful NodeJS addons powered by NIM Language</strong>(WIP)</p>
 
 Work in progress...
