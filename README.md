@@ -1,35 +1,7 @@
-**Denim is a CLI toolkit for building native NodeJS addons** without touching a line of C/C++. Denim is a reimplementation of [andi23rosca/napi-nim](https://github.com/andi23rosca/napi-nim), fully written in Nim. (WIP)
+<p align="center"><img src=".github/denim.png" width="540px" alt="DENIM - CLI Toolkit to build cool NodeJS addons Powered by NIM language"><br>
+    <strong>Denim is CLI toolkit for creating powerful NodeJS addons powered by NIM Language</strong>(WIP)</p>
 
-For using Denim you will need <code>node-gyp</code> module installed globally.
-```bash
-npm i -g node-gyp
-# or using yarn
-yarn global add node-gyp
-```
-
-Get the compiled version of Denim from latest release, or install the package from Nimble and compile it yourself
-```bash
-nimble install denim
-# go to denim directory source and build the toolkit
-nimble build
-```
-
-Once you have Denim installed on your system and set in your `PATH` you can simply call `denim -h` in your terminal and you get
-```
-Denim 🔥 Write native NodeJS addons powered by Nim.
-For more info https://github.com/georgelemon/denim
-
-Usage:
-    denim new <project>                      Create a new Denim project by invoking "nimble init" 
-    denim build <entry> [--release]          Compile your Nim project to a native NodeJS addon.
-                                             Use "release" flag for compiling release version. 
-    denim (-h | --help)
-    denim (-v | --version)
-
-Options:
-    -h --help        Show this screen.
-    -v --version     Show version.
-```
+Work in progress...
 
 **What's Nim?**
 _Nim is a statically typed compiled systems programming language. It combines successful concepts from mature languages like Python, Ada and Modula. [Find out more about Nim, and Nimble](https://nim-lang.org/)_
