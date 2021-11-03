@@ -9,6 +9,5 @@ bin           = @["denim"]
 binDir        = "bin"
 
 # Dependencies
-
 requires "nim >= 1.4.8"
 requires "klymene"
