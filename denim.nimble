@@ -11,3 +11,11 @@ binDir        = "bin"
 # Dependencies
 requires "nim >= 1.4.8"
 requires "klymene"
+
+task dev, "Compile denim":
+    echo "\n✨ Compiling... " & $version & "\n"
+    exec "nimble build --gc:arc -d:useMalloc"
+
+task prod, "Compile denim":
+    echo "\n✨ Compiling... " & $version & "\n"
+    exec "nimble build --gc:arc -d:release -d:useMalloc --opt:size --spellSuggest"

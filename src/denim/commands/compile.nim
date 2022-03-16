@@ -1,4 +1,4 @@
-import os, json, tables, strutils
+import os, json, strutils
 import ../utils
 from klymene/util import cmd, cmdExec, isEmptyDir
 from klymene/cli import promptConfirm, display
@@ -32,11 +32,13 @@ proc runCommand*(inputFile: Value) =
     # checking if cache directory contains any files from previous compilation
     if isEmptyDir(addonPathDirectory) == false:
         display("Directory is not empty: " & os.splitPath(addonPathDirectory).tail, indent=2, br="after")
-        if not cli.promptConfirm("👉 Are you sure you want to remove contents?"):
+        if promptConfirm("👉 Are you sure you want to remove contents?"):
+            os.removeDir(addonPathDirectory)
+        else:
             display("Canceled", indent=2, br="after")
             quit()
 
-    var isRelease = false
+    var isRelease = true
     var build_flag = if isRelease: "-d:release" else: "--embedsrc"
 
     display("🔥 Nim Compiler output", indent=2, br="both")

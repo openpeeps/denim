@@ -160,26 +160,30 @@ proc hasProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, Nap
     assessStatus napi_has_named_property(`env$`, obj, (key), addr result)
 
 
-proc getProperty*(obj: napi_value, key: string): napi_value {.raises: [KeyError, ValueError, NapiStatusError].}=
-    ##Retrieves property ``key`` from ``obj``; Panics if ``obj`` is not an object
+proc getProperty*(obj: napi_value, key: string):
+    napi_value {.raises: [KeyError, ValueError, NapiStatusError].}=
+    ## Retrieves property ``key`` from ``obj``;
+    ## Panics if ``obj`` is not an object
     if not hasProperty(obj, key): raise newException(KeyError, "property not contained for key " & key)
     assessStatus napi_get_named_property(`env$`, obj, (key), addr result)
 
 proc getProperty*(obj: napi_value, key: string, default: napi_value): napi_value =
-    ##Retrieves property ``key`` from ``obj``; returns default if ``obj`` is not an object or does not contain ``key``
+    ## Retrieves property ``key`` from ``obj``;
+    ## returns default if ``obj`` is not an object or does not contain ``key``
     try: obj.getProperty(key)
     except: default
 
-proc setProperty*(obj: napi_value, key: string, value: napi_value) {.raises: [ValueError, NapiStatusError].}=
-    ##Sets property ``key`` in ``obj`` to ``value``; raises exception if ``obj`` is not an object
+proc setProperty*(obj: napi_value, key: string, value: napi_value)
+    {.raises: [ValueError, NapiStatusError].}=
+    ## Sets property ``key`` in ``obj`` to ``value``; raises exception if ``obj`` is not an object
     if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
     assessStatus napi_set_named_property(`env$`, obj, key, value)
 
 proc `[]`*(obj: napi_value, key: string): napi_value =
-    ##Alias for ``getProperty``, raises exception
+    ## Alias for ``getProperty``, raises exception
     obj.getProperty(key)
 proc `[]=`*(obj: napi_value, key: string, value: napi_value) =
-    ##Alias for ``setProperty``, raises exception
+    ## Alias for ``setProperty``, raises exception
     obj.setProperty(key, value)
 
 
@@ -188,12 +192,14 @@ proc isArray*(obj: napi_value): bool =
     assessStatus napi_is_array(`env$`, obj, addr result)
 
 proc hasElement*(obj: napi_value, index: int): bool =
-    ##Checks whether element is contained in ``obj``; raises exception if ``obj`` is not an array
+    ## Checks whether element is contained in ``obj``;
+    ## raises exception if ``obj`` is not an array
     if not isArray(obj): raise newException(ValueError, "value is not an array")
     assessStatus napi_has_element(`env$`, obj, uint32 index, addr result)
 
 proc getElement*(obj: napi_value, index: int): napi_value =
-    ##Retrieves value from ``index`` in  ``obj``; raises exception if ``obj`` is not an array or ``index`` is out of bounds
+    ##Retrieves value from ``index`` in  ``obj``;
+    ## raises exception if ``obj`` is not an array or ``index`` is out of bounds
     if not hasElement(obj, index): raise newException(IndexDefect, "index out of bounds")
     assessStatus napi_get_element(`env$`, obj, uint32 index, addr result)
 
@@ -238,18 +244,21 @@ proc registerBase(obj: Module, name: string, value: napi_value, attr: int) =
         )
     )
 
-proc register*[T: int | uint | string | napi_value](obj: Module, name: string, value: T, attr: int = 0) =
+proc register*[T: int | uint | string | napi_value](obj: Module,
+    name: string, value: T, attr: int = 0) =
     ##Adds field to exports object ``obj``
     obj.registerBase(name, create(obj.env, value), attr)
 
-proc register*[T: int | uint | string | napi_value](obj: Module, name: string, values: openarray[T], attr: int = 0) =
+proc register*[T: int | uint | string | napi_value](obj: Module,
+    name: string, values: openarray[T], attr: int = 0) =
     ##Adds field to exports object ``obj``
     var elements =  newSeq[napi_value]()
     for v in values: elements.add(obj.create(v))
 
     obj.registerBase(name, create(obj.env, elements), attr)
 
-proc register*[T: int | uint | string | napi_value](obj: Module, name: string, values: openarray[(string, T)], attr: int = 0) =
+proc register*[T: int | uint | string | napi_value](obj: Module,
+    name: string, values: openarray[(string, T)], attr: int = 0) =
     ##Adds field to exports object ``obj``
     var properties = newSeq[(string, napi_value)]()
     for v in values: properties.add((v[0], obj.create(v[1])))
@@ -266,13 +275,14 @@ proc `%`*[T](t: T): napi_value =
 const emptyArr: array[0, (string, napi_value)] = []
 
 proc callFunction*(fn: napi_value, args: openarray[napi_value] = [], this = %emptyArr): napi_value =
-    assessStatus napi_call_function(`env$`, this, fn, args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
+    assessStatus napi_call_function(`env$`, this, fn,
+        args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
 
 proc callMethod*(instance: napi_value, methd: string, args: openarray[napi_value] = []): napi_value =
-    assessStatus napi_call_function(`env$`, instance, instance.getProperty(methd), args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
+    assessStatus napi_call_function(`env$`, instance, instance.getProperty(methd),
+        args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
 
 template getIdentStr*(n: untyped): string = $n
-
 
 template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
     var name {.inject.}: napi_value
@@ -293,7 +303,7 @@ template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
         name = createFn(`env$`, getIdentStr(name), `wrapper$`)
 
 
-template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.}=
+template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.} =
     block:
         proc `wrapper$`(environment: napi_env, info: napi_callback_info): napi_value {.cdecl.} =
             var
@@ -312,8 +322,10 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
 
 
 proc defineProperties*(obj: Module) =
-    assessStatus napi_define_properties(obj.env, obj.val, obj.descriptors.len.csize_t, cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked))
-
+    assessStatus napi_define_properties(obj.env, obj.val,
+        obj.descriptors.len.csize_t,
+        cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked)
+    )
 
 
 proc napiCreate*[T](t: T): napi_value =
@@ -342,6 +354,9 @@ iterator items*(n: napi_value): napi_value =
     for index in 0..<n.len:
         yield n[index]
 
+# iterator pairs*(n: napi_value): napi_value =
+#     for index in 0..<n.len:
+#         yield n[index]
 
 macro init*(initHook: proc(exports: Module)): void =
     ##Bootstraps module; use by calling ``register`` to add properties to ``exports``
