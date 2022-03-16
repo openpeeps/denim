@@ -18,10 +18,10 @@ proc runCommand*(inputFile: Value) =
     ## Compile project to source code by using Nim compiler
     # https://nim-lang.org/docs/nimc.html
     var
-        currDir = os.getCurrentDir()
+        currDir = getCurrentDir()
         addonPathDirectory = utils.getPath(currDir, "/denim_build")
         cachePathDirectory = addonPathDirectory & "/nimcache"
-        path = os.splitPath($inputFile)
+        path = splitPath($inputFile)
         entryFile = path.tail
 
     if not entryFile.endsWith(".nim"):
@@ -45,6 +45,7 @@ proc runCommand*(inputFile: Value) =
     echo cmd("nim", [
         "c",
         "--nimcache:"&cachePathDirectory,
+        "--opt:size",
         build_flag,
         "--compileOnly",
         "--noMain",
@@ -76,7 +77,7 @@ proc runCommand*(inputFile: Value) =
 
     # Invoke Node GYP for bundling the node addon
     display("✨ Node GYP output", indent=2, br="both")
-    echo cmd("node-gyp", [
+    discard cmd("node-gyp", [
         "rebuild", "--directory="&addonPathDirectory, "--loglevel", "silent"
     ])
 
@@ -85,9 +86,9 @@ proc runCommand*(inputFile: Value) =
         binDirectory = currDir & "/bin"
         binaryTargetPath = binDirectory & "/" & entryFile.replace(".nim", ".node")
 
-    if os.fileExists(binaryNodePath) == false:
+    if fileExists(binaryNodePath) == false:
         display("👉 Could not find the compiled addon file. Try build again", indent=2)
     else:
-        discard os.existsOrCreateDir(binDirectory)              # ensure bin directory exists
-        os.moveFile(binaryNodePath, binaryTargetPath)           # move .node addon
+        discard existsOrCreateDir(binDirectory)              # ensure bin directory exists
+        moveFile(binaryNodePath, binaryTargetPath)           # move .node addon
         display("👌 Denim sucessfully compiled your Node addon", indent=2, br="both")
