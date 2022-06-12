@@ -44,6 +44,7 @@ proc runCommand*(inputFile: Value) =
     display("🔥 Nim Compiler output", indent=2, br="both")
     echo cmd("nim", [
         "c",
+        "--threads:on",
         "--nimcache:"&cachePathDirectory,
         "--opt:size",
         build_flag,
@@ -77,7 +78,7 @@ proc runCommand*(inputFile: Value) =
 
     # Invoke Node GYP for bundling the node addon
     display("✨ Node GYP output", indent=2, br="both")
-    discard cmd("node-gyp", [
+    echo cmd("node-gyp", [
         "rebuild", "--directory="&addonPathDirectory, "--loglevel", "silent"
     ])
 
