@@ -1,3 +1,6 @@
+bin/
+denim_build/
+.DS_Store
 nimcache/
 nimblecache/
 htmldocs/
