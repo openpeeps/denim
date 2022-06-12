@@ -295,7 +295,6 @@ proc register*[T: int | uint | string | napi_value](obj: Module,
 proc register*(obj: Module, name: string, cb: napi_callback) =
     obj.registerBase(name, createFn(obj.env, name, cb), 0)
 
-
 proc `%`*[T](t: T): napi_value =
     `env$`.create(t)
 
@@ -308,6 +307,23 @@ proc callFunction*(fn: napi_value, args: openarray[napi_value] = [], this = %emp
 proc callMethod*(instance: napi_value, methd: string, args: openarray[napi_value] = []): napi_value =
     assessStatus napi_call_function(`env$`, instance, instance.getProperty(methd),
         args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
+
+proc napiCall*(fname: string, args: openarray[napi_value] = []): napi_value =
+    ## A short-hand procedure for calling global `Napi` functions
+    ## by string. You can use dot annotation for accessing and
+    ## calling from object properties. For example `napiCall("JSON.parse", "{}")`
+    let globals = getGlobal()
+    if fname.contains("."):
+        var keys = fname.split(".")
+        var parentProp, prop: napi_value
+        prop = globals.getProperty(keys[0])
+        parentProp = prop
+        keys.delete(0)
+        for k in keys:
+            prop = prop.getProperty(k)
+        result = callFunction(prop, args, parentProp)
+    else:
+        result = callFunction(globals.getProperty(fname), args, globals)
 
 template getIdentStr*(n: untyped): string = $n
 
@@ -328,7 +344,6 @@ template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
             cushy
 
         name = createFn(`env$`, getIdentStr(name), `wrapper$`)
-
 
 template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.} =
     block:
