@@ -1,4 +1,6 @@
-import macros
+import std/macros
+from std/strutils import contains, split
+from std/sequtils import delete
 
 import
     jsNativeApiTypes,
@@ -96,6 +98,17 @@ proc getInt64*(n: napi_value, default: int64): int64 =
     try: assessStatus napi_get_value_int64(`env$`, n, addr result)
     except: result = default
 
+proc getNull*: napi_value =
+    ##Returns JavaScript ``null`` value
+    assessStatus napi_get_null(`env$`, addr result)
+
+proc getUndefined*: napi_value =
+    ##Returns JavaScript ``undefined`` value
+    assessStatus napi_get_undefined(`env$`, addr result)
+
+proc getGlobal*: napi_value =
+    ##Returns NodeJS global variable
+    assessStatus napi_get_global(`env$`, addr result)
 
 proc getInt32*(n: napi_value): int32 =
     ##Retrieves value from node; raises exception on failure
@@ -161,7 +174,7 @@ proc hasProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, Nap
 
 
 proc getProperty*(obj: napi_value, key: string):
-    napi_value {.raises: [KeyError, ValueError, NapiStatusError].}=
+    napi_value {.raises: [KeyError, ValueError, NapiStatusError].} =
     ## Retrieves property ``key`` from ``obj``;
     ## Panics if ``obj`` is not an object
     if not hasProperty(obj, key): raise newException(KeyError, "property not contained for key " & key)
@@ -173,15 +186,41 @@ proc getProperty*(obj: napi_value, key: string, default: napi_value): napi_value
     try: obj.getProperty(key)
     except: default
 
+proc `[]`*(obj: napi_value, key: string): napi_value =
+    ## Alias for ``getProperty``
+    obj.getProperty(key)
+
+proc get*(obj: napi_value, key: string): napi_value =
+    ## Alias of `getProperty` for accessing a property from a specific object
+    result = obj.getProperty(key)
+
+proc get*(key: string): napi_value =
+    ## Alias of `getProperty` for accessing global properties.
+    ## This proc supports dot annotations `get("JSON.parse") to access
+    ## deeper properties
+    let globals = getGlobal()
+    if key.contains("."):
+        var keys = key.split(".")
+        var prop: napi_value
+        prop = globals.getProperty(keys[0])
+        keys.delete(0)
+        for k in keys:
+            prop = prop.getProperty(k)
+        result = prop
+    else:
+        result = globals.getProperty(key)
+
+proc get*(key: string, default: napi_value): napi_value =
+    ## Alias for `getProperty` with default support
+    let globals = getGlobal()
+    result = globals.getProperty(key, default)
+
 proc setProperty*(obj: napi_value, key: string, value: napi_value)
     {.raises: [ValueError, NapiStatusError].}=
     ## Sets property ``key`` in ``obj`` to ``value``; raises exception if ``obj`` is not an object
     if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
     assessStatus napi_set_named_property(`env$`, obj, key, value)
 
-proc `[]`*(obj: napi_value, key: string): napi_value =
-    ## Alias for ``getProperty``, raises exception
-    obj.getProperty(key)
 proc `[]=`*(obj: napi_value, key: string, value: napi_value) =
     ## Alias for ``setProperty``, raises exception
     obj.setProperty(key, value)
@@ -222,18 +261,6 @@ proc `[]`*(obj: napi_value, index: int): napi_value =
 proc `[]=`*(obj: napi_value, index: int, value: napi_value) =
     ##Alias for ``setElement``; raises exception
     obj.setElement(index, value)
-
-proc getNull*: napi_value =
-    ##Returns JavaScript ``null`` value
-    assessStatus napi_get_null(`env$`, addr result)
-
-proc getUndefined*: napi_value =
-    ##Returns JavaScript ``undefined`` value
-    assessStatus napi_get_undefined(`env$`, addr result)
-
-proc getGlobal*: napi_value =
-    ##Returns NodeJS global variable
-    assessStatus napi_get_global(`env$`, addr result)
 
 proc registerBase(obj: Module, name: string, value: napi_value, attr: int) =
     obj.descriptors.add(
