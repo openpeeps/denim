@@ -2,20 +2,18 @@
 
 version       = "0.1.0"
 author        = "George Lemon"
-description   = "Write native NodeJS addons powered by Nim"
+description   = "Native NodeJS addons powered by Nim language"
 license       = "MIT"
 srcDir        = "src"
 bin           = @["denim"]
 binDir        = "bin"
 
 # Dependencies
-requires "nim >= 1.4.8"
+requires "nim >= 1.6.8"
 requires "klymene"
 
 task dev, "Compile denim":
-    echo "\n✨ Compiling... " & $version & "\n"
-    exec "nimble build --gc:arc -d:useMalloc"
+  exec "nimble build --gc:arc"
 
 task prod, "Compile denim":
-    echo "\n✨ Compiling... " & $version & "\n"
-    exec "nimble build --gc:arc -d:release -d:useMalloc --opt:size --spellSuggest"
+  exec "nimble build --gc:arc -d:release -d:danger --opt:size"
