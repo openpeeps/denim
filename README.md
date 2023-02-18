@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="https://github.com/openpeep/denim/blob/main/.github/denim.png" alt="Bro aka NimSass" width="170px"><br>
-  😋 Denim - Native NodeJS addons powered by Nim language<br>👑 Written in Nim language
+  <img src="https://github.com/openpeep/denim/blob/main/.github/denim.png" alt="Denim" width="170px"><br>
+  Denim - Native NodeJS addons powered by Nim language<br>👑 Written in Nim language
 </p>
 
 <p align="center">
