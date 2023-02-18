@@ -16,6 +16,35 @@
 - [x] Open Source | `MIT` License
 - [x] Written in 👑 Nim language
 
+## Example
+
+Here we'll use [nyml package](https://github.com/openpeep/nyml) to build a native nodejs yaml parser
+
+My `yaml.nim`
+```nim
+import denim/napi/napibindings
+import nyml except `%*`
+
+init proc(module: Module) =
+  module.registerFn(1, "parse"):
+    let yamlContent = args[0].getStr
+    return napiCall("JSON.parse", [
+      %* yaml(yamlContent).toJsonStr
+    ])
+```
+
+Magically run
+```denim build yaml.nim```
+
+```js
+const {parse} = require('./yaml.node')
+const sample = "email: test@example.com"
+
+let obj = parse(sample)
+
+console.log(obj)
+console.log(obj.email == "test@example.com")
+```
 
 ### ❤ Contributions & Support
 - 🐛 Found a bug? [Create a new Issue](https://github.com/openpeep/denim/issues)
