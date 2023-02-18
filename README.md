@@ -55,4 +55,5 @@ console.log(obj.email == "test@example.com")
 ### 🎩 License
 Denim | MIT license. [Made by Humans from OpenPeep](https://github.com/openpeep)<br>
 Thanks to [Andrew Breidenbach](https://github.com/AjBreidenbach) and [Andrei Rosca](https://github.com/andi23rosca) for their work.<br>
+
 Copyright &copy; 2023 OpenPeep & Contributors &mdash; All rights reserved.
