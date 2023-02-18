@@ -1,39 +1,29 @@
 <p align="center">
-    A small toolkit for building powerful native NodeJS addons using Nim language 👑
+  <img src="https://github.com/openpeep/denim/blob/main/.github/denim.png" alt="Bro aka NimSass" width="170px"><br>
+  😋 Denim - Native NodeJS addons powered by Nim language<br>👑 Written in Nim language
 </p>
 
-Work in progress...
+<p align="center">
+  <code>nimble install denim</code> or <a href="#">Download</a> the latest version 
+</p>
 
-# Install
-Get latest version of Denim from Github releases.
+<p align="center">
+  <a href="https://openpeep.github.io/denim">API reference</a><br>
+  <img src="https://github.com/openpeep/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeep/denim/workflows/docs/badge.svg" alt="Github Actions">
+</p>
 
-# Install from Source
-```bash
-nimble install denim
-
-# Build with release flag
-nimble build -d:release
-```
-
-### Add a Nimble task
-Edit your Nimble file and add the following task
-
-```nim
-task denim, "Compile to native NodeJS addon":
-    exec "denim build src/project.nim"
-```
+## 😍 Key Features
+- [x] Open Source | `MIT` License
+- [x] Written in 👑 Nim language
 
 
-### ❤ Contributions
-If you like this project you can contribute to DENIM by opening new issues, fixing bugs, contribute with code, ideas and you can even [donate via PayPal address](https://www.paypal.com/donate/?hosted_button_id=RJK3ZTDWPL55C) 🥰
-
-### 👑 Discover Nim language
-<strong>What's Nim?</strong> Nim is a statically typed compiled systems programming language. It combines successful concepts from mature languages like Python, Ada and Modula. [Find out more about Nim language](https://nim-lang.org/)
-
-<strong>Why Nim?</strong> Performance, fast compilation and C-like freedom. We want to keep code clean, readable, concise, and close to our intention. Also a very good language to learn in 2022.
+### ❤ Contributions & Support
+- 🐛 Found a bug? [Create a new Issue](https://github.com/openpeep/denim/issues)
+- 👋 Wanna help? [Fork it!](https://github.com/openpeep/denim/fork)
+- 😎 [Get €20 in cloud credits from Hetzner](https://hetzner.cloud/?ref=Hm0mYGM9NxZ4)
+- 🥰 [Donate via PayPal address](https://www.paypal.com/donate/?hosted_button_id=RJK3ZTDWPL55C)
 
 ### 🎩 License
-DENIM is an Open Source Software released under `MIT` license. Based on [Andrei Rosca - napi-nim](https://github.com/andi23rosca/napi-nim). [Developed by Humans from OpenPeep](https://github.com/openpeep).<br>
-Copyright &copy; 2022 OpenPeep & Contributors &mdash; All rights reserved.
-
-<a href="https://hetzner.cloud/?ref=Hm0mYGM9NxZ4"><img src="https://openpeep.ro/banners/openpeep-footer.png" width="100%"></a>
+Denim | MIT license. [Made by Humans from OpenPeep](https://github.com/openpeep)<br>
+Thanks to [Andrew Breidenbach](https://github.com/AjBreidenbach) and [Andrei Rosca](https://github.com/andi23rosca) for their work.<br>
+Copyright &copy; 2023 OpenPeep & Contributors &mdash; All rights reserved.
