@@ -5,15 +5,13 @@ author        = "George Lemon"
 description   = "Native NodeJS addons powered by Nim language"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["denim"]
-binDir        = "bin"
 
 # Dependencies
 requires "nim >= 1.6.8"
 requires "klymene"
 
 task dev, "Compile denim":
-  exec "nimble build --gc:arc"
+  exec "nim c --gc:arc -o:./bin/denim src/denim.nim"
 
 task prod, "Compile denim":
-  exec "nimble build --gc:arc -d:release -d:danger --opt:size"
+  exec "nim c --gc:arc -d:release -d:danger --opt:size -o:./bin/denim src/denim.nim"

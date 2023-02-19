@@ -1,36 +1,22 @@
 import std/[os, osproc, json, strutils]
 import ../utils
-# from klymene/util import cmd, cmdExec, isEmptyDir
 import klymene/[cli, runtime]
 
-proc getNodeGypConfig(release: bool = false): JsonNode = 
+proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode = 
+  echo getNimPath
   return %* {
     "target_name": "main",
     "include_dirs": [
-      utils.getNimPath()
+      getNimPath
     ],
     "cflags": if release: %*["-w", "-O3", "-fno-strict-aliasing"] else: %*["-w"],
     "linkflags": ["-ldl"]
   }
 
-proc findNimStdLib(): string =
-  try:
-    let nimexe = os.findExe("nim")
-    echo nimexe
-    if nimexe.len == 0: return ""
-    result = nimexe.splitPath()[0] /../ "lib"
-    if not fileExists(result / "system.nim"):
-      when defined(unix):
-        result = nimexe.expandSymlink.splitPath()[0] /../ "lib"
-        if not fileExists(result / "system.nim"): return ""
-  except OSError, ValueError:
-    return ""
-
 proc runCommand*(v: Values) =
   ## Compile project to source code by using Nim compiler
   # https://nim-lang.org/docs/nimc.html
   let inputFile = v.get("entry")
-  echo inputFile
   var
     currDir = getCurrentDir()
     addonPathDirectory = utils.getPath(currDir, "/denim_build")
@@ -39,8 +25,7 @@ proc runCommand*(v: Values) =
     entryFile = path.tail
   if not entryFile.endsWith(".nim"):
     display("Entry file should be the main '.nim' file of your project", indent=2)
-    quit()
-  display("Start compiling $# ...".format(entryFile), indent=2, br="both")
+    QuitFailure.quit
 
   # checking if cache directory contains any files from previous compilation
   if isEmptyDir(addonPathDirectory) == false:
@@ -50,14 +35,34 @@ proc runCommand*(v: Values) =
     else:
       display("Canceled", indent=2, br="after")
       QuitFailure.quit
-  var isRelease = true
-  # var build_flag = if isRelease: "-d:release" else: "--embedsrc"
-  display("🔥 Nim Compiler output", indent=2, br="both")
-  echo utils.getPath(currDir, "/$#".format(inputFile))
-  let nimCompileCmd = "nim c --nimcache:$1 --opt:size -d:release --compileOnly --noMain --warnings:off $2" % [
-    cachePathDirectory, utils.getPath(currDir, "/$#".format(inputFile))
+
+  display("🔥 Nim Compiler", indent=2, br="both")
+  # echo utils.getPath(currDir, "/$#".format(inputFile))
+  var args = @[
+    "--nimcache:$1",
+    "--opt:size",
+    "-d:napibuild",
+    "-d:release"
+    "--compileOnly",
+    "--noMain",
+    "--warnings:off",
+    "--gc:arc",
+    "--deepcopy:on",
+    # "--threads:on",
   ]
-  let status = execCmdEx(nimCompileCmd)
+
+  # if v.flag("release"):
+  #   add args, "-d:release"
+  # else:
+  #   add args, "--embedsrc"
+  if v.flag("threads"):
+    add args, "--threads:on"
+
+  let nimCompileCmd = "nim c " & args.join(" ") & " $2"
+  let status = execCmdEx(nimCompileCmd % [
+    cachePathDirectory,
+    utils.getPath(currDir, "/$#".format(inputFile))
+  ])
   if status.exitCode != 0:
     display(status.output)
     QuitFailure.quit
@@ -70,14 +75,18 @@ proc runCommand*(v: Values) =
   # TODO find if nim was installed via choosenim,
   # and create a symlink of `nimbase` header to `cachePathDirectory`
   # to satisfy node-gyp requirements
+  var getNimPath = execCmdEx("choosenim show path")
+  if getNimPath.exitCode != 0:
+    display("The current Nim installation path could not be found")
+    QuitFailure.quit
   discard execProcess("ln", args = [
     "-s",
-    "/Users/georgelemon/.choosenim/toolchains/nim-1.6.10/lib/nimbase.h",
+    strip(getNimPath.output) & "/lib/nimbase.h",
     cachePathDirectory
   ], options={poStdErrToStdOut, poUsePath})
   display("Now, invoke node-gyp...", indent=2, br="after")
   var
-    gyp = %* {"targets": [getNodeGypConfig()]}
+    gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip)]}
     jsonConfigPath = cachePathDirectory & "/" & entryFile.replace(".nim", ".json")
   var
     jsonConfigContents = parseJson(readFile(jsonConfigPath))
@@ -90,7 +99,6 @@ proc runCommand*(v: Values) =
 
   # Invoke Node GYP for bundling the node addon
   display("✨ Node GYP output", indent=2, br="both")
-  echo findNimStdLib()
   echo execProcess("node-gyp", args = ["rebuild", "--directory="&addonPathDirectory], options={poStdErrToStdOut, poUsePath})
   let
     binaryNodePath = utils.getPath(currDir, "/denim_build/build/Release/main.node")
