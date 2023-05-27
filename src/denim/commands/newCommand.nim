@@ -1,4 +1,4 @@
-import yacli/[cli, runtime]
+import kapsis/[cli, runtime]
 
 proc runCommand*(v: Values) =
   discard

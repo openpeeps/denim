@@ -8,7 +8,7 @@ srcDir        = "src"
 
 # Dependencies
 requires "nim >= 1.6.8"
-requires "yacli"
+requires "kapsis"
 
 task dev, "Compile denim":
   exec "nim c --gc:arc -o:./bin/denim src/denim.nim"

@@ -1,4 +1,4 @@
-import yacli/commands
+import kapsis/commands
 import denim/commands/[newCommand, buildCommand]
 
 App:

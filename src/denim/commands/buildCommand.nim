@@ -1,6 +1,6 @@
 import std/[os, osproc, json, strutils]
 import ../utils
-import yacli/[cli, runtime]
+import kapsis/[cli, runtime]
 
 proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode = 
   return %* {
