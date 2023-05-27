@@ -1,4 +1,4 @@
-import klymene/commands
+import yacli/commands
 import denim/commands/[newCommand, buildCommand]
 
 App:

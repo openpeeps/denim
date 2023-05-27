@@ -1,9 +1,8 @@
 import std/[os, osproc, json, strutils]
 import ../utils
-import klymene/[cli, runtime]
+import yacli/[cli, runtime]
 
 proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode = 
-  echo getNimPath
   return %* {
     "target_name": "main",
     "include_dirs": [
@@ -37,26 +36,26 @@ proc runCommand*(v: Values) =
       QuitFailure.quit
 
   display("🔥 Nim Compiler", indent=2, br="both")
-  # echo utils.getPath(currDir, "/$#".format(inputFile))
+  # TODO expose nim flags
   var args = @[
     "--nimcache:$1",
-    "--opt:size",
+    "--opt:speed",
     "-d:napibuild",
-    "-d:release"
+    "-d:release",
+    "-d:danger",
     "--compileOnly",
     "--noMain",
-    "--warnings:off",
     "--gc:arc",
     "--deepcopy:on",
-    # "--threads:on",
+    "--threads:on"
   ]
 
   # if v.flag("release"):
   #   add args, "-d:release"
   # else:
   #   add args, "--embedsrc"
-  if v.flag("threads"):
-    add args, "--threads:on"
+  # if v.flag("threads"):
+  #   add args, "--threads:on"
 
   let nimCompileCmd = "nim c " & args.join(" ") & " $2"
   let status = execCmdEx(nimCompileCmd % [
