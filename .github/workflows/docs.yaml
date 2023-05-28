@@ -23,9 +23,6 @@ jobs:
       
       - name: "Find and replace (index.html)"
         run: sed -i 's/${{ github.event.repository.name }}.html/index.html/g' ${{ env.deploy-dir }}/index.html
-      
-      - name: "Find and replace (find.idx)"
-        run: sed -i 's/${{ github.event.repository.name }}.html/index.html/g' ${{ env.deploy-dir }}/${{ github.event.repository.name }}.idx
         
       - name: "Find and replace (theindex.html)"
         run: sed -i 's/${{ github.event.repository.name }}.html/index.html/g' ${{ env.deploy-dir }}/theindex.html
