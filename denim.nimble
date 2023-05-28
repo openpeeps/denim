@@ -10,6 +10,12 @@ srcDir        = "src"
 requires "nim >= 1.6.8"
 requires "kapsis"
 
+import ospaths
+
+before install:
+  let path = getHomeDir() & "./nimble/bin"
+  exec "nim c --gc:arc -d:release -d:danger --opt:size -o:" & path & "/denim src/denim.nim"
+
 task dev, "Compile denim":
   exec "nim c --gc:arc -o:./bin/denim src/denim.nim"
 
