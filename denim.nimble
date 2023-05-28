@@ -13,7 +13,7 @@ requires "kapsis"
 import ospaths
 let path = getHomeDir() & "/.nimble/bin"
 
-before install:
+after install:
   exec "nim c --gc:arc -d:release -d:danger --opt:size -o:" & path & "/denim src/denim.nim"
 
 task dev, "Compile denim":
