@@ -7,6 +7,7 @@ env:
   nim-version: 'stable'
   nim-src: src/${{ github.event.repository.name }}.nim
   deploy-dir: .gh-pages
+
 jobs:
   docs:
     runs-on: ubuntu-latest
