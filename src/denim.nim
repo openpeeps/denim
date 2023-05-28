@@ -1,5 +1,5 @@
-import kapsis/commands
-import denim/commands/[newCommand, buildCommand]
+import kapsis
+import ./commands/[newCommand, buildCommand]
 
 App:
   about:
