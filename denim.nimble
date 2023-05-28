@@ -11,7 +11,7 @@ requires "nim >= 1.6.8"
 requires "kapsis"
 
 import ospaths
-let path = getHomeDir() & "/.nimble/bin"
+let path = getHomeDir() & ".nimble/bin"
 
 after install:
   exec "nim c --gc:arc -d:release -d:danger --opt:size -o:" & path & "/denim src/denim.nim"
