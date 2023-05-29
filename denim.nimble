@@ -15,9 +15,6 @@ requires "kapsis"
 import ospaths
 let path = getHomeDir() & ".nimble/bin"
 
-# after install:
-#   exec "nim c --gc:arc -d:release -d:danger --opt:size -o:" & path & "/denim src/denim.nim"
-
 task dev, "Compile denim":
   exec "nim c --gc:arc -o:" & path & "/denim src/denim.nim"
 
