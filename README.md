@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://github.com/openpeeps/denim/blob/main/.github/denim.png" alt="Denim" width="170px"><br>
-  Denim - Native NodeJS/BunJS addons powered by Nim language<br>👑 Written in Nim
+  Denim - Native NodeJS/BunJS addons powered by Nim<br>👑 Written in Nim language
 </p>
 
 <p align="center">
