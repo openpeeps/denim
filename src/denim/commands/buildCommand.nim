@@ -39,10 +39,7 @@ proc runCommand*(v: Values) =
   # TODO expose nim flags
   var args = @[
     "--nimcache:$1",
-    "--opt:speed",
     "-d:napibuild",
-    "-d:release",
-    "-d:danger",
     "--compileOnly",
     "--noMain",
     "--gc:arc",
@@ -50,12 +47,12 @@ proc runCommand*(v: Values) =
     "--threads:on"
   ]
 
-  # if v.flag("release"):
-  #   add args, "-d:release"
-  # else:
-  #   add args, "--embedsrc"
-  # if v.flag("threads"):
-  #   add args, "--threads:on"
+  if v.flag("release"):
+    add args, "-d:release"
+    add args, "-d:danger"
+    add args, "--opt:speed"
+  else:
+    add args, "--embedsrc"
 
   let nimCompileCmd = "nim c " & args.join(" ") & " $2"
   let status = execCmdEx(nimCompileCmd % [
@@ -66,24 +63,17 @@ proc runCommand*(v: Values) =
     display(status.output)
     QuitFailure.quit
 
-  # Once compiled will get the generated files from nimcache directory.
-  # We care about the source C files that node-gyp will
-  # have to know about. We can get them from the json file's
-  # compile property that has a list of the C files.
-  display("Sucessfully compiled your Nim project to C", indent=2)
-  # TODO find if nim was installed via choosenim,
-  # and create a symlink of `nimbase` header to `cachePathDirectory`
-  # to satisfy node-gyp requirements
   var getNimPath = execCmdEx("choosenim show path")
   if getNimPath.exitCode != 0:
-    display("The current Nim installation path could not be found")
+    display("Could not find Nim installation path")
     QuitFailure.quit
   discard execProcess("ln", args = [
     "-s",
     strip(getNimPath.output) & "/lib/nimbase.h",
     cachePathDirectory
   ], options={poStdErrToStdOut, poUsePath})
-  display("Now, invoke node-gyp...", indent=2, br="after")
+  
+  display("Invoke node-gyp...", indent=2, br="after")
   var
     gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip)]}
     jsonConfigPath = cachePathDirectory & "/" & entryFile.replace(".nim", ".json")
