@@ -25,6 +25,6 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: sudo apt install nodejs
       - run: npm install -g node-gyp
-      - run: nimble install -Y
+      - run: nimble prod
       - run: nim c -r src/${{ github.event.repository.name }}.nim
       - run: nimble test
