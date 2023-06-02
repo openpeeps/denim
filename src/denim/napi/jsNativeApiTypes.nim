@@ -19,16 +19,16 @@ type NApiPropertyAttributes* {.importc: "napi_property_attributes", header:"<nod
 
 type NapiValueType* {.importc: "napi_valuetype", header:"<node_api.h>".} = enum
   # ES6 types (corresponds to typeof)
-  napi_undefined
-  napi_null
-  napi_boolean
-  napi_number
-  napi_string
-  napi_symbol
-  napi_object
-  napi_function
-  napi_external
-  napi_bigint
+  napi_undefined = "undefined"
+  napi_null = "null"
+  napi_boolean = "boolean"
+  napi_number = "number"
+  napi_string = "string"
+  napi_symbol = "symbol"
+  napi_object = "object"
+  napi_function = "function"
+  napi_external = "external"
+  napi_bigint = "bigint"
 
 type NApiTypedArrayType* {.importc: "napi_typedarray_type", header:"<node_api.h>".} = enum
   napi_int8_array

@@ -1,4 +1,4 @@
-import std/[macros, json]
+import std/[macros, json, strutils]
 
 from std/strutils import contains, split
 from std/sequtils import delete
@@ -39,6 +39,13 @@ template error*(msg: cstring, code: cstring = "", errorType: NapiErrorType = nap
   of napiTypeError:   Env.napi_throw_type_error(code, msg)
   of napiRangeError:  Env.napi_throw_range_error(code, msg)
   of napiCustomError: Env.napi_throw(customError)
+
+proc throwError*(env: napi_env, msg: cstring, code: cstring = cstring(""), errorType: NapiErrorType = napiError, customError: napi_value = nil): NapiStatus =
+  case errorType:
+  of napiError:       env.napi_throw_error(code, msg)
+  of napiTypeError:   env.napi_throw_type_error(code, msg)
+  of napiRangeError:  env.napi_throw_range_error(code, msg)
+  of napiCustomError: env.napi_throw(customError)  
 
 proc newNodeValue*(val: napi_value, env: napi_env): Module =
   ##Used internally, disregard
@@ -169,8 +176,8 @@ proc getStr*(n: napi_value): string =
   return $buf
 
 proc getStr*(n: napi_value, default: string, bufsize: int = 40): string =
-  ##Retrieves utf8 encoded value from node; returns default on failure
-  ##Maximum return string length is equal to ``bufsize``
+  ## Retrieves utf8 encoded value from node; returns default on failure
+  ## Maximum return string length is equal to ``bufsize``
   var
     buf = cast[cstring](alloc(bufsize))
     res: csize_t
@@ -182,6 +189,18 @@ proc getStr*(n: napi_value, default: string, bufsize: int = 40): string =
 
 proc expect*(n: napi_value, kind: NapiValueType): bool =
   return kind(n) == kind
+
+proc expect*(env: napi_env, v: seq[napi_value], errorName = "", expectKind: varargs[(string, NapiValueType)]): bool =
+  if v.len == expectKind.len:
+    for i in 0 .. v.high:
+      if v[i].kind != expectKind[i][1]:
+        let msg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [expectKind[i][0], $v[i].kind, $expectKind[i][1]]
+        assert env.throwError(cstring(msg), errorName.cstring)
+        return
+    return true
+  var arglabel = "argument"
+  if expectKind.len > 1: add arglabel, "s"
+  assert error("This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
 
 proc hasProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, NapiStatusError].} =
   ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
