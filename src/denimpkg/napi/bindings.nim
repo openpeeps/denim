@@ -48,42 +48,66 @@ proc throwError*(env: napi_env, msg: cstring, code: cstring = cstring(""), error
   of napiCustomError: env.napi_throw(customError)  
 
 proc newNodeValue*(val: napi_value, env: napi_env): Module =
-  ##Used internally, disregard
+  ## Used internally, disregard
   Module(val: val, env: env, descriptors: @[])
 
 proc kind(env: napi_env, val: napi_value): NapiValueType =
   assert ( napi_typeof(env, val, addr result) )
 
+proc expect*(env: napi_env, n: napi_value, expectKind: NapiValueType): bool =
+  return kind(env, n) == expectKind
 
+proc expect*(env: napi_env, v: seq[napi_value], errorName = "", expectKind: varargs[(string, NapiValueType)]): bool =
+  ## Check a seq of `napi_value` based on given `expectKind`.
+  ## If not match will throw a `NapiErrorType` with the following message:
+  ## ```Type mismatch parameter 'x'. Got 'A', expected 'B'```
+  if v.len == expectKind.len:
+    for i in 0 .. v.high:
+      if kind(env, v[i]) != expectKind[i][1]:
+        let msg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [expectKind[i][0], $kind(env, v[i]), $expectKind[i][1]]
+        assert env.throwError(cstring(msg), errorName.cstring)
+        return
+    return true
+  var arglabel = "argument"
+  if expectKind.len > 1: add arglabel, "s"
+  assert error("This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
 
 proc create(env: napi_env, n: bool): napi_value =
+  ## Create a new `Boolean` `napi_value`
   assert (napi_get_boolean(env, n, addr result))
 
 proc create(env: napi_env, n: int32): napi_value =
+  ## Create a new `int32` `napi_value`
   assert ( napi_create_int32(env, n, addr result) )
 
 proc create(env: napi_env, n: int64): napi_value =
+  ## Create a new `int64` `napi_value`
   assert ( napi_create_int64(env, n, addr result) )
 
 proc create(env: napi_env, n: uint32): napi_value =
+  ## Create a new `uint32` `napi_value`
   assert ( napi_create_uint32(env, n, addr result) )
 
 proc create(env: napi_env, n: uint64): napi_value =
+  ## Create a new `uint64` `napi_value`
   assert ( napi_create_uint64(env, n, addr result) )
 
 proc create(env: napi_env, n: float64): napi_value =
+  ## Create a new `float64` `napi_value`
   assert ( napi_create_double(env, n, addr result) )
 
 proc create(env: napi_env, s: string): napi_value =
+  ## Create a new `string` `napi_value`
   assert ( napi_create_string_utf8(env, s, s.len.csize_t, addr result) )
 
 proc create(env: napi_env, p: openarray[(string, napi_value)]): napi_value =
+  ## Create a new `object` `napi_value`
   assert napi_create_object(env, addr result)
   for name, val in items(p):
     assert napi_set_named_property(env, result, name, val)
 
-
 proc create(env: napi_env, a: openarray[napi_value]): napi_value =
+  ## Create a new `array` `napi_value`
   assert( napi_create_array_with_length(env, a.len.csize_t, addr result) )
   for i, elem in a.enumerate: assert napi_set_element(env, result, i.uint32, a[i])
 
@@ -92,17 +116,16 @@ proc create[T: int | uint | string](env: napi_env, a: openarray[T]): napi_value 
   for elem in a: elements.add(env.create(elem))
   env.create(elements)
 
-
 proc create[T: int | uint | string](env: napi_env, a: openarray[(string, T)]): napi_value =
   var properties = newSeq[(string, napi_value)]()
   for prop in a: properties.add((prop[0], create(prop[1])))
   env.create(a)
 
 proc createFn*(env: napi_env, fname: string, cb: napi_callback): napi_value =
+  ## Create a new function
   assert ( napi_create_function(env, fname, fname.len.csize_t, cb, nil, addr result) )
 
 proc create(env: napi_env, v: napi_value): napi_value = v
-
 
 proc create*[T](n: Module, t: T): napi_value =
   n.env.create(t)
@@ -140,7 +163,6 @@ proc getInt32*(n: napi_value, default: int32): int32 =
   try: assert napi_get_value_int32(Env, n, addr result)
   except: result = default
 
-
 template getInt*(n: napi_value): int =
   ##Retrieves value from node based on bitness of architecture; raises exception on failure
   when sizeof(int) == 8:
@@ -155,7 +177,6 @@ template getInt*(n: napi_value, default: int): int =
   else:
     int(n.getInt32(default))
 
-
 proc getBool*(n: napi_value): bool =
   ##Retrieves value from node; raises exception on failure
   assert napi_get_value_bool(Env, n, addr result)
@@ -164,7 +185,6 @@ proc getBool*(n: napi_value, default: bool): bool =
   ##Retrieves value from node; returns default on failure
   try: assert napi_get_value_bool(Env, n, addr result)
   except: result = default
-
 
 proc getStr*(n: napi_value): string =
   var bufSize: csize_t
@@ -186,21 +206,6 @@ proc getStr*(n: napi_value, default: string, bufsize: int = 40): string =
     assert napi_get_value_string_utf8(Env, n, buf, bufsize.csize_t, addr res)
     result = ($buf)[0..res-1]
   except: result = default
-
-proc expect*(n: napi_value, kind: NapiValueType): bool =
-  return kind(n) == kind
-
-proc expect*(env: napi_env, v: seq[napi_value], errorName = "", expectKind: varargs[(string, NapiValueType)]): bool =
-  if v.len == expectKind.len:
-    for i in 0 .. v.high:
-      if v[i].kind != expectKind[i][1]:
-        let msg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [expectKind[i][0], $v[i].kind, $expectKind[i][1]]
-        assert env.throwError(cstring(msg), errorName.cstring)
-        return
-    return true
-  var arglabel = "argument"
-  if expectKind.len > 1: add arglabel, "s"
-  assert error("This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
 
 proc hasProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, NapiStatusError].} =
   ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
@@ -230,8 +235,7 @@ proc get*(obj: napi_value, key: string): napi_value =
 
 proc get*(key: string): napi_value =
   ## Alias of `getProperty` for accessing global properties.
-  ## This proc supports dot annotations `get("JSON.parse") to access
-  ## deeper properties
+  ## This proc supports dot annotations `get("JSON.parse")`
   let globals = getGlobal()
   if key.contains("."):
     var keys = key.split(".")

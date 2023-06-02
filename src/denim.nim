@@ -1,6 +1,6 @@
-when isMainModule:
+when defined denimcli:
   import kapsis
-  import denim/commands/[newCommand, buildCommand]
+  import denimpkg/commands/[newCommand, buildCommand]
 
   App:
     about:
@@ -10,5 +10,5 @@ when isMainModule:
       $ "build" `entry` "--release":
         ? "Build Nim project to a native NodeJS addon"
 else:
-  import denim/napi/bindings
+  import denimpkg/napi/bindings
   export bindings
