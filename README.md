@@ -13,6 +13,10 @@
 </p>
 
 ## 😍 Key Features
+- [x] Native build via `node-gyp`
+- [ ] Native build via `CMake.js`
+- [x] Low-level API
+- [ ] High-level API
 - [x] Open Source | `MIT` License
 - [x] Written in 👑 Nim language
 
@@ -21,36 +25,8 @@
 - Install Node.js and `node-gyp`, the native addon build tool
 - Install Denim CLI via `nimble`
 
-## Example
-
-Here we'll use [nyml package](https://github.com/openpeeps/nyml) to build a native nodejs yaml parser
-
-My `yaml.nim`
-```nim
-import denim/napi/napibindings
-import nyml except `%*`
-
-init proc(module: Module) =
-  module.registerFn(1, "parse"):
-    let yamlContent = args[0].getStr
-    return napiCall("JSON.parse", [
-      %* yaml(yamlContent).toJsonStr
-    ])
-```
-
-Magically run
-```denim build yaml.nim```
-
-Here is my JS code.
-```js
-const {parse} = require('./yaml.node')
-const sample = "email: test@example.com"
-
-let obj = parse(sample)
-
-console.log(obj)
-console.log(obj.email == "test@example.com")
-```
+## Examples
+todo add examples
 
 ### ❤ Contributions & Support
 - 🐛 Found a bug? [Create a new Issue](https://github.com/openpeeps/denim/issues)
