@@ -1,4 +1,5 @@
-import std/macros
+import std/[macros, json]
+
 from std/strutils import contains, split
 from std/sequtils import delete
 
@@ -31,7 +32,7 @@ type Module* = ref object
   env*: napi_env
   descriptors: seq[NapiPropertyDescriptor]
 
-template error*(code, msg: cstring, errorType: NapiErrorType = napiError, customError: napi_value = nil): untyped =
+template error*(msg: cstring, code: cstring = "", errorType: NapiErrorType = napiError, customError: napi_value = nil): untyped =
   ## Throw an exception using `napi_throw_error`
   case errorType:
   of napiError:       Env.napi_throw_error(code, msg)
@@ -179,12 +180,13 @@ proc getStr*(n: napi_value, default: string, bufsize: int = 40): string =
     result = ($buf)[0..res-1]
   except: result = default
 
+proc expect*(n: napi_value, kind: NapiValueType): bool =
+  return kind(n) == kind
+
 proc hasProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, NapiStatusError].} =
   ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
   if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
-
   assert napi_has_named_property(Env, obj, (key), addr result)
-
 
 proc getProperty*(obj: napi_value, key: string):
   napi_value {.raises: [KeyError, ValueError, NapiStatusError].} =
@@ -237,7 +239,6 @@ proc setProperty*(obj: napi_value, key: string, value: napi_value)
 proc `[]=`*(obj: napi_value, key: string, value: napi_value) =
   ## Alias for ``setProperty``, raises exception
   obj.setProperty(key, value)
-
 
 
 proc isArray*(obj: napi_value): bool =
@@ -340,6 +341,10 @@ proc napiCall*(fname: string, args: openarray[napi_value] = []): napi_value {.di
   else:
     result = callFunction(globals.getProperty(fname), args, globals)
 
+proc tryGetJson*(n: napi_value): JsonNode =
+  let data = napiCall("JSON.stringify", [n])
+  result = parseJson(data.getStr)
+
 template getIdentStr*(n: untyped): string = $n
 
 template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
@@ -357,8 +362,7 @@ template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
         args.add(`argv$`[][i])
       dealloc(`argv$`)
       cushy
-
-    name = createFn(Env, getIdentStr(name), `wrapper$`)
+    name = Env.createFn(name.getStr(), `wrapper$`)
 
 template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.} =
   block:
@@ -384,7 +388,6 @@ proc defineProperties*(obj: Module) =
     cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked)
   )
 
-
 proc napiCreate*[T](t: T): napi_value =
   Env.create(t)
 
@@ -405,6 +408,10 @@ proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
 
 macro `%*`*(x: untyped): untyped =
   return toNapiValue(x)
+
+
+# Promise API
+
 
 iterator items*(n: napi_value): napi_value =
   if not n.isArray: raise newException(ValueError, "value is not an array")

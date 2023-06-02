@@ -109,7 +109,9 @@ proc napi_unrwap*(env: napi_env, js_object: napi_value, result: ptr pointer): Na
 proc napi_remove_wrap*(env: napi_env, js_object: napi_value, result: ptr pointer): NapiStatus
 proc napi_create_external*(env: napi_env, data: pointer, finalize_cb: napi_finalize, finalize_hint: pointer, result: ptr napi_value): NapiStatus
 proc napi_get_value_external*(env: napi_env, value: napi_value, result: ptr pointer): NapiStatus
+
 # TODO: Add "Methods to control object lifespan"
+# proc napi_create_reference*(env: napi_env, value: napi_value, initial_refcount: cuint, res: napi_ref)
 
 # Methods to support error handling
 proc napi_throw*(env: napi_env, error: napi_value): NapiStatus
