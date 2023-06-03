@@ -22,7 +22,7 @@ proc runCommand*(v: Values) =
     cachePathDirectory = addonPathDirectory & "/nimcache"
     path = splitPath(inputFile)
     entryFile = path.tail
-  if not entryFile.endsWith(".nim"):
+  if not entryFile.endsWith(".nim") or fileExists(entryFile) == false:
     display("Entry file should be the main '.nim' file of your project", indent=2)
     QuitFailure.quit
 
@@ -34,8 +34,8 @@ proc runCommand*(v: Values) =
     else:
       display("Canceled", indent=2, br="after")
       QuitFailure.quit
-
   display("🔥 Nim Compiler", indent=2, br="both")
+  
   # TODO expose nim flags
   var args = @[
     "--nimcache:$1",
@@ -75,7 +75,7 @@ proc runCommand*(v: Values) =
   
   display("Invoke node-gyp...", indent=2, br="after")
   var
-    gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip)]}
+    gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.flag("release"))]}
     jsonConfigPath = cachePathDirectory & "/" & entryFile.replace(".nim", ".json")
   var
     jsonConfigContents = parseJson(readFile(jsonConfigPath))
@@ -88,7 +88,8 @@ proc runCommand*(v: Values) =
 
   # Invoke Node GYP for bundling the node addon
   display("✨ Node GYP output", indent=2, br="both")
-  echo execProcess("node-gyp", args = ["rebuild", "--directory="&addonPathDirectory], options={poStdErrToStdOut, poUsePath})
+  # todo expose https://github.com/nodejs/node-gyp#command-options
+  echo execProcess("node-gyp", args = ["rebuild", "--release", "--directory="&addonPathDirectory], options={poStdErrToStdOut, poUsePath})
   let
     binaryNodePath = utils.getPath(currDir, "/denim_build/build/Release/main.node")
     binDirectory = currDir & "/bin"
