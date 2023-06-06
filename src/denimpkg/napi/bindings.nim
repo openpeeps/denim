@@ -61,16 +61,31 @@ proc expect*(env: napi_env, v: seq[napi_value], errorName = "", expectKind: vara
   ## Check a seq of `napi_value` based on given `expectKind`.
   ## If not match will throw a `NapiErrorType` with the following message:
   ## ```Type mismatch parameter 'x'. Got 'A', expected 'B'```
-  if v.len == expectKind.len:
-    for i in 0 .. v.high:
+  result = true
+  let msg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`"
+  for i in 0 .. expectKind.high:
+    var isOpt: bool
+    let argName = 
+      if expectKind[i][0][0] == '?':
+        isOpt = true
+        expectKind[i][0][1..^1]
+      else:
+        expectKind[i][0]
+    try:
       if kind(env, v[i]) != expectKind[i][1]:
-        let msg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [expectKind[i][0], $kind(env, v[i]), $expectKind[i][1]]
-        assert env.throwError(cstring(msg), errorName.cstring)
+        let errmsg = msg % [argName, $kind(env, v[i]), $expectKind[i][1]]
+        assert env.throwError(errmsg.cstring, errorName.cstring)
         return
-    return true
-  var arglabel = "argument"
-  if expectKind.len > 1: add arglabel, "s"
-  assert error("This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
+    except IndexDefect:
+      if isOpt:
+        result = true
+        continue
+      else: result = false
+
+  if not result:
+    var arglabel = "argument"
+    if expectKind.len > 1: add arglabel, "s"
+    assert error("This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
 
 proc create(env: napi_env, n: bool): napi_value =
   ## Create a new `Boolean` `napi_value`

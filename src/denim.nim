@@ -1,5 +1,5 @@
 when defined denimcli:
-  import kapsis
+  import pkg/kapsis
   import denimpkg/commands/[newCommand, buildCommand]
 
   App:
