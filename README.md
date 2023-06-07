@@ -25,8 +25,31 @@
 - Install Node.js and `node-gyp`, the native addon build tool
 - Install Denim CLI via `nimble`
 
+### Defining a module
+
+Use `init` to define module initialization.
+```nim
+init proc(module: Module) =
+  # registering properties and functions here
+```
+
+### Registering module exports
+Export properties and functions using `registerFn()` for functions and `register()` for properties
+
+```nim
+init proc(module: Module) =
+  module.registerFn(0, "hello"):
+    # fn body
+```
+
 ## Examples
-todo add examples
+```nim
+init proc(module: Module) =
+  module.registerFn(1, "hello"):
+    # access function arguments using `args` seq
+    # use `%*` operator to convert Nim types to `napi_value`
+    return %* "Yay! " & args[0].getStr
+```
 
 ### ❤ Contributions & Support
 - 🐛 Found a bug? [Create a new Issue](https://github.com/openpeeps/denim/issues)
