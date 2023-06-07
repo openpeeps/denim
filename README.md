@@ -42,6 +42,21 @@ init proc(module: Module) =
     # fn body
 ```
 
+### Check function arguments
+```nim
+init proc(module: Module) =
+  module.registerFn(3, "setUsername"):
+    # throw NAPI error when
+    # mismatch arg types / receive less args than expected 
+    if not Env.expect(args, "MyProgram",
+      ("name", napi_string),
+      ("email", napi_string),
+      ("?age", napi_number) # prefix with `?` to set as optional arg
+    ): return
+    # do the do
+```
+
+
 ## Examples
 ```nim
 init proc(module: Module) =
