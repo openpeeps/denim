@@ -1,0 +1,2 @@
+enumerate	denimpkg/napi/utils.html#enumerate.i,openArray[T]	utils: enumerate[T](open: openArray[T]): (int, T)	
+toUnchecked	denimpkg/napi/utils.html#toUnchecked,openArray[T]	utils: toUnchecked[T](open: openArray[T]): ptr UncheckedArray[T]	

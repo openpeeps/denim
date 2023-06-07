@@ -1,2 +1,0 @@
-getPath	denim/utils.html#getPath,string,string,string	utils: getPath(currentPath: string; toDirName: string; relative: string = &quot;&quot;): string	
-isEmptyDir	denim/utils.html#isEmptyDir,string	utils: isEmptyDir(dir: string): bool	
