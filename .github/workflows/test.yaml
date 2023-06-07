@@ -30,6 +30,7 @@ jobs:
           curl https://nodejs.org/download/release/v19.9.0/node-v19.9.0-headers.tar.gz --output headers.tar.gz
           tar -xvzf headers.tar.gz
           sudo mv node-v19.9.0/include/node /usr/include
+          locate node/node.h
 
       - run: nimble install -Y
       - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -r src/${{ github.event.repository.name }}.nim
