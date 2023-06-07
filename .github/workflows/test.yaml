@@ -25,5 +25,5 @@ jobs:
       - run: sudo apt install nodejs
       - run: npm install -g node-gyp
       # - run: nimble prod
-      - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -r src/${{ github.event.repository.name }}.nim"
+      - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -r src/${{ github.event.repository.name }}.nim
       - run: nimble test
