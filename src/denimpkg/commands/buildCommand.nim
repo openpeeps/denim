@@ -16,13 +16,15 @@ proc runCommand*(v: Values) =
   ## Compile project to source code by using Nim compiler
   # https://nim-lang.org/docs/nimc.html
   let inputFile = v.get("entry")
+  let links = v.get("links")
+  echo links
   var
     currDir = getCurrentDir()
     addonPathDirectory = utils.getPath(currDir, "/denim_build")
     cachePathDirectory = addonPathDirectory & "/nimcache"
     path = splitPath(inputFile)
     entryFile = path.tail
-  if not entryFile.endsWith(".nim") or fileExists(entryFile) == false:
+  if not entryFile.endsWith(".nim") or fileExists(inputFile) == false:
     display("Entry file should be the main '.nim' file of your project", indent=2)
     QuitFailure.quit
 
@@ -49,7 +51,6 @@ proc runCommand*(v: Values) =
 
   if v.flag("release"):
     add args, "-d:release"
-    add args, "-d:danger"
     add args, "--opt:speed"
   else:
     add args, "--embedsrc"
@@ -65,7 +66,7 @@ proc runCommand*(v: Values) =
 
   var getNimPath = execCmdEx("choosenim show path")
   if getNimPath.exitCode != 0:
-    display("Could not find Nim installation path")
+    display("Can't find Nim path")
     QuitFailure.quit
   discard execProcess("ln", args = [
     "-s",
@@ -96,7 +97,7 @@ proc runCommand*(v: Values) =
     binaryTargetPath = binDirectory & "/" & entryFile.replace(".nim", ".node")
 
   if fileExists(binaryNodePath) == false:
-    display("👉 Could not find the compiled addon file. Try build again", indent=2)
+    display("👉 Oups! Try build again", indent=2)
   else:
     discard existsOrCreateDir(binDirectory)              # ensure bin directory exists
     moveFile(binaryNodePath, binaryTargetPath)           # move .node addon
