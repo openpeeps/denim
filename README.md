@@ -56,7 +56,6 @@ init proc(module: Module) =
     # do the do
 ```
 
-
 ## Examples
 ```nim
 init proc(module: Module) =
@@ -65,6 +64,10 @@ init proc(module: Module) =
     # use `%*` operator to convert Nim types to `napi_value`
     return %* "Yay! " & args[0].getStr
 ```
+
+## Real-World Examples
+- **Tim Engine** is a powerful template engine and markup language written in Nim. [Here is the code for building Tim to Node/Bun via NAPI](https://github.com/openpeeps/tim/blob/main/src/tim.nim#L8-L133), 
+- **Bro**, a statically typed stylesheet language alternative to SassC, DartSass, SassJS. Written in Nim. [Here is the code](https://github.com/openpeeps/bro/blob/main/src/bro.nim#L6)
 
 ### ❤ Contributions & Support
 - 🐛 Found a bug? [Create a new Issue](https://github.com/openpeeps/denim/issues)
