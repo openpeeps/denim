@@ -22,9 +22,8 @@ jobs:
           nim-version: ${{ matrix.nim-version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       
-      # - run: sudo apt install nodejs
-      # - run: npm install -g node-gyp
-      # - run: nimble prod
+      - run: sudo apt install nodejs
+      - run: npm install -g node-gyp
       - run: nimble install -Y
       - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -r src/${{ github.event.repository.name }}.nim
       - run: nimble test
