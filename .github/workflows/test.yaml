@@ -26,7 +26,7 @@ jobs:
       - run: sudo apt-get -y install nodejs
       - run: npm install -g node-gyp
       - run: node-gyp install
-      - run: sudo move $HOME/.cache/node-gyp/19.9.0/include/node /usr/include/
+      - run: sudo mv $HOME/.cache/node-gyp/19.9.0/include/node /usr/include/
 
       - run: nimble install -Y
       - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -r src/${{ github.event.repository.name }}.nim
