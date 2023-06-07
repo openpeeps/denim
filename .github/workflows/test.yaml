@@ -25,7 +25,7 @@ jobs:
       - run: |
           sudo apt-get update
           sudo apt-get -y install linux-libc-dev linux-headers-generic build-essential
-          sudo apt-get -y install nodejs
+          sudo apt-get -y install nodejs plocate
           npm install -g node-gyp
           curl https://nodejs.org/download/release/v19.9.0/node-v19.9.0-headers.tar.gz --output headers.tar.gz
           tar -xvzf headers.tar.gz
