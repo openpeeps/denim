@@ -32,19 +32,19 @@ type Module* = ref object
   env*: napi_env
   descriptors: seq[NapiPropertyDescriptor]
 
-template error*(msg: cstring, code: cstring = "", errorType: NapiErrorType = napiError, customError: napi_value = nil): untyped =
+template error*(msg: string, code = "", errorType: NapiErrorType = napiError, customError: napi_value = nil): untyped =
   ## Throw an exception using `napi_throw_error`
   case errorType:
-  of napiError:       Env.napi_throw_error(code, msg)
-  of napiTypeError:   Env.napi_throw_type_error(code, msg)
-  of napiRangeError:  Env.napi_throw_range_error(code, msg)
+  of napiError:       Env.napi_throw_error(code.cstring, msg.cstring)
+  of napiTypeError:   Env.napi_throw_type_error(code.cstring, msg.cstring)
+  of napiRangeError:  Env.napi_throw_range_error(code.cstring, msg.cstring)
   of napiCustomError: Env.napi_throw(customError)
 
-proc throwError*(env: napi_env, msg: cstring, code: cstring = cstring(""), errorType: NapiErrorType = napiError, customError: napi_value = nil): NapiStatus =
+proc throwError*(env: napi_env, msg: string, code = "", errorType: NapiErrorType = napiError, customError: napi_value = nil): NapiStatus =
   case errorType:
-  of napiError:       env.napi_throw_error(code, msg)
-  of napiTypeError:   env.napi_throw_type_error(code, msg)
-  of napiRangeError:  env.napi_throw_range_error(code, msg)
+  of napiError:       env.napi_throw_error(code.cstring, msg.cstring)
+  of napiTypeError:   env.napi_throw_type_error(code.cstring, msg.cstring)
+  of napiRangeError:  env.napi_throw_range_error(code.cstring, msg.cstring)
   of napiCustomError: env.napi_throw(customError)  
 
 proc newNodeValue*(val: napi_value, env: napi_env): Module =
@@ -74,7 +74,7 @@ proc expect*(env: napi_env, v: seq[napi_value], errorName = "", expectKind: vara
     try:
       if kind(env, v[i]) != expectKind[i][1]:
         let errmsg = msg % [argName, $kind(env, v[i]), $expectKind[i][1]]
-        assert env.throwError(errmsg.cstring, errorName.cstring)
+        assert env.throwError(errmsg, errorName)
         return
     except IndexDefect:
       if isOpt:
