@@ -22,9 +22,12 @@ jobs:
           nim-version: ${{ matrix.nim-version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       
+      - run: sudo apt-get install mlocate
       - run: sudo apt install nodejs
       - run: npm install -g node-gyp
       - run: node-gyp install
+      - run: locate node.h
+
       - run: nimble install -Y
-      - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -r --passC:-I$HOME/.cache/node-gyp/19.9.0/include/node src/${{ github.event.repository.name }}.nim
+      - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size --passC:-I$HOME/.cache/node-gyp/19.9.0/include/node -r src/${{ github.event.repository.name }}.nim
       - run: nimble test
