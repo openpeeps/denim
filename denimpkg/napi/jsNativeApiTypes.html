@@ -105,44 +105,44 @@ window.addEventListener('DOMContentLoaded', main);
     title="napi_callback = proc (environment: napi_env; info: napi_callback_info): napi_value {.
     cdecl.}">napi_callback</a></li>
   <li><a class="reference" href="#napi_callback_info"
-    title="napi_callback_info {.header: &quot;&lt;node/node_api.h&gt;&quot;.} = pointer">napi_callback_info</a></li>
+    title="napi_callback_info {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_callback_info</a></li>
   <li><a class="reference" href="#napi_deferred"
-    title="napi_deferred {.header: &quot;&lt;node/node_api.h&gt;&quot;.} = pointer">napi_deferred</a></li>
+    title="napi_deferred {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_deferred</a></li>
   <li><a class="reference" href="#napi_env"
-    title="napi_env {.header: &quot;&lt;node/node_api.h&gt;&quot;.} = pointer">napi_env</a></li>
+    title="napi_env {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_env</a></li>
   <li><a class="reference" href="#napi_escapable_handle_scope"
-    title="napi_escapable_handle_scope {.header: &quot;&lt;node/node_api.h&gt;&quot;.} = pointer">napi_escapable_handle_scope</a></li>
+    title="napi_escapable_handle_scope {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_escapable_handle_scope</a></li>
   <li><a class="reference" href="#napi_finalize"
     title="napi_finalize = proc (environment: napi_env;
                       finalize_data, finalize_hint: pointer): void {.cdecl.}">napi_finalize</a></li>
   <li><a class="reference" href="#napi_handle_scope"
-    title="napi_handle_scope {.header: &quot;&lt;node/node_api.h&gt;&quot;.} = pointer">napi_handle_scope</a></li>
+    title="napi_handle_scope {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_handle_scope</a></li>
   <li><a class="reference" href="#napi_ref"
-    title="napi_ref {.header: &quot;&lt;node/node_api.h&gt;&quot;.} = pointer">napi_ref</a></li>
+    title="napi_ref {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_ref</a></li>
   <li><a class="reference" href="#napi_value"
-    title="napi_value {.header: &quot;&lt;node/node_api.h&gt;&quot;.} = pointer">napi_value</a></li>
+    title="napi_value {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_value</a></li>
   <li><a class="reference" href="#NapiExtendedErrorInfo"
     title="NapiExtendedErrorInfo {.importc: &quot;napi_extended_error_info&quot;,
-                        header: &quot;&lt;node/node_api.h&gt;&quot;.} = object
+                        header: &quot;&lt;node_api.h&gt;&quot;.} = object
   error_message*: cstring
   engine_reserved*: pointer
   engine_error_code*: uint32
   error_code*: NapiStatus">NapiExtendedErrorInfo</a></li>
   <li><a class="reference" href="#NApiPropertyAttributes"
     title="NApiPropertyAttributes {.importc: &quot;napi_property_attributes&quot;,
-                         header: &quot;&lt;node/node_api.h&gt;&quot;.} = enum
+                         header: &quot;&lt;node_api.h&gt;&quot;.} = enum
   napi_default = 0, napi_writable = 1, napi_enumerable = 2,
   napi_configurable = 4, napi_static = 1024">NApiPropertyAttributes</a></li>
   <li><a class="reference" href="#NapiPropertyDescriptor"
     title="NapiPropertyDescriptor {.importc: &quot;napi_property_descriptor&quot;,
-                         header: &quot;&lt;node/node_api.h&gt;&quot;.} = object
+                         header: &quot;&lt;node_api.h&gt;&quot;.} = object
   utf8name*: cstring
   name*, value*: napi_value
   attributes*: NApiPropertyAttributes
   `method`*, getter*, setter*: napi_callback
   data*: pointer">NapiPropertyDescriptor</a></li>
   <li><a class="reference" href="#NapiStatus"
-    title="NapiStatus {.importc: &quot;napi_status&quot;, header: &quot;&lt;node/node_api.h&gt;&quot;.} = enum
+    title="NapiStatus {.importc: &quot;napi_status&quot;, header: &quot;&lt;node_api.h&gt;&quot;.} = enum
   napi_ok, napi_invalid_arg, napi_object_expected, napi_string_expected,
   napi_name_expected, napi_function_expected, napi_number_expected,
   napi_boolean_expected, napi_array_expected, napi_generic_failure,
@@ -151,13 +151,12 @@ window.addEventListener('DOMContentLoaded', main);
   napi_closing, napi_bigint_expected, napi_date_expected,
   napi_arraybuffer_expected, napi_detachable_arraybuffer_expected">NapiStatus</a></li>
   <li><a class="reference" href="#NApiTypedArrayType"
-    title="NApiTypedArrayType {.importc: &quot;napi_typedarray_type&quot;,
-                     header: &quot;&lt;node/node_api.h&gt;&quot;.} = enum
+    title="NApiTypedArrayType {.importc: &quot;napi_typedarray_type&quot;, header: &quot;&lt;node_api.h&gt;&quot;.} = enum
   napi_int8_array, napi_uint8_array, napi_uint8_clamped_array, napi_int16_array,
   napi_uint16_array, napi_int32_array, napi_uint32_array, napi_float32_array,
   napi_float64_array, napi_bigint64_array, napi_biguint64_array">NApiTypedArrayType</a></li>
   <li><a class="reference" href="#NapiValueType"
-    title="NapiValueType {.importc: &quot;napi_valuetype&quot;, header: &quot;&lt;node/node_api.h&gt;&quot;.} = enum
+    title="NapiValueType {.importc: &quot;napi_valuetype&quot;, header: &quot;&lt;node_api.h&gt;&quot;.} = enum
   napi_undefined = &quot;undefined&quot;, napi_null = &quot;null&quot;, napi_boolean = &quot;boolean&quot;,
   napi_number = &quot;number&quot;, napi_string = &quot;string&quot;, napi_symbol = &quot;symbol&quot;,
   napi_object = &quot;object&quot;, napi_function = &quot;function&quot;,
@@ -195,7 +194,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="napi_callback_info">
-<dt><pre><a href="jsNativeApiTypes.html#napi_callback_info"><span class="Identifier">napi_callback_info</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
+<dt><pre><a href="jsNativeApiTypes.html#napi_callback_info"><span class="Identifier">napi_callback_info</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
 
 
@@ -207,7 +206,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="napi_deferred">
-<dt><pre><a href="jsNativeApiTypes.html#napi_deferred"><span class="Identifier">napi_deferred</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
+<dt><pre><a href="jsNativeApiTypes.html#napi_deferred"><span class="Identifier">napi_deferred</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
 
 
@@ -219,7 +218,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="napi_env">
-<dt><pre><a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
+<dt><pre><a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
 
 
@@ -231,7 +230,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="napi_escapable_handle_scope">
-<dt><pre><a href="jsNativeApiTypes.html#napi_escapable_handle_scope"><span class="Identifier">napi_escapable_handle_scope</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
+<dt><pre><a href="jsNativeApiTypes.html#napi_escapable_handle_scope"><span class="Identifier">napi_escapable_handle_scope</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
 
 
@@ -256,7 +255,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="napi_handle_scope">
-<dt><pre><a href="jsNativeApiTypes.html#napi_handle_scope"><span class="Identifier">napi_handle_scope</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
+<dt><pre><a href="jsNativeApiTypes.html#napi_handle_scope"><span class="Identifier">napi_handle_scope</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
 
 
@@ -268,7 +267,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="napi_ref">
-<dt><pre><a href="jsNativeApiTypes.html#napi_ref"><span class="Identifier">napi_ref</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
+<dt><pre><a href="jsNativeApiTypes.html#napi_ref"><span class="Identifier">napi_ref</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
 
 
@@ -280,7 +279,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="napi_value">
-<dt><pre><a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
+<dt><pre><a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
 
 
@@ -293,7 +292,7 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 <div id="NapiExtendedErrorInfo">
 <dt><pre><a href="jsNativeApiTypes.html#NapiExtendedErrorInfo"><span class="Identifier">NapiExtendedErrorInfo</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_extended_error_info&quot;</span><span class="Other">,</span>
-                        <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">object</span>
+                        <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">error_message</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
   <span class="Identifier">engine_reserved</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">pointer</span>
   <span class="Identifier">engine_error_code</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">uint32</span>
@@ -311,7 +310,7 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 <div id="NApiPropertyAttributes">
 <dt><pre><a href="jsNativeApiTypes.html#NApiPropertyAttributes"><span class="Identifier">NApiPropertyAttributes</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_property_attributes&quot;</span><span class="Other">,</span>
-                         <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
+                         <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">napi_default</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="Identifier">napi_writable</span> <span class="Other">=</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="Identifier">napi_enumerable</span> <span class="Other">=</span> <span class="DecNumber">2</span><span class="Other">,</span>
   <span class="Identifier">napi_configurable</span> <span class="Other">=</span> <span class="DecNumber">4</span><span class="Other">,</span> <span class="Identifier">napi_static</span> <span class="Other">=</span> <span class="DecNumber">1024</span></pre></dt>
 <dd>
@@ -326,7 +325,7 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 <div id="NapiPropertyDescriptor">
 <dt><pre><a href="jsNativeApiTypes.html#NapiPropertyDescriptor"><span class="Identifier">NapiPropertyDescriptor</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_property_descriptor&quot;</span><span class="Other">,</span>
-                         <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">object</span>
+                         <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">utf8name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
   <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">value</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a>
   <span class="Identifier">attributes</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#NApiPropertyAttributes"><span class="Identifier">NApiPropertyAttributes</span></a>
@@ -344,7 +343,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="NapiStatus">
-<dt><pre><a href="jsNativeApiTypes.html#NapiStatus"><span class="Identifier">NapiStatus</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_status&quot;</span><span class="Other">,</span> <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
+<dt><pre><a href="jsNativeApiTypes.html#NapiStatus"><span class="Identifier">NapiStatus</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_status&quot;</span><span class="Other">,</span> <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">napi_ok</span><span class="Other">,</span> <span class="Identifier">napi_invalid_arg</span><span class="Other">,</span> <span class="Identifier">napi_object_expected</span><span class="Other">,</span> <span class="Identifier">napi_string_expected</span><span class="Other">,</span>
   <span class="Identifier">napi_name_expected</span><span class="Other">,</span> <span class="Identifier">napi_function_expected</span><span class="Other">,</span> <span class="Identifier">napi_number_expected</span><span class="Other">,</span>
   <span class="Identifier">napi_boolean_expected</span><span class="Other">,</span> <span class="Identifier">napi_array_expected</span><span class="Other">,</span> <span class="Identifier">napi_generic_failure</span><span class="Other">,</span>
@@ -363,8 +362,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="NApiTypedArrayType">
-<dt><pre><a href="jsNativeApiTypes.html#NApiTypedArrayType"><span class="Identifier">NApiTypedArrayType</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_typedarray_type&quot;</span><span class="Other">,</span>
-                     <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
+<dt><pre><a href="jsNativeApiTypes.html#NApiTypedArrayType"><span class="Identifier">NApiTypedArrayType</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_typedarray_type&quot;</span><span class="Other">,</span> <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">napi_int8_array</span><span class="Other">,</span> <span class="Identifier">napi_uint8_array</span><span class="Other">,</span> <span class="Identifier">napi_uint8_clamped_array</span><span class="Other">,</span> <span class="Identifier">napi_int16_array</span><span class="Other">,</span>
   <span class="Identifier">napi_uint16_array</span><span class="Other">,</span> <span class="Identifier">napi_int32_array</span><span class="Other">,</span> <span class="Identifier">napi_uint32_array</span><span class="Other">,</span> <span class="Identifier">napi_float32_array</span><span class="Other">,</span>
   <span class="Identifier">napi_float64_array</span><span class="Other">,</span> <span class="Identifier">napi_bigint64_array</span><span class="Other">,</span> <span class="Identifier">napi_biguint64_array</span></pre></dt>
@@ -379,7 +377,7 @@ class="link-seesrc" target="_blank">Source</a>
 </dd>
 </div>
 <div id="NapiValueType">
-<dt><pre><a href="jsNativeApiTypes.html#NapiValueType"><span class="Identifier">NapiValueType</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_valuetype&quot;</span><span class="Other">,</span> <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node/node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
+<dt><pre><a href="jsNativeApiTypes.html#NapiValueType"><span class="Identifier">NapiValueType</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_valuetype&quot;</span><span class="Other">,</span> <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">napi_undefined</span> <span class="Other">=</span> <span class="StringLit">&quot;undefined&quot;</span><span class="Other">,</span> <span class="Identifier">napi_null</span> <span class="Other">=</span> <span class="StringLit">&quot;null&quot;</span><span class="Other">,</span> <span class="Identifier">napi_boolean</span> <span class="Other">=</span> <span class="StringLit">&quot;boolean&quot;</span><span class="Other">,</span>
   <span class="Identifier">napi_number</span> <span class="Other">=</span> <span class="StringLit">&quot;number&quot;</span><span class="Other">,</span> <span class="Identifier">napi_string</span> <span class="Other">=</span> <span class="StringLit">&quot;string&quot;</span><span class="Other">,</span> <span class="Identifier">napi_symbol</span> <span class="Other">=</span> <span class="StringLit">&quot;symbol&quot;</span><span class="Other">,</span>
   <span class="Identifier">napi_object</span> <span class="Other">=</span> <span class="StringLit">&quot;object&quot;</span><span class="Other">,</span> <span class="Identifier">napi_function</span> <span class="Other">=</span> <span class="StringLit">&quot;function&quot;</span><span class="Other">,</span>
@@ -404,7 +402,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-08 13:26:34 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-08 14:50:23 UTC</small>
       </div>
     </div>
   </div>
