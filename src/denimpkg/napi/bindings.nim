@@ -80,7 +80,10 @@ proc expect*(env: napi_env, v: seq[napi_value], errorName = "", expectKind: vara
       if isOpt:
         result = true
         continue
-      else: result = false
+      else:
+        let errmsg = msg % [argName, $napi_undefined, $expectKind[i][1]]
+        assert env.throwError(errmsg, errorName)
+        return false
 
   if not result:
     var arglabel = "argument"
