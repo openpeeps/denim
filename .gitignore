@@ -4,3 +4,4 @@ denim_build/
 nimcache/
 nimblecache/
 htmldocs/
+src/denim.nims
