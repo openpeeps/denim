@@ -20,8 +20,8 @@ proc runCommand*(v: Values) =
   echo links
   var
     currDir = getCurrentDir()
-    addonPathDirectory = utils.getPath(currDir, "/denim_build")
-    cachePathDirectory = addonPathDirectory & "/nimcache"
+    addonPathDirectory = utils.getPath(currDir, "" / "denim_build")
+    cachePathDirectory = addonPathDirectory / "nimcache"
     path = splitPath(inputFile)
     entryFile = path.tail
   if not entryFile.endsWith(".nim") or fileExists(inputFile) == false:
@@ -58,7 +58,7 @@ proc runCommand*(v: Values) =
   let nimCompileCmd = "nim c " & args.join(" ") & " $2"
   let status = execCmdEx(nimCompileCmd % [
     cachePathDirectory,
-    utils.getPath(currDir, "/$#".format(inputFile))
+    utils.getPath(currDir, "" / "$#".format(inputFile))
   ])
   if status.exitCode != 0:
     display(status.output)
@@ -70,36 +70,37 @@ proc runCommand*(v: Values) =
     QuitFailure.quit
   discard execProcess("ln", args = [
     "-s",
-    strip(getNimPath.output) & "/lib/nimbase.h",
+    strip(getNimPath.output) / "lib" / "nimbase.h",
     cachePathDirectory
   ], options={poStdErrToStdOut, poUsePath})
   
   display("Invoke node-gyp...", indent=2, br="after")
   var
     gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.flag("release"))]}
-    jsonConfigPath = cachePathDirectory & "/" & entryFile.replace(".nim", ".json")
+    jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
   var
     jsonConfigContents = parseJson(readFile(jsonConfigPath))
     jarr = newJArray()
   for elem in items(jsonConfigContents["compile"].elems):
-    jarr.add(newJString(elem[0].getStr().replace(addonPathDirectory&"/", "")))
+    jarr.add(newJString(elem[0].getStr().replace(addonPathDirectory / "", "")))
   gyp["targets"][0]["sources"] = %* jarr
 
-  writeFile(addonPathDirectory & "/binding.gyp", pretty(gyp, 2))
+  writeFile(addonPathDirectory / "binding.gyp", pretty(gyp, 2))
 
   # Invoke Node GYP for bundling the node addon
   display("✨ Node GYP output", indent=2, br="both")
   # todo expose https://github.com/nodejs/node-gyp#command-options
   echo execProcess("node-gyp", args = ["rebuild", "--release", "--directory="&addonPathDirectory], options={poStdErrToStdOut, poUsePath})
   let
-    binaryNodePath = utils.getPath(currDir, "/denim_build/build/Release/main.node")
-    binDirectory = currDir & "/bin"
-    binaryTargetPath = binDirectory & "/" & entryFile.replace(".nim", ".node")
+    binaryNodePath = utils.getPath(currDir, "" / "denim_build" / "build" / "Release" / "main.node")
+    binDirectory = currDir / "bin"
+    binName = entryFile.replace(".nim", ".node")
+    binaryTargetPath = binDirectory / binName
 
   if fileExists(binaryNodePath) == false:
-    display("👉 Oups! Try build again", indent=2)
+    display("👉 Oups! $1 not found. Try build again" % [binName], indent=2)
   else:
     discard existsOrCreateDir(binDirectory)              # ensure bin directory exists
     moveFile(binaryNodePath, binaryTargetPath)           # move .node addon
-    display("👌 Denim sucessfully compiled your Node addon", indent=2, br="both")
+    display("👌 Sucessfully compiled your Node addon", indent=2, br="both")
     QuitSuccess.quit
