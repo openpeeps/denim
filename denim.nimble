@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.1"
+version       = "0.1.2"
 author        = "George Lemon"
 description   = "DENIM - Nim code to Bun.js/Node.js in seconds via NAPI"
 license       = "MIT"
