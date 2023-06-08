@@ -21,12 +21,7 @@ jobs:
         with:
           nim-version: ${{ matrix.nim-version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-        - run: ls /usr/local/node
-      # - run: |
-      #     curl https://nodejs.org/download/release/v19.9.0/node-v19.9.0-headers.tar.gz --output headers.tar.gz
-      #     tar -xvzf headers.tar.gz
-      #     sudo mv node-v19.9.0/include/node /usr/include
-
+      - run: "ls /usr/local/include/node"
       - run: nimble install -Y
       - run: nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -r src/${{ github.event.repository.name }}.nim
       - run: nimble test
