@@ -1,1 +1,1 @@
-switch("passC", "-I/usr/local/include/node ")
+switch("passC", "-I/usr/include/node -I/usr/local/include/node")
