@@ -9,6 +9,6 @@ when defined denimcli:
     commands:
       $ "build" `entry` `links` "--release":
         ? "Build Nim project to a native NodeJS addon"
-else:
+elif defined napibuild:
   import denimpkg/napi/bindings
   export bindings
