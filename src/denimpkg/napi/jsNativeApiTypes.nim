@@ -1,13 +1,13 @@
 type
-  napi_env* {.header:"<node/node_api.h>".} = pointer
-  napi_value* {.header:"<node/node_api.h>".} = pointer
-  napi_ref* {.header:"<node/node_api.h>".} = pointer
-  napi_handle_scope* {.header:"<node/node_api.h>".} = pointer
-  napi_escapable_handle_scope* {.header:"<node/node_api.h>".} = pointer
-  napi_callback_info* {.header:"<node/node_api.h>".} = pointer
-  napi_deferred* {.header:"<node/node_api.h>".} = pointer
+  napi_env* {.header:"<node_api.h>".} = pointer
+  napi_value* {.header:"<node_api.h>".} = pointer
+  napi_ref* {.header:"<node_api.h>".} = pointer
+  napi_handle_scope* {.header:"<node_api.h>".} = pointer
+  napi_escapable_handle_scope* {.header:"<node_api.h>".} = pointer
+  napi_callback_info* {.header:"<node_api.h>".} = pointer
+  napi_deferred* {.header:"<node_api.h>".} = pointer
 
-type NApiPropertyAttributes* {.importc: "napi_property_attributes", header:"<node/node_api.h>".} = enum
+type NApiPropertyAttributes* {.importc: "napi_property_attributes", header:"<node_api.h>".} = enum
   napi_default = 0
   napi_writable = 1 # 1 << 0
   napi_enumerable = 2 # 1 << 1
@@ -17,7 +17,7 @@ type NApiPropertyAttributes* {.importc: "napi_property_attributes", header:"<nod
   # from instance properties. Ignored by napi_define_properties.
   napi_static = 1024 # 1 << 10
 
-type NapiValueType* {.importc: "napi_valuetype", header:"<node/node_api.h>".} = enum
+type NapiValueType* {.importc: "napi_valuetype", header:"<node_api.h>".} = enum
   # ES6 types (corresponds to typeof)
   napi_undefined = "undefined"
   napi_null = "null"
@@ -30,7 +30,7 @@ type NapiValueType* {.importc: "napi_valuetype", header:"<node/node_api.h>".} = 
   napi_external = "external"
   napi_bigint = "bigint"
 
-type NApiTypedArrayType* {.importc: "napi_typedarray_type", header:"<node/node_api.h>".} = enum
+type NApiTypedArrayType* {.importc: "napi_typedarray_type", header:"<node_api.h>".} = enum
   napi_int8_array
   napi_uint8_array
   napi_uint8_clamped_array
@@ -43,7 +43,7 @@ type NApiTypedArrayType* {.importc: "napi_typedarray_type", header:"<node/node_a
   napi_bigint64_array
   napi_biguint64_array
 
-type NapiStatus* {.importc: "napi_status", header:"<node/node_api.h>".} = enum
+type NapiStatus* {.importc: "napi_status", header:"<node_api.h>".} = enum
   napi_ok
   napi_invalid_arg
   napi_object_expected
@@ -70,14 +70,14 @@ type napi_callback* = proc(environment: napi_env, info: napi_callback_info): nap
 
 type napi_finalize* = proc(environment: napi_env, finalize_data, finalize_hint: pointer): void {.cdecl.}
 
-type NapiPropertyDescriptor* {.importc: "napi_property_descriptor", header:"<node/node_api.h>".} = object
+type NapiPropertyDescriptor* {.importc: "napi_property_descriptor", header:"<node_api.h>".} = object
   utf8name*: cstring
   name*, value*: napi_value
   attributes*: NApiPropertyAttributes
   `method`*, getter*, setter*: napi_callback
   data*: pointer
 
-type NapiExtendedErrorInfo* {.importc: "napi_extended_error_info", header:"<node/node_api.h>".} = object
+type NapiExtendedErrorInfo* {.importc: "napi_extended_error_info", header:"<node_api.h>".} = object
   error_message*: cstring
   engine_reserved*: pointer
   engine_error_code*: uint32

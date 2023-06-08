@@ -1,6 +1,6 @@
 import jsNativeApiTypes
 
-{.push importc, header: "<node/node_api.h>".}
+{.push importc, header: "<node_api.h>".}
 proc napi_get_last_error_info*(env: napi_env, result: UncheckedArray[NapiExtendedErrorInfo]): NapiStatus
 # Getters for defined singletons
 proc napi_get_undefined*(env: napi_env, result: ptr napi_value): NapiStatus

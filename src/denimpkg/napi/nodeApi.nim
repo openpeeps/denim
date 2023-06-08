@@ -3,9 +3,9 @@ import nodeApiTypes, jsNativeApiTypes
 
 export nodeApiTypes
 
-proc napi_addon_register_func*(env: napi_env, exports: napi_value): napi_value {.header: "<node/node_api.h>".}
+proc napi_addon_register_func*(env: napi_env, exports: napi_value): napi_value {.header: "<node_api.h>".}
 
-type NapiModule* {.importc: "napi_module", header:"<node/node_api.h>".} = object
+type NapiModule* {.importc: "napi_module", header:"<node_api.h>".} = object
   nm_version: cint
   nm_flags: cuint
   nm_filename: cstring
@@ -39,7 +39,7 @@ macro napiModule*(initHook: proc(env: napi_env, exports: napi_value)): void =
   )
   echo result.toStrLit
 
-{.push importc, header: "<node/node_api.h>".}
+{.push importc, header: "<node_api.h>".}
 proc napi_module_register*(module: NapiModule)
 proc napi_fatal_error*(location: cstring, location_len: csize_t, message: cstring, message_len: csize_t)
 
