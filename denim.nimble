@@ -11,7 +11,7 @@ installExt    = @["nim"]
 
 # Dependencies
 requires "nim >= 1.6.8"
-requires "kapsis"
+requires "kapsis#head"
 
 import ospaths
 let path = getHomeDir() & ".nimble/bin"
