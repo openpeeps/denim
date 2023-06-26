@@ -29,13 +29,13 @@ proc runCommand*(v: Values) =
     QuitFailure.quit
 
   # checking if cache directory contains any files from previous compilation
-  if isEmptyDir(addonPathDirectory) == false:
+  if isEmptyDir(addonPathDirectory) == false and v.has("-h") == false:
     display("Directory is not empty: " & os.splitPath(addonPathDirectory).tail, indent=2, br="after")
-    if promptConfirm("👉 Are you sure you want to remove contents?"):
-      os.removeDir(addonPathDirectory)
-    else:
-      display("Canceled", indent=2, br="after")
-      QuitFailure.quit
+    # if promptConfirm("👉 Are you sure you want to remove contents?"):
+    #   os.removeDir(addonPathDirectory)
+    # else:
+    #   display("Canceled", indent=2, br="after")
+    #   QuitFailure.quit
   display("🔥 Nim Compiler", indent=2, br="both")
   
   # TODO expose nim flags
@@ -99,6 +99,7 @@ proc runCommand*(v: Values) =
 
   if fileExists(binaryNodePath) == false:
     display("👉 Oups! $1 not found. Try build again" % [binName], indent=2)
+    QuitFailure.quit
   else:
     discard existsOrCreateDir(binDirectory)              # ensure bin directory exists
     moveFile(binaryNodePath, binaryTargetPath)           # move .node addon
