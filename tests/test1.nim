@@ -2,6 +2,7 @@ import std/[unittest, strutils, osproc]
 
 test "can build addon":
   let status = execCmdEx("denim build ./tests/myaddon.nim -y")
+  echo status.output
   assert status.exitCode == 0
 
 test "can run addon (node)":
