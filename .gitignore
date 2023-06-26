@@ -5,3 +5,6 @@ nimcache/
 nimblecache/
 htmldocs/
 src/denim.nims
+tests/*
+!tests/*.nim
+!tests/*.js
