@@ -467,7 +467,7 @@ macro export_napi*(vName, vType: untyped, vVal: typed) =
       ident("register"),
       ident("module"),
       newLit(vName.strVal),
-      toNapiValue(vVal)
+      vVal
     )
   )
 
