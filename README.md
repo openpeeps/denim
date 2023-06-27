@@ -14,17 +14,15 @@
 </p>
 
 ## 😍 Key Features
-- [x] Native build via `node-gyp`
-- [ ] Native build via `CMake.js`
+- [x] Build with `node-gyp` or CMake.js (faster)
 - [x] Low-level API
-- [ ] High-level API
+- [x] High-level API
 - [x] Open Source | `MIT` License
 - [x] Written in 👑 Nim language
 
 ## Requirements
-- Get the latest Nim version (**Note** Denim works with `choosenim`)
-- Install Node.js and `node-gyp`, the native addon build tool
-- Install Denim CLI via `nimble`
+- Nim (latest / via `choosenim`)
+- Node (latest) and `node-gyp` or CMake.js
 
 ### CLI
 Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon via `Nim` + `NodeGYP`
@@ -127,10 +125,15 @@ app.hello()
 Type mismatch parameter: `name`. Got `undefined`, expected `string`
 ```
 
-
 ## Real-World Examples
-- **Tim Engine** is a powerful template engine and markup language written in Nim. [Here is the code for building Tim to Node/Bun via NAPI](https://github.com/openpeeps/tim/blob/main/src/tim.nim#L8-L133), 
-- **Bro**, a better stylesheet language, alternative to SassC, DartSass, SassJS. Written in Nim. [Here is the code](https://github.com/openpeeps/bro/blob/main/src/bro.nim#L6)
+- **Tim Engine**, a template engine written in Nim. [Here is the code for building Tim to Node/Bun via NAPI](https://github.com/openpeeps/tim/blob/main/src/tim.nim#L8-L133), 
+- **Bro**, a better stylesheet language, alternative to SassC, DartSass... [Here is the code](https://github.com/openpeeps/bro/blob/main/src/bro.nim#L6)
+- Add yours!
+
+### Todo
+- Option to pass flags to Nim/C Compiler
+- Option to link external C Headers/libraries
+- Extend High-level API with compile-time functionality. 
 
 ### ❤ Contributions & Support
 - 🐛 Found a bug? [Create a new Issue](https://github.com/openpeeps/denim/issues)
