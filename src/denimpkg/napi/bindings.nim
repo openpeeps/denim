@@ -438,75 +438,70 @@ macro export_napi*(fn: untyped) =
   ## proc hello(name: string): string {.export_napi.} =
   ##   return %* args.get("name")
   ## ```
-  case fn.kind:
-  of nnkProcDef:
-    expectKind(fn[6], nnkStmtList) # body
-    expectKind(fn[3], nnkFormalParams) # params
-    result = newStmtList()
-    let fnName = fn[0].strVal
-    var params = fn[3][1..^1]
-    var args = newNimNode(nnkBracket)
-    for p in params:
-      var nimArgType, napiArgType: string 
-      if eqIdent(p[1], "string"):
-        napiArgType = "napi_string"
-        nimArgType = p[1].strVal
-      elif eqIdent(p[1], "bool"):
-        napiArgType = "napi_boolean"
-        nimArgType = p[1].strVal
-      elif eqIdent(p[1], "nil"):
-       napiArgType = "napi_null"
-       nimArgType = p[1].strVal
-      elif eqIdent(p[1], "int"):
-        napiArgType = "napi_number"
-        nimArgType = p[1].strVal
-      elif p[1].kind == nnkObjectTy:
-        napiArgType = "napi_object"
-        nimArgType = "object"
-      else:
-        error("Cannot convert", p[1])
-      var types = nnkTupleConstr.newTree(
-        newLit(p[0].strVal),
-        newLit(nimArgType),
-        ident(napiArgType),
-        newLit(false)
-      )
-      add args, types
-    add result, newCall(ident("addDocBlock"), newLit(fnName), args)
-
-    let
-      callExpectProc = newCall(
-        ident("expect"),
-        ident("Env"),
-        ident("args"),
-        newLit(""),
-        newLit(fnName)
-      )
-      typeChecker = newIfStmt(
-        (
-          nnkPrefix.newTree(ident("not"), callExpectProc),
-          newStmtList(
-            nnkReturnStmt.newTree(
-              newEmptyNode()
-            )
-          )
-        ))
-    var fnBody = newStmtList()
-    add fnBody, typeChecker
-    add fnBody, fn[6]
-    result.add(
-      newCall(
-        ident("registerFn"),
-        ident("module"),
-        newLit(params.len),
-        newLit(fnName),
-        fnBody
-      )
+  expectKind(fn, nnkProcDef)
+  expectKind(fn[6], nnkStmtList) # body
+  expectKind(fn[3], nnkFormalParams) # params
+  result = newStmtList()
+  let fnName = fn[0].strVal
+  var params = fn[3][1..^1]
+  var args = newNimNode(nnkBracket)
+  for p in params:
+    var nimArgType, napiArgType: string 
+    if eqIdent(p[1], "string"):
+      napiArgType = "napi_string"
+      nimArgType = p[1].strVal
+    elif eqIdent(p[1], "bool"):
+      napiArgType = "napi_boolean"
+      nimArgType = p[1].strVal
+    elif eqIdent(p[1], "nil"):
+     napiArgType = "napi_null"
+     nimArgType = p[1].strVal
+    elif eqIdent(p[1], "int"):
+      napiArgType = "napi_number"
+      nimArgType = p[1].strVal
+    elif p[1].kind == nnkObjectTy:
+      napiArgType = "napi_object"
+      nimArgType = "object"
+    else:
+      error("Cannot convert", p[1])
+    var types = nnkTupleConstr.newTree(
+      newLit(p[0].strVal),
+      newLit(nimArgType),
+      ident(napiArgType),
+      newLit(false)
     )
-  else:
-    echo fn.kind
-    quit()
-    # error("Nope")
+    add args, types
+  add result, newCall(ident("addDocBlock"), newLit(fnName), args)
+
+  let
+    callExpectProc = newCall(
+      ident("expect"),
+      ident("Env"),
+      ident("args"),
+      newLit(""),
+      newLit(fnName)
+    )
+    typeChecker = newIfStmt(
+      (
+        nnkPrefix.newTree(ident("not"), callExpectProc),
+        newStmtList(
+          nnkReturnStmt.newTree(
+            newEmptyNode()
+          )
+        )
+      ))
+  var fnBody = newStmtList()
+  add fnBody, typeChecker
+  add fnBody, fn[6]
+  result.add(
+    newCall(
+      ident("registerFn"),
+      ident("module"),
+      newLit(params.len),
+      newLit(fnName),
+      fnBody
+    )
+  )
 
 proc defineProperties*(obj: Module) =
   assert napi_define_properties(obj.env, obj.val,
