@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli-screen.png" alt="Denim CLI" width="652px">
+  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli-screen.png" alt="Denim CLI" width="676px">
 </p>
 
 <p align="center">
@@ -36,8 +36,8 @@ Simply run `denim -h`
 ```
 DENIM 🔥 Native Node/Bun addons powered by Nim language
 
-  build <entry> --release --yes         Compile Nim program to Node addon
-  publish                               Publish addon to NPM (requires npm cli)
+  build <entry> --release --yes         Nim to Node addon
+  publish                               Publish addon to NPM
 ```
 
 
