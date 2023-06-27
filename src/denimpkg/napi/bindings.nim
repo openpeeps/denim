@@ -22,7 +22,7 @@ type
     env*: napi_env
     descriptors: seq[NapiPropertyDescriptor]
 
-  TypedArg = tuple[str, argName: string, argNapiValue: NapiValueType, isOptional: bool]
+  TypedArg = tuple[str, argName, argType: string, argNapiValue: NapiValueType, isOptional: bool]
 
 var
   Env*: napi_env = nil
@@ -49,6 +49,10 @@ proc throwError*(env: napi_env, msg: string, code = "", errorType: NapiErrorType
   of napiRangeError:  env.napi_throw_range_error(code.cstring, msg.cstring)
   of napiCustomError: env.napi_throw(customError)  
 
+# fwd
+proc isArray*(obj: napi_value): bool
+
+
 proc newNodeValue*(val: napi_value, env: napi_env): Module =
   ## Used internally, disregard
   Module(val: val, env: env, descriptors: @[])
@@ -66,8 +70,9 @@ proc expect*(env: napi_env, v: seq[napi_value], errorName, fnIdent: string): boo
   add index, "\n" & indent("*/", 1)
   for i in 0 .. exp.high:
     try:
-      if kind(env, v[i]) != exp[i].argNapiValue:
-        let errmsg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [exp[i].argName, $kind(env, v[i]), $exp[i].argNapiValue]
+      if kind(env, v[i]) != exp[i].argNapiValue or (exp[i].argType == "array" and v[i].isArray == false):
+        let expectedType = if exp[i].argType == "array": "array" else: $exp[i].argNapiValue
+        let errmsg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [exp[i].argName, $kind(env, v[i]), expectedType]
         assert env.throwError(index & "\n" & errmsg, errorName)
         return
     except IndexDefect:
@@ -453,7 +458,7 @@ proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType
   IndexModule[fnName] = newSeq[TypedArg]()
   for arg in args:
     let jsCommentLine = "* @param {$1} $2" % [arg[1], arg[0]]
-    add(IndexModule[fnName], (jsCommentLine, arg[0], arg[2], arg[3]))
+    add(IndexModule[fnName], (jsCommentLine, arg[0], arg[1], arg[2], arg[3]))
 
 macro export_napi*(vName, vType: untyped, vVal: typed) =
   ## A fancy compile-time macro to export NAPI fields
@@ -514,6 +519,9 @@ macro export_napi*(fn: untyped) =
       # func > napi_function
       napiArgType = "napi_function"
       nimArgType = "func"
+    elif p[1].eqIdent("array"):
+      napiArgType = "napi_object"
+      nimArgType = "array"
     elif p[1].eqIdent("external"):
       napiArgType = "napi_external"
       nimArgType = p[1].strVal

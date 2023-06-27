@@ -19,6 +19,7 @@ type NApiPropertyAttributes* {.importc: "napi_property_attributes", header:"<nod
 
 type NapiValueType* {.importc: "napi_valuetype", header:"<node_api.h>".} = enum
   # ES6 types (corresponds to typeof)
+  # https://nodejs.org/api/n-api.html#napi_valuetype
   napi_undefined = "undefined"
   napi_null = "null"
   napi_boolean = "boolean"
