@@ -37,7 +37,6 @@ DENIM 🔥 Native Node/Bun addons powered by Nim language
   publish                               Publish addon to NPM
 ```
 
-
 Use Denim as a Nimble task:
 ```nim
 task napi, "Build a .node addon":
@@ -48,10 +47,15 @@ task napi, "Build a .node addon":
 
 Use `init` to define module initialization.
 ```nim
-import denim # import NAPI bindings 
-init proc(module: Module) =
-  # registering properties and functions here
-  # this is similar with javascript `module.exports`
+when defined napibuild:
+  # optionally, you can use `napibuild` flag to wrap your code
+  # this flag is set when compiling via `denim build src/myprogram.nim` 
+  import denim # import NAPI bindings 
+  init proc(module: Module) =
+    # registering properties and functions here
+    # this is similar with javascript `module.exports`
+elif isMainModule:
+  echo "just a normal nim program"
 ```
 
 ### Nim Type to NapiValueType
