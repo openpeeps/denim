@@ -1,6 +1,4 @@
-import std/[macros, json, strutils]
-
-from std/strutils import contains, split
+import std/[macros, json, strutils, sequtils, tables]
 from std/sequtils import delete
 
 import
@@ -19,18 +17,22 @@ type
     napiRangeError
     napiCustomError
 
-var Env*: napi_env = nil
-##Global environment variable; state maintained by various hooks; used internally
+  Module* = ref object
+    val*: napi_value
+    env*: napi_env
+    descriptors: seq[NapiPropertyDescriptor]
+
+  TypedArg = tuple[str, argName: string, argNapiValue: NapiValueType, isOptional: bool]
+
+var
+  Env*: napi_env = nil
+    ## Global environment variable; state maintained by various hooks; used internally
+  IndexModule = OrderedTableRef[string, seq[TypedArg]]()
 
 proc assert*(status: NapiStatus) {.raises: [NapiStatusError].} =
   ## Asserts that a call returns correctly;
   if status != napi_ok:
     raise newException(NapiStatusError, "NAPI call returned non-zero status (" & $status & ": " & $NapiStatus(status) & ")")
-
-type Module* = ref object
-  val*: napi_value
-  env*: napi_env
-  descriptors: seq[NapiPropertyDescriptor]
 
 template error*(msg: string, code = "", errorType: NapiErrorType = napiError, customError: napi_value = nil): untyped =
   ## Throw an exception using `napi_throw_error`
@@ -57,38 +59,31 @@ proc kind(env: napi_env, val: napi_value): NapiValueType =
 proc expect*(env: napi_env, n: napi_value, expectKind: NapiValueType): bool =
   return kind(env, n) == expectKind
 
-proc expect*(env: napi_env, v: seq[napi_value], errorName = "", expectKind: varargs[(string, NapiValueType)]): bool =
-  ## Check a seq of `napi_value` based on given `expectKind`.
-  ## If not match will throw a `NapiErrorType` with the following message:
-  ## ```Type mismatch parameter 'x'. Got 'A', expected 'B'```
+proc expect*(env: napi_env, v: seq[napi_value], errorName, fnIdent: string): bool =
   result = true
-  let msg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`"
-  for i in 0 .. expectKind.high:
-    var isOpt: bool
-    let argName = 
-      if expectKind[i][0][0] == '?':
-        isOpt = true
-        expectKind[i][0][1..^1]
-      else:
-        expectKind[i][0]
+  let exp = IndexModule[fnIdent]
+  var index = "\n/*\n" & exp.map(proc(x: TypedArg): string = indent(x.str, 1)).join("\n")
+  add index, "\n" & indent("*/", 1)
+  for i in 0 .. exp.high:
     try:
-      if kind(env, v[i]) != expectKind[i][1]:
-        let errmsg = msg % [argName, $kind(env, v[i]), $expectKind[i][1]]
-        assert env.throwError(errmsg, errorName)
+      if kind(env, v[i]) != exp[i].argNapiValue:
+        let errmsg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [exp[i].argName, $kind(env, v[i]), $exp[i].argNapiValue]
+        assert env.throwError(index & "\n" & errmsg, errorName)
         return
     except IndexDefect:
-      if isOpt:
+      if exp[i].isOptional:
         result = true
         continue
       else:
-        let errmsg = msg % [argName, $napi_undefined, $expectKind[i][1]]
-        assert env.throwError(errmsg, errorName)
+        let errmsg = "Type mismatch parameter: `$1`. Got `$2`, expected `$3`" % [exp[i].argName, $napi_undefined, $exp[i].argNapiValue]
+        assert env.throwError(index & "\n" & errmsg, errorName)
         return false
 
-  if not result:
-    var arglabel = "argument"
-    if expectKind.len > 1: add arglabel, "s"
-    assert error("This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
+  # if not result:
+  #   var arglabel = "argument"
+  #   if expectKind.len > 1: add arglabel, "s"
+  #   assert env.throwError(fnDesc.docblock & "\n" & "This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
+
 
 proc create(env: napi_env, n: bool): napi_value =
   ## Create a new `Boolean` `napi_value`
@@ -119,7 +114,7 @@ proc create(env: napi_env, s: string): napi_value =
   assert ( napi_create_string_utf8(env, s, s.len.csize_t, addr result) )
 
 proc create(env: napi_env, p: openarray[(string, napi_value)]): napi_value =
-  ## Create a new `object` `napi_value`
+  ## Create a new k/v `object` containing `napi_value`
   assert napi_create_object(env, addr result)
   for name, val in items(p):
     assert napi_set_named_property(env, result, name, val)
@@ -165,46 +160,51 @@ proc getNull*: napi_value =
   assert napi_get_null(Env, addr result)
 
 proc getUndefined*: napi_value =
-  ##Returns JavaScript ``undefined`` value
+  ## Returns JavaScript ``undefined`` value
   assert napi_get_undefined(Env, addr result)
 
+proc undefined*: napi_value =
+  ## Returns an `undefined` napi_value
+  assert napi_get_undefined(Env, addr result) 
+
 proc getGlobal*: napi_value =
-  ##Returns NodeJS global variable
+  ## Returns NodeJS global variable
   assert napi_get_global(Env, addr result)
 
 proc getInt32*(n: napi_value): int32 =
-  ##Retrieves value from node; raises exception on failure
+  ## Retrieves value from node; raises exception on failure
   assert napi_get_value_int32(Env, n, addr result)
 
 proc getInt32*(n: napi_value, default: int32): int32 =
-  ##Retrieves value from node; returns default on failure
+  ## Retrieves value from node; returns default on failure
   try: assert napi_get_value_int32(Env, n, addr result)
   except: result = default
 
 template getInt*(n: napi_value): int =
-  ##Retrieves value from node based on bitness of architecture; raises exception on failure
+  ## Return `int` value from `n`
   when sizeof(int) == 8:
     int(n.getInt64())
   else:
     int(n.getInt32())
 
 template getInt*(n: napi_value, default: int): int =
-  ##Retrieves value from node based on bitness of architecture; returns default on failure
+  ## Return `int` value from `n`. Returns `default` on failure
   when sizeof(int) == 8:
     int(n.getInt64(default))
   else:
     int(n.getInt32(default))
 
 proc getBool*(n: napi_value): bool =
-  ##Retrieves value from node; raises exception on failure
+  ## Return a `bool` value from `n`
   assert napi_get_value_bool(Env, n, addr result)
 
 proc getBool*(n: napi_value, default: bool): bool =
-  ##Retrieves value from node; returns default on failure
+  ## Return a `bool` from `n`. Returns `default` on failure
   try: assert napi_get_value_bool(Env, n, addr result)
   except: result = default
 
 proc getStr*(n: napi_value): string =
+  ## Return a `string` from `n`
   var bufSize: csize_t
   assert napi_get_value_string_utf8(Env, n, cast[cstring](nil), cast[csize_t](nil), addr bufSize)
   bufSize += 1
@@ -271,16 +271,14 @@ proc get*(key: string, default: napi_value): napi_value =
   let globals = getGlobal()
   result = globals.getProperty(key, default)
 
-proc setProperty*(obj: napi_value, key: string, value: napi_value)
-  {.raises: [ValueError, NapiStatusError].}=
+proc setProperty*(obj: napi_value, key: string, value: napi_value) =
   ## Sets property ``key`` in ``obj`` to ``value``; raises exception if ``obj`` is not an object
-  if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
+  if kind(obj) != napi_object: raise newException(ValueError, "Value is not an object")
   assert napi_set_named_property(Env, obj, key, value)
 
 proc `[]=`*(obj: napi_value, key: string, value: napi_value) =
   ## Alias for ``setProperty``, raises exception
   obj.setProperty(key, value)
-
 
 proc isArray*(obj: napi_value): bool =
   assert napi_is_array(Env, obj, addr result)
@@ -288,13 +286,13 @@ proc isArray*(obj: napi_value): bool =
 proc hasElement*(obj: napi_value, index: int): bool =
   ## Checks whether element is contained in ``obj``;
   ## raises exception if ``obj`` is not an array
-  if not isArray(obj): raise newException(ValueError, "value is not an array")
+  if not isArray(obj): raise newException(ValueError, "Value is not an array")
   assert napi_has_element(Env, obj, uint32 index, addr result)
 
 proc getElement*(obj: napi_value, index: int): napi_value =
   ##Retrieves value from ``index`` in  ``obj``;
   ## raises exception if ``obj`` is not an array or ``index`` is out of bounds
-  if not hasElement(obj, index): raise newException(IndexDefect, "index out of bounds")
+  if not hasElement(obj, index): raise newException(IndexDefect, "Index out of bounds")
   assert napi_get_element(Env, obj, uint32 index, addr result)
 
 proc getElement*(obj: napi_value, index: int, default: napi_value): napi_value =
@@ -303,18 +301,18 @@ proc getElement*(obj: napi_value, index: int, default: napi_value): napi_value =
 
 proc setElement*(obj: napi_value, index: int, value: napi_value) =
   ##Sets value at ``index``; raises exception if ``obj`` is not an array
-  if not isArray(obj): raise newException(ValueError, "value is not an array")
+  if not isArray(obj): raise newException(ValueError, "Value is not an array")
   assert napi_set_element(Env, obj, uint32 index, value)
 
 proc len*(arr: napi_value): int =
-  if not isArray(arr): raise newException(ValueError, "value is not an array")
+  if not isArray(arr): raise newException(ValueError, "Value is not an array")
   arr.getProperty("length").getInt
 
 proc `[]`*(obj: napi_value, index: int): napi_value =
-  ##Alias for ``getElement``; raises exception
+  ## Alias for ``getElement``; raises exception
   obj.getElement(index)
 proc `[]=`*(obj: napi_value, index: int, value: napi_value) =
-  ##Alias for ``setElement``; raises exception
+  ## Alias for ``setElement``; raises exception
   obj.setElement(index, value)
 
 proc registerBase(obj: Module, name: string, value: napi_value, attr: int) =
@@ -326,28 +324,28 @@ proc registerBase(obj: Module, name: string, value: napi_value, attr: int) =
     )
   )
 
-proc register*[T: int | uint | string | napi_value](obj: Module,
-  name: string, value: T, attr: int = 0) =
-  ##Adds field to exports object ``obj``
+proc register*[T: int | uint | string | napi_value](obj: Module, name: string, value: T, attr: int = 0) =
+  ## Adds field to exports object ``obj``
   obj.registerBase(name, create(obj.env, value), attr)
 
 proc register*[T: int | uint | string | napi_value](obj: Module,
-  name: string, values: openarray[T], attr: int = 0) =
-  ##Adds field to exports object ``obj``
+                name: string, values: openarray[T], attr: int = 0) =
+  ## Adds field to exports object ``obj``
   var elements =  newSeq[napi_value]()
   for v in values: elements.add(obj.create(v))
 
   obj.registerBase(name, create(obj.env, elements), attr)
 
 proc register*[T: int | uint | string | napi_value](obj: Module,
-  name: string, values: openarray[(string, T)], attr: int = 0) =
-  ##Adds field to exports object ``obj``
+              name: string, values: openarray[(string, T)], attr: int = 0) =
+  ## Register a new property field to `obj` Module.
   var properties = newSeq[(string, napi_value)]()
   for v in values: properties.add((v[0], obj.create(v[1])))
 
   obj.registerBase(name, create(obj.env, properties), attr)
 
 proc register*(obj: Module, name: string, cb: napi_callback) =
+  ## Register a new property field to `obj` Module.
   obj.registerBase(name, createFn(obj.env, name, cb), 0)
 
 proc `%`*[T](t: T): napi_value =
@@ -389,6 +387,7 @@ proc tryGetJson*(n: napi_value): JsonNode =
 template getIdentStr*(n: untyped): string = $n
 
 template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
+  ## Register a function
   var name {.inject.}: napi_value
   block:
     proc `wrapper$`(environment: napi_env, info: napi_callback_info): napi_value {.cdecl.} =
@@ -406,6 +405,7 @@ template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
     name = Env.createFn(name.getStr(), `wrapper$`)
 
 template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.} =
+  ## Register and export a function
   block:
     proc `wrapper$`(environment: napi_env, info: napi_callback_info): napi_value {.cdecl.} =
       var
@@ -414,7 +414,6 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
         this: napi_value
         args = newSeq[napi_value]()
       Env = environment
-
       assert napi_get_cb_info(environment, info, addr argc, `argv$`, addr this, nil)
       for i in 0..<min(argc, paramCt):
         args.add(`argv$`[][i])
@@ -422,6 +421,92 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
       cushy
     exports.register(name, `wrapper$`)
 
+proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType, bool)]) =
+  # OrderedTableRef[string, tuple[argName, argValue: string, argNapiValue: napi_value, isOptional: bool]]
+  IndexModule[fnName] = newSeq[TypedArg]()
+  for arg in args:
+    let jsCommentLine = "* @param {$1} $2" % [arg[1], arg[0]]
+    add(IndexModule[fnName], (jsCommentLine, arg[0], arg[2], arg[3]))
+
+macro export_napi*(varName, varType: untyped, varValue: typed) =
+  ## A fancy, compile-time macro to export NAPI fields
+  echo "todo"
+
+macro export_napi*(fn: untyped) =
+  ## A fancy, compile-time macro to export NAPI functions
+  ## ```nim
+  ## proc hello(name: string): string {.export_napi.} =
+  ##   return %* args.get("name")
+  ## ```
+  case fn.kind:
+  of nnkProcDef:
+    expectKind(fn[6], nnkStmtList) # body
+    expectKind(fn[3], nnkFormalParams) # params
+    result = newStmtList()
+    let fnName = fn[0].strVal
+    var params = fn[3][1..^1]
+    var args = newNimNode(nnkBracket)
+    for p in params:
+      var nimArgType, napiArgType: string 
+      if eqIdent(p[1], "string"):
+        napiArgType = "napi_string"
+        nimArgType = p[1].strVal
+      elif eqIdent(p[1], "bool"):
+        napiArgType = "napi_boolean"
+        nimArgType = p[1].strVal
+      elif eqIdent(p[1], "nil"):
+       napiArgType = "napi_null"
+       nimArgType = p[1].strVal
+      elif eqIdent(p[1], "int"):
+        napiArgType = "napi_number"
+        nimArgType = p[1].strVal
+      elif p[1].kind == nnkObjectTy:
+        napiArgType = "napi_object"
+        nimArgType = "object"
+      else:
+        error("Cannot convert", p[1])
+      var types = nnkTupleConstr.newTree(
+        newLit(p[0].strVal),
+        newLit(nimArgType),
+        ident(napiArgType),
+        newLit(false)
+      )
+      add args, types
+    add result, newCall(ident("addDocBlock"), newLit(fnName), args)
+
+    let
+      callExpectProc = newCall(
+        ident("expect"),
+        ident("Env"),
+        ident("args"),
+        newLit(""),
+        newLit(fnName)
+      )
+      typeChecker = newIfStmt(
+        (
+          nnkPrefix.newTree(ident("not"), callExpectProc),
+          newStmtList(
+            nnkReturnStmt.newTree(
+              newEmptyNode()
+            )
+          )
+        ))
+    var fnBody = newStmtList()
+    add fnBody, typeChecker
+    add fnBody, fn[6]
+    result.add(
+      newCall(
+        ident("registerFn"),
+        ident("module"),
+        newLit(params.len),
+        newLit(fnName),
+        fnBody
+      )
+    )
+  else:
+    echo fn.kind
+    quit()
+    # error("Nope")
 
 proc defineProperties*(obj: Module) =
   assert napi_define_properties(obj.env, obj.val,
@@ -430,6 +515,7 @@ proc defineProperties*(obj: Module) =
   )
 
 proc napiCreate*[T](t: T): napi_value =
+  ## Create a new `napi_value` of `T`
   Env.create(t)
 
 proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
@@ -448,6 +534,11 @@ proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
     newCall("napiCreate", x)
 
 macro `%*`*(x: untyped): untyped =
+  ## An elegant way to convert Nim types to `napi_value`.
+  runnableExamples:
+    var nvStr: napi_value = %* "This is a string"
+    var nvInt: napi_value = %* 1234
+    var nvBool = %* true
   return toNapiValue(x)
 
 
@@ -464,11 +555,12 @@ iterator items*(n: napi_value): napi_value =
 #         yield n[index]
 
 macro init*(initHook: proc(exports: Module)): void =
-  ##Bootstraps module; use by calling ``register`` to add properties to ``exports``
+  ##Bootstraps module; use by calling `register` to add properties to `exports`
   ##
-  ##.. code-block:: Nim
+  ## ```nim
   ##  init proc(exports: Module) =
   ##    exports.register("hello", "hello world")
+  ## ```
   var nimmain = newProc(ident("NimMain"))
   nimmain.addPragma(ident("importc"))
   var cinit = newProc(
