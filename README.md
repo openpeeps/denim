@@ -8,6 +8,10 @@
 </p>
 
 <p align="center">
+  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli.png" alt="Denim CLI" width="652px">
+</p>
+
+<p align="center">
   <a href="https://openpeeps.github.io/denim">API reference</a><br>
   <img src="https://github.com/openpeeps/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/denim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
@@ -25,10 +29,29 @@
 - Install Node.js and `node-gyp`, the native addon build tool
 - Install Denim CLI via `nimble`
 
+### CLI
+Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon via `Nim` + `NodeGYP`
+
+Simply run `denim -h`
+```
+DENIM 🔥 Native Node/Bun addons powered by Nim language
+
+  build <entry> --release --yes         Compile Nim program to Node addon
+  publish                               Publish addon to NPM (requires npm cli)
+```
+
+
+Use Denim as a Nimble task:
+```nim
+task napi, "Build a .node addon":
+  exec "denim build src/myprogram.nim"
+```
+
 ### Defining a module
 
 Use `init` to define module initialization.
 ```nim
+import denim # import NAPI bindings 
 init proc(module: Module) =
   # registering properties and functions here
   # this is similar with javascript `module.exports`
@@ -39,6 +62,7 @@ Use low-level API to convert Nim values to `napi_value` (`NapiValueType`) such a
 Use `assert` to check if a low-level function returns a success or failure. [Currently, the following status codes are supported](https://nodejs.org/api/n-api.html#napi_status)
 
 ```nim
+import denim
 init proc(module: Module) =
   module.registerFn(0, "awesome"):
     var str2napi: napi_value
