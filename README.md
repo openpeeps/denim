@@ -91,7 +91,7 @@ import std/json except `%*`
 init proc(module: Module): # the name `module` is required
   proc hello(name: string) {.export_napi} =
     ## A simple function from Nim
-    return %* "Hello, " & args.get("name")
+    return %*("Hello, " & args.get("name"))
 
   proc callNimFn(): object {.export_napi} =
     ## Return a JSON object
