@@ -48,7 +48,7 @@ init proc(module: Module) =
 ```
 
 Alternatively, use `%*` for auto-convert Nim values to `NapiValueType`.
-```
+```nim
 let
   a: napi_value = %* "Hey"
   b: napi_value = %* true
