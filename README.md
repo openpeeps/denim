@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim.png" alt="Denim" width="170px"><br>
+  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim.png" alt="Denim" width="210px" height="210px"><br>
   Denim - Native NodeJS/BunJS addons powered by Nim<br>👑 Written in Nim language
 </p>
 
