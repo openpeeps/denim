@@ -1,19 +1,16 @@
 <p align="center">
-  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim.png" alt="Denim" width="170px"><br>
+  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim.png" alt="Denim" width="210px" height="210px"><br>
   Denim - Native NodeJS/BunJS addons powered by Nim<br>👑 Written in Nim language
 </p>
 
 <p align="center">
-  <code>nimble install denim</code>
+  <code>nimble install denim</code><br><br>
+  <a href="https://openpeeps.github.io/denim">API reference</a><br>
+  <img src="https://github.com/openpeeps/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/denim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
 
 <p align="center">
   <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli-screen.png" alt="Denim CLI" width="676px">
-</p>
-
-<p align="center">
-  <a href="https://openpeeps.github.io/denim">API reference</a><br>
-  <img src="https://github.com/openpeeps/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/denim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
 
 ## 😍 Key Features
