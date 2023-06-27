@@ -127,16 +127,31 @@ proc create(env: napi_env, p: openarray[(string, napi_value)]): napi_value =
 proc create(env: napi_env, a: openarray[napi_value]): napi_value =
   ## Create a new `array` `napi_value`
   assert( napi_create_array_with_length(env, a.len.csize_t, addr result) )
-  for i, elem in a.enumerate: assert napi_set_element(env, result, i.uint32, a[i])
+  for i, elem in a.enumerate:
+    assert napi_set_element(env, result, i.uint32, a[i])
+
+proc create(env: napi_env, a: seq[napi_value]): napi_value =
+  ## Create a new `array` `napi_value`
+  assert( napi_create_array_with_length(env, a.len.csize_t, addr result) )
+  for i, elem in a.enumerate:
+    assert napi_set_element(env, result, i.uint32, a[i])
 
 proc create[T: int | uint | string](env: napi_env, a: openarray[T]): napi_value =
   var elements = newSeq[napi_value]()
-  for elem in a: elements.add(env.create(elem))
+  for elem in a:
+    elements.add(env.create(elem))
+  env.create(elements)
+
+proc create[T](env: napi_env, a: seq[T]): napi_value =
+  var elements = newSeq[napi_value]()
+  for elem in a:
+    elements.add(env.create(elem))
   env.create(elements)
 
 proc create[T: int | uint | string](env: napi_env, a: openarray[(string, T)]): napi_value =
   var properties = newSeq[(string, napi_value)]()
-  for prop in a: properties.add((prop[0], create(prop[1])))
+  for prop in a:
+    properties.add((prop[0], create(prop[1])))
   env.create(a)
 
 proc createFn*(env: napi_env, fname: string, cb: napi_callback): napi_value =
@@ -580,6 +595,12 @@ iterator items*(n: napi_value): napi_value =
   if not n.isArray: raise newException(ValueError, "value is not an array")
   for index in 0..<n.len:
     yield n[index]
+
+proc toSeq*(n: napi_value): seq[napi_value] =
+  ## Return unpacked Array `object` to `seq[napi_value]`   
+  if not n.isArray: raise newException(ValueError, "value is not an array")
+  for i in n:
+    add result, i
 
 # iterator pairs*(n: napi_value): napi_value =
 #     for index in 0..<n.len:
