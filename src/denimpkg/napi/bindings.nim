@@ -421,6 +421,33 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
       cushy
     exports.register(name, `wrapper$`)
 
+proc napiCreate*[T](t: T): napi_value =
+  ## Create a new `napi_value` of `T`
+  Env.create(t)
+
+proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
+  case x.kind
+  of nnkBracket:
+    var brackets = newNimNode(nnkBracket)
+    for i in 0..<x.len: brackets.add(toNapiValue(x[i]))
+    newCall("napiCreate", brackets)
+  of nnkTableConstr:
+    var table = newNimNode(nnkTableConstr)
+    for i in 0..<x.len:
+      x[i].expectKind nnkExprColonExpr
+      table.add newTree(nnkExprColonExpr, x[i][0], toNapiValue(x[i][1]))
+    newCall("napiCreate", table)
+  else:
+    newCall("napiCreate", x)
+
+macro `%*`*(x: untyped): untyped =
+  ## An elegant way to convert Nim types to `napi_value`.
+  runnableExamples:
+    var nvStr: napi_value = %* "This is a string"
+    var nvInt: napi_value = %* 1234
+    var nvBool = %* true
+  return toNapiValue(x)
+
 proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType, bool)]) =
   # OrderedTableRef[string, tuple[argName, argValue: string, argNapiValue: napi_value, isOptional: bool]]
   IndexModule[fnName] = newSeq[TypedArg]()
@@ -428,12 +455,24 @@ proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType
     let jsCommentLine = "* @param {$1} $2" % [arg[1], arg[0]]
     add(IndexModule[fnName], (jsCommentLine, arg[0], arg[2], arg[3]))
 
-macro export_napi*(varName, varType: untyped, varValue: typed) =
-  ## A fancy, compile-time macro to export NAPI fields
-  echo "todo"
+macro export_napi*(vName, vType: untyped, vVal: typed) =
+  ## A fancy compile-time macro to export NAPI fields
+  ## ```nim
+  ## var name {.export_napi.} = "Denim is Awesome!"
+  ## ```
+  expectKind(vName, nnkIdent)
+  result = newStmtList()
+  result.add(
+    newCall(
+      ident("register"),
+      ident("module"),
+      newLit(vName.strVal),
+      toNapiValue(vVal)
+    )
+  )
 
 macro export_napi*(fn: untyped) =
-  ## A fancy, compile-time macro to export NAPI functions
+  ## A fancy compile-time macro to export NAPI functions
   ## ```nim
   ## proc hello(name: string): string {.export_napi.} =
   ##   return %* args.get("name")
@@ -447,23 +486,39 @@ macro export_napi*(fn: untyped) =
   var args = newNimNode(nnkBracket)
   for p in params:
     var nimArgType, napiArgType: string 
-    if eqIdent(p[1], "string"):
+    if p[1].eqIdent("string"):
+      # string > napi_string
       napiArgType = "napi_string"
       nimArgType = p[1].strVal
-    elif eqIdent(p[1], "bool"):
+    elif p[1].eqIdent("bool"):
+      # bool > napi_boolean
       napiArgType = "napi_boolean"
       nimArgType = p[1].strVal
-    elif eqIdent(p[1], "nil"):
-     napiArgType = "napi_null"
-     nimArgType = p[1].strVal
-    elif eqIdent(p[1], "int"):
+    elif p[1].eqIdent("nil"):
+      # nil > napi_null
+      napiArgType = "napi_null"
+      nimArgType = p[1].strVal
+    elif p[1].eqIdent("int"):
+      # int > napi_number
       napiArgType = "napi_number"
       nimArgType = p[1].strVal
+    elif p[1].eqIdent("symbol"):
+      # symbol > napi_symbol
+      napiArgType = "napi_symbol"
+      nimArgType = "symbol"
     elif p[1].kind == nnkObjectTy:
+      # object > napi_object
       napiArgType = "napi_object"
       nimArgType = "object"
+    elif p[1].kind == nnkProcTy:
+      # func > napi_function
+      napiArgType = "napi_function"
+      nimArgType = "func"
+    elif p[1].eqIdent("external"):
+      napiArgType = "napi_external"
+      nimArgType = p[1].strVal
     else:
-      error("Cannot convert", p[1])
+      error("Cannot convert to NapiValueType", p[1])
     var types = nnkTupleConstr.newTree(
       newLit(p[0].strVal),
       newLit(nimArgType),
@@ -508,33 +563,6 @@ proc defineProperties*(obj: Module) =
     obj.descriptors.len.csize_t,
     cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked)
   )
-
-proc napiCreate*[T](t: T): napi_value =
-  ## Create a new `napi_value` of `T`
-  Env.create(t)
-
-proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
-  case x.kind
-  of nnkBracket:
-    var brackets = newNimNode(nnkBracket)
-    for i in 0..<x.len: brackets.add(toNapiValue(x[i]))
-    newCall("napiCreate", brackets)
-  of nnkTableConstr:
-    var table = newNimNode(nnkTableConstr)
-    for i in 0..<x.len:
-      x[i].expectKind nnkExprColonExpr
-      table.add newTree(nnkExprColonExpr, x[i][0], toNapiValue(x[i][1]))
-    newCall("napiCreate", table)
-  else:
-    newCall("napiCreate", x)
-
-macro `%*`*(x: untyped): untyped =
-  ## An elegant way to convert Nim types to `napi_value`.
-  runnableExamples:
-    var nvStr: napi_value = %* "This is a string"
-    var nvInt: napi_value = %* 1234
-    var nvBool = %* true
-  return toNapiValue(x)
 
 
 # Promise API
