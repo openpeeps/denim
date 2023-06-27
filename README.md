@@ -4,16 +4,13 @@
 </p>
 
 <p align="center">
-  <code>nimble install denim</code>
+  <code>nimble install denim</code><br><br>
+  <a href="https://openpeeps.github.io/denim">API reference</a><br>
+  <img src="https://github.com/openpeeps/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/denim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
 
 <p align="center">
   <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli-screen.png" alt="Denim CLI" width="676px">
-</p>
-
-<p align="center">
-  <a href="https://openpeeps.github.io/denim">API reference</a><br>
-  <img src="https://github.com/openpeeps/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/denim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
 
 ## 😍 Key Features
