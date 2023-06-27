@@ -132,7 +132,7 @@ proc create(env: napi_env, a: openarray[napi_value]): napi_value =
 
 proc create(env: napi_env, a: seq[napi_value]): napi_value =
   ## Create a new `array` `napi_value`
-  assert( napi_create_array_with_length(env, a.len.csize_t, addr result) )
+  assert( napi_create_array(env, addr result) )
   for i, elem in a.enumerate:
     assert napi_set_element(env, result, i.uint32, a[i])
 
