@@ -68,7 +68,7 @@ init proc(module: Module) =
     return str2napi
 ```
 
-Alternatively, use `%*` for auto-convert Nim values to `NapiValueType`.
+Alternatively, use `%*` to auto-convert Nim values to `NapiValueType`.
 ```nim
 let
   a: napi_value = %* "Hey"
