@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli.png" alt="Denim CLI" width="652px">
+  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli-screen.png" alt="Denim CLI" width="652px">
 </p>
 
 <p align="center">
