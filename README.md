@@ -31,39 +31,77 @@ Use `init` to define module initialization.
 ```nim
 init proc(module: Module) =
   # registering properties and functions here
+  # this is similar with javascript `module.exports`
 ```
 
-### Registering module exports
-Export properties and functions using `registerFn()` for functions and `register()` for properties
+### Nim Type to NapiValueType
+Use low-level API to convert Nim values to `napi_value` (`NapiValueType`) such as `number`, `string`, `object`, `bool`, and so on.
+Use `assert` to check if a low-level function returns a success or failure. [Currently, the following status codes are supported](https://nodejs.org/api/n-api.html#napi_status)
 
 ```nim
 init proc(module: Module) =
-  module.registerFn(0, "hello"):
-    # fn body
+  module.registerFn(0, "awesome"):
+    var str2napi: napi_value
+    var str = "Nim is awesome!"
+    assert Env.napi_create_string_utf8(str, str.len.csize_t, str2napi.addr) 
+    return str2napi
 ```
 
-### Check function arguments
-```nim
-init proc(module: Module) =
-  module.registerFn(3, "setUsername"):
-    # throw NAPI error when
-    # mismatch arg types / receive less args than expected 
-    if not Env.expect(args, "MyProgram",
-      ("name", napi_string),
-      ("email", napi_string),
-      ("?age", napi_number) # prefix with `?` to set as optional arg
-    ): return
-    # do the do
+Alternatively, use `%*` for auto-convert Nim values to `NapiValueType`.
+```
+let
+  a: napi_value = %* "Hey"
+  b: napi_value = %* true
+assert a.kind == napi_string
+assert b.kind == napi_boolean
 ```
 
-## Examples
+### Exports
+Since `v0.1.5`, you can use `{.export_napi.}` pragma to export functions and object properties.
+
 ```nim
-init proc(module: Module) =
-  module.registerFn(1, "hello"):
-    # access function arguments using `args` seq
-    # use `%*` operator to convert Nim types to `napi_value`
-    return %* "Yay! " & args[0].getStr
+import denim
+import std/json
+
+init proc(module: Module): # the name `module` is required
+  proc hello(name: string) {.export_napi} =
+    ## A simple function from Nim
+    return %* "Hello, " & args.get("name")
+
+  proc callNimFn(): object {.export_napi} =
+    ## Return a JSON object
+    var data: JsonNode = newJObject()
+    data["hello"] = newJString("Hello!")
+    # convert `data` to napi_string using `%*`
+    # then, call native JSON.parse() 
+    return napiCall("JSON.parse", [%* $(data)])
+
+  const age {.export_napi.} = "Nim is Awesome!"
 ```
+
+Calling a function/property from Node/Bun
+```js
+const app = require('myaddon.node')
+console.log(app.hello("World!"))       // Hello, World!
+console.log(app.awesome)               // Nim is Awesome!
+
+console.log(app.callNimFn().hello)     // Hello!
+```
+
+# Built-in type checker
+```js
+app.hello()
+```
+
+```
+/*
+ * A simple function from Nim
+ * @param {string} name
+ * @return {string}
+ */
+Type mismatch parameter: `name`. Got `undefined`, expected `string`
+```
+
 
 ## Real-World Examples
 - **Tim Engine** is a powerful template engine and markup language written in Nim. [Here is the code for building Tim to Node/Bun via NAPI](https://github.com/openpeeps/tim/blob/main/src/tim.nim#L8-L133), 
