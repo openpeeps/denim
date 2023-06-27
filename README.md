@@ -82,7 +82,7 @@ Since `v0.1.5`, you can use `{.export_napi.}` pragma to export functions and obj
 
 ```nim
 import denim
-import std/json
+import std/json except `%*`
 
 init proc(module: Module): # the name `module` is required
   proc hello(name: string) {.export_napi} =
