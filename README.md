@@ -92,12 +92,12 @@ init proc(module: Module): # the name `module` is required
   proc callNimFn(): object {.export_napi} =
     ## Return a JSON object
     var data: JsonNode = newJObject()
-    data["hello"] = newJString("Hello!")
+    data["say"] = newJString("Hello!")
     # convert `data` to napi_string using `%*`
     # then, call native JSON.parse() 
     return napiCall("JSON.parse", [%* $(data)])
 
-  const age {.export_napi.} = "Nim is Awesome!"
+  var awesome {.export_napi.} = "Nim is Awesome!"
 ```
 
 Calling a function/property from Node/Bun
@@ -106,7 +106,7 @@ const app = require('myaddon.node')
 console.log(app.hello("World!"))       // Hello, World!
 console.log(app.awesome)               // Nim is Awesome!
 
-console.log(app.callNimFn().hello)     // Hello!
+console.log(app.callNimFn().say)     // Hello!
 ```
 
 # Built-in type checker
