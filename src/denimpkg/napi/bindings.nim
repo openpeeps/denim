@@ -491,6 +491,40 @@ macro export_napi*(vName, vType: untyped, vVal: typed) =
     )
   )
 
+proc getNimNapiType(n: NimNode, countless: var bool): tuple[nimArgType, napiArgType: string] =
+  if n.eqIdent("string"):
+    # string > napi_string
+    result = ("napi_string", n.strVal)
+  elif n.eqIdent("bool"):
+    # bool > napi_boolean
+    result = ("napi_boolean", n.strVal)
+  elif n.eqIdent("nil"):
+    # nil > napi_null
+    result = ("napi_null", n.strVal)
+  elif n.eqIdent("int"):
+    # int > napi_number
+    result = ("napi_number", n.strVal)
+  elif n.eqIdent("symbol"):
+    # symbol > napi_symbol
+    result = ("napi_symbol", "symbol")
+  elif n.kind == nnkObjectTy:
+    # object > napi_object
+    result = ("napi_object", "object")
+  elif n.kind == nnkProcTy:
+    # func > napi_function
+    result = ("napi_function", "func")
+  elif n.eqIdent("array"):
+    result = ("napi_object", "array")
+  elif n.eqIdent("external"):
+    result = ("napi_external", n.strVal)
+  elif n.kind == nnkBracketExpr:
+    if n[0].eqIdent("varargs"):
+      countless = true
+      result = getNimNapiType(n[1], countless)
+  else:
+    error("Cannot convert to NapiValueType", n)
+
+
 macro export_napi*(fn: untyped) =
   ## A fancy compile-time macro to export NAPI functions
   ## ```nim
@@ -502,50 +536,16 @@ macro export_napi*(fn: untyped) =
   expectKind(fn[3], nnkFormalParams) # params
   result = newStmtList()
   let fnName = fn[0].strVal
-  var params = fn[3][1..^1]
-  var args = newNimNode(nnkBracket)
+  var
+    params = fn[3][1..^1]
+    countless: bool # enabled when an argument has `varargs[]` type 
+    args = newNimNode(nnkBracket)
   for p in params:
-    var nimArgType, napiArgType: string 
-    if p[1].eqIdent("string"):
-      # string > napi_string
-      napiArgType = "napi_string"
-      nimArgType = p[1].strVal
-    elif p[1].eqIdent("bool"):
-      # bool > napi_boolean
-      napiArgType = "napi_boolean"
-      nimArgType = p[1].strVal
-    elif p[1].eqIdent("nil"):
-      # nil > napi_null
-      napiArgType = "napi_null"
-      nimArgType = p[1].strVal
-    elif p[1].eqIdent("int"):
-      # int > napi_number
-      napiArgType = "napi_number"
-      nimArgType = p[1].strVal
-    elif p[1].eqIdent("symbol"):
-      # symbol > napi_symbol
-      napiArgType = "napi_symbol"
-      nimArgType = "symbol"
-    elif p[1].kind == nnkObjectTy:
-      # object > napi_object
-      napiArgType = "napi_object"
-      nimArgType = "object"
-    elif p[1].kind == nnkProcTy:
-      # func > napi_function
-      napiArgType = "napi_function"
-      nimArgType = "func"
-    elif p[1].eqIdent("array"):
-      napiArgType = "napi_object"
-      nimArgType = "array"
-    elif p[1].eqIdent("external"):
-      napiArgType = "napi_external"
-      nimArgType = p[1].strVal
-    else:
-      error("Cannot convert to NapiValueType", p[1])
+    var typedArg = getNimNapiType(p[1], countless)
     var types = nnkTupleConstr.newTree(
       newLit(p[0].strVal),
-      newLit(nimArgType),
-      ident(napiArgType),
+      newLit(typedArg[1]),
+      ident(typedArg[0]),
       newLit(false)
     )
     add args, types
@@ -568,14 +568,16 @@ macro export_napi*(fn: untyped) =
           )
         )
       ))
-  var fnBody = newStmtList()
+  var
+    fnBody = newStmtList()
+    paramsLength = if countless: 100 else: params.len
   add fnBody, typeChecker
   add fnBody, fn[6]
   result.add(
     newCall(
       ident("registerFn"),
       ident("module"),
-      newLit(params.len),
+      newLit(paramsLength),
       newLit(fnName),
       fnBody
     )
