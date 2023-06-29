@@ -1,17 +1,28 @@
 import std/[unittest, strutils, osproc]
 
-test "can build addon with node-gyp":
-  let status = execCmdEx("denim build ./tests/myaddon.nim --yes")
-  assert status.exitCode == 0
+when not defined skipbuild:
+  var addons = ["myaddon", "myobject"]
+  test "can build addons with node-gyp":
+    for addonName in addons:
+      let status = execCmdEx("denim build ./tests/" & addonName & ".nim --yes")
+      echo "[OK] " & addonName & ".nim"
+      assert status.exitCode == 0
 
-test "can build addon with CMake.js":
-  let status = execCmdEx("denim build ./tests/myaddon.nim --cmake --yes")
-  echo status.output
-  assert status.exitCode == 0
+  test "can build addons with CMake":
+    for addonName in addons:
+      let status = execCmdEx("denim build ./tests/" & addonName & ".nim --cmake --yes")
+      echo "[OK] " & addonName & ".nim"
+      assert status.exitCode == 0
 
-test "can run addon (node)":
-  let status = execCmdEx("node tests/myaddon.js")
+test "can run myaddon (NodeJS)":
+  let status = execCmdEx("node tests/js/myaddon.js")
   let hello = status.output.strip()
   echo hello
   assert hello == "Hello, World!"
+  assert status.exitCode == 0
+
+test "can run myobject (NodeJS)":
+  let status = execCmdEx("node tests/js/myobject.js")
+  let hello = status.output.strip()
+  echo hello
   assert status.exitCode == 0

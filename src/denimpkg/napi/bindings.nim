@@ -122,7 +122,13 @@ proc create(env: napi_env, p: openarray[(string, napi_value)]): napi_value =
   ## Create a new k/v `object` containing `napi_value`
   assert napi_create_object(env, addr result)
   for name, val in items(p):
-    assert napi_set_named_property(env, result, name, val)
+    assert napi_set_named_property(env, result, name.cstring, val)
+
+proc create(env: napi_env, p: seq[(string, napi_value)]): napi_value =
+  ## Create a new k/v `object` containing `napi_value`
+  assert napi_create_object(env, addr result)
+  for name, val in items(p):
+    assert napi_set_named_property(env, result, name.cstring, val)
 
 proc create(env: napi_env, a: openarray[napi_value]): napi_value =
   ## Create a new `array` `napi_value`
@@ -137,12 +143,15 @@ proc create(env: napi_env, a: seq[napi_value]): napi_value =
     assert napi_set_element(env, result, i.uint32, a[i])
 
 proc create[T: int | uint | string](env: napi_env, a: openarray[T]): napi_value =
+  ## Create a new `array`. Produce an array of `int`, `uint` `string` from `a
   var elements = newSeq[napi_value]()
   for elem in a:
     elements.add(env.create(elem))
   env.create(elements)
 
 proc create[T](env: napi_env, a: seq[T]): napi_value =
+  ## Create a new seq[seq[T]]. Produce an `napi_value` of type `array`
+  ## containing one or more arrays.
   var elements = newSeq[napi_value]()
   for elem in a:
     elements.add(env.create(elem))
@@ -331,25 +340,29 @@ proc len*(arr: napi_value): int =
 proc `[]`*(obj: napi_value, index: int): napi_value =
   ## Alias for ``getElement``; raises exception
   obj.getElement(index)
+
 proc `[]=`*(obj: napi_value, index: int, value: napi_value) =
   ## Alias for ``setElement``; raises exception
   obj.setElement(index, value)
 
-proc registerBase(obj: Module, name: string, value: napi_value, attr: int) =
+proc registerBase(obj: Module, name: string, value: napi_value,
+                attr: NapiPropertyAttributes = napi_default) =
+  # https://nodejs.org/api/n-api.html#napi_property_descriptor
   obj.descriptors.add(
     NapiPropertyDescriptor(
       utf8name: name,
       value: value,
-      attributes: napi_default
+      attributes: attr
     )
   )
 
-proc register*[T: int | uint | string | napi_value](obj: Module, name: string, value: T, attr: int = 0) =
+proc register*[T: int | uint | string | napi_value](obj: Module, name: string,
+                value: T, attr: NapiPropertyAttributes = napi_default) =
   ## Adds field to exports object ``obj``
   obj.registerBase(name, create(obj.env, value), attr)
 
 proc register*[T: int | uint | string | napi_value](obj: Module,
-                name: string, values: openarray[T], attr: int = 0) =
+                name: string, values: openarray[T], attr: NapiPropertyAttributes = napi_default) =
   ## Adds field to exports object ``obj``
   var elements =  newSeq[napi_value]()
   for v in values: elements.add(obj.create(v))
@@ -357,23 +370,26 @@ proc register*[T: int | uint | string | napi_value](obj: Module,
   obj.registerBase(name, create(obj.env, elements), attr)
 
 proc register*[T: int | uint | string | napi_value](obj: Module,
-              name: string, values: openarray[(string, T)], attr: int = 0) =
+              name: string, values: openarray[(string, T)],
+              attr: NapiPropertyAttributes = napi_default) =
   ## Register a new property field to `obj` Module.
   var properties = newSeq[(string, napi_value)]()
   for v in values: properties.add((v[0], obj.create(v[1])))
 
   obj.registerBase(name, create(obj.env, properties), attr)
 
-proc register*(obj: Module, name: string, cb: napi_callback) =
+proc register*(obj: Module, name: string, cb: napi_callback,
+              attr: NapiPropertyAttributes = napi_default) =
   ## Register a new property field to `obj` Module.
-  obj.registerBase(name, createFn(obj.env, name, cb), 0)
+  obj.registerBase(name, createFn(obj.env, name, cb), attr)
 
 proc `%`*[T](t: T): napi_value =
   Env.create(t)
 
 const emptyArr: array[0, (string, napi_value)] = []
 
-proc callFunction*(fn: napi_value, args: openarray[napi_value] = [], this = %emptyArr): napi_value =
+proc callFunction*(fn: napi_value, args: openarray[napi_value] = [],
+                  this = %emptyArr): napi_value =
   ## Call a function by `napi_value` with given `args` and `this` context.
   assert napi_call_function(Env, this, fn,
     args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
@@ -433,6 +449,7 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
         argc: csize_t = paramCt
         this: napi_value
         args = newSeq[napi_value]()
+        env = environment
       Env = environment
       assert napi_get_cb_info(environment, info, addr argc, `argv$`, addr this, nil)
       for i in 0..<min(argc, paramCt):
@@ -450,17 +467,38 @@ proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
   of nnkBracket:
     var brackets = newNimNode(nnkBracket)
     for i in 0..<x.len: brackets.add(toNapiValue(x[i]))
-    newCall("napiCreate", brackets)
+    result = newCall("napiCreate", brackets)
   of nnkTableConstr:
     var table = newNimNode(nnkTableConstr)
     for i in 0..<x.len:
       x[i].expectKind nnkExprColonExpr
       table.add newTree(nnkExprColonExpr, x[i][0], toNapiValue(x[i][1]))
-    newCall("napiCreate", table)
+    result = newCall("napiCreate", table)
   else:
-    newCall("napiCreate", x)
+    case x.kind
+    of nnkSym:
+      case x.getType.kind
+      of nnkObjectTy:
+        # x.getTypeInst.repr
+        # x.getType.repr
+        let objStruct = x.getTypeImpl
+        expectKind(objStruct[2], nnkRecList)
+        var objFields = nnkBracket.newTree()
+        for objField in objStruct[2]:
+          case objField.kind:
+          of nnkIdentDefs:
+            objFields.add(
+              nnkTupleConstr.newTree(
+                newLit(objField[0].strVal),
+                newCall("napiCreate", nnkDotExpr.newTree(x, objField[0]))
+              )
+            )
+          else: discard # dont know what to do, yet
+        result = newCall("napiCreate", objFields)
+      else: result = newCall("napiCreate", x)
+    else: result = newCall("napiCreate", x)
 
-macro `%*`*(x: untyped): untyped =
+macro `%*`*(x: typed): untyped =
   ## An elegant way to convert Nim types to `napi_value`.
   runnableExamples:
     var nvStr: napi_value = %* "This is a string"
@@ -474,22 +512,6 @@ proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType
   for arg in args:
     let jsCommentLine = "* @param {$1} $2" % [arg[1], arg[0]]
     add(IndexModule[fnName], (jsCommentLine, arg[0], arg[1], arg[2], arg[3]))
-
-macro export_napi*(vName, vType: untyped, vVal: typed) =
-  ## A fancy compile-time macro to export NAPI fields
-  ## ```nim
-  ## var name {.export_napi.} = "Denim is Awesome!"
-  ## ```
-  expectKind(vName, nnkIdent)
-  result = newStmtList()
-  result.add(
-    newCall(
-      ident("register"),
-      ident("module"),
-      newLit(vName.strVal),
-      vVal
-    )
-  )
 
 proc getNimNapiType(n: NimNode, countless: var bool): tuple[nimArgType, napiArgType: string] =
   if n.eqIdent("string"):
@@ -524,6 +546,21 @@ proc getNimNapiType(n: NimNode, countless: var bool): tuple[nimArgType, napiArgT
   else:
     error("Cannot convert to NapiValueType", n)
 
+macro export_napi*(vName, vType: untyped, vVal: typed) =
+  ## A fancy compile-time macro to export object properties
+  ## ```nim
+  ## var name {.export_napi.} = "Denim is Awesome!"
+  ## ```
+  expectKind(vName, nnkIdent)
+  result = newStmtList()
+  result.add(
+    newCall(
+      ident("register"),
+      ident("module"),
+      newLit(vName.strVal),
+      vVal
+    )
+  )
 
 macro export_napi*(fn: untyped) =
   ## A fancy compile-time macro to export NAPI functions
@@ -583,14 +620,26 @@ macro export_napi*(fn: untyped) =
     )
   )
 
-proc defineProperties*(obj: Module) =
-  assert napi_define_properties(obj.env, obj.val,
-    obj.descriptors.len.csize_t,
-    cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked)
-  )
+#
+# Promise - High-Level API
+#
+type
+  AsyncActionStatus* = enum
+    asyncActionSuccess
+    asyncActionFail
 
+  PromiseData*[T] = object
+    status*: AsyncActionStatus
+    deferred*: napi_deferred
+    work*: napi_async_work
+    jsData*: T
 
-# Promise API
+proc newPromiseData*[T](jsData: T): ref PromiseData[T] =
+  new(result)
+  result.jsData = jsData
+
+macro promise*(fn: untyped) =
+  fn # todo
 
 
 iterator items*(n: napi_value): napi_value =
@@ -608,12 +657,19 @@ proc toSeq*(n: napi_value): seq[napi_value] =
 #     for index in 0..<n.len:
 #         yield n[index]
 
+
+proc defineProperties*(obj: Module) =
+  assert napi_define_properties(obj.env, obj.val,
+    obj.descriptors.len.csize_t,
+    cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked)
+  )
+
 macro init*(initHook: proc(exports: Module)): void =
   ##Bootstraps module; use by calling `register` to add properties to `exports`
   ##
   ## ```nim
-  ##  init proc(exports: Module) =
-  ##    exports.register("hello", "hello world")
+  ##  init proc(module: Module) =
+  ##    module.register("hello", "hello world")
   ## ```
   var nimmain = newProc(ident("NimMain"))
   nimmain.addPragma(ident("importc"))

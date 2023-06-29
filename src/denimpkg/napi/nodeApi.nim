@@ -37,7 +37,7 @@ macro napiModule*(initHook: proc(env: napi_env, exports: napi_value)): void =
     initFunc,
     newNimNode(nnkPragma).add(newColonExpr(ident("emit"), newStrLitNode("""/*VARSECTION*/ NAPI_MODULE(NODE_GYP_MODULE_NAME, initfunc)""")))
   )
-  echo result.toStrLit
+  # echo result.toStrLit
 
 {.push importc, header: "<node_api.h>".}
 proc napi_module_register*(module: NapiModule)
@@ -65,6 +65,8 @@ proc napi_create_async_work*(env: napi_env, async_resource: napi_value, async_re
 proc napi_delete_async_work*(env: napi_env, work: napi_async_work): NapiStatus
 proc napi_queue_async_work*(env: napi_env, work: napi_async_work): NapiStatus
 proc napi_cancel_async_work*(env: napi_env, work: napi_async_work): NapiStatus
+
 # Version management
 proc napi_get_node_version*(env: napi_env, version: ptr NapiNodeVersion): NapiStatus
+
 {.pop.}

@@ -1,6 +1,6 @@
 import std/[os, osproc, json, strutils]
-import ../utils
 import kapsis/[cli, runtime]
+import ../utils
 
 proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode = 
   return %* {
@@ -48,7 +48,7 @@ proc runCommand*(v: Values) =
     path = splitPath(inputFile)
     entryFile = path.tail
   if not entryFile.endsWith(".nim") or fileExists(inputFile) == false:
-    display("Entry file should be the main '.nim' file of your project", indent=2)
+    display("Missing '.nim' file", indent=2)
     QuitFailure.quit
 
   if not isEmptyDir(addonPathDirectory):
@@ -69,9 +69,7 @@ proc runCommand*(v: Values) =
     "-d:napibuild",
     "--compileOnly",
     "--noMain",
-    "--gc:arc",
-    "--deepcopy:on",
-    "--threads:on"
+    "-d:useMalloc"
   ]
 
   if v.flag("release"):
@@ -80,14 +78,16 @@ proc runCommand*(v: Values) =
   else:
     add args, "--embedsrc"
 
-  let nimCompileCmd = "nim c " & args.join(" ") & " $2"
-  let status = execCmdEx(nimCompileCmd % [
+  let nimc = "nim c " & args.join(" ") & " $2"
+  let nimCmd = execCmdEx(nimc % [
     cachePathDirectory,
     utils.getPath(currDir, "" / "$#".format(inputFile))
   ])
-  if status.exitCode != 0:
-    display(status.output)
+  if nimCmd.exitCode != 0:
+    display(nimCmd.output)
     QuitFailure.quit
+  elif v.has("verbose"):
+    display(nimCmd.output)
   var getNimPath = execCmdEx("choosenim show path")
   if getNimPath.exitCode != 0:
     display("Can't find Nim path")
@@ -105,6 +105,8 @@ proc runCommand*(v: Values) =
     if cmakeCmd.exitCode != 0:
       display(cmakeCmd.output)
       QuitFailure.quit
+    elif v.has("verbose"):
+      display(cmakeCmd.output)
   else:
     display("✨ Building with node-gyp", indent=2, br="after")
     var
@@ -117,8 +119,12 @@ proc runCommand*(v: Values) =
       jarr.add(newJString(elem[0].getStr().replace(addonPathDirectory / "", "")))
     gyp["targets"][0]["sources"] = %* jarr
     writeFile(addonPathDirectory / "binding.gyp", pretty(gyp, 2))
-    echo execProcess("node-gyp", args = ["rebuild", "--release", "--directory="&addonPathDirectory], options={poStdErrToStdOut, poUsePath})
-
+    let gypCmd = execCmdEx("node-gyp rebuild --directory=" & addonPathDirectory)
+    if gypCmd.exitCode != 0:
+      display(gypCmd.output)
+      QuitFailure.quit
+    elif v.has("verbose"):
+      display(gypCmd.output)
   let
     defaultBinName =
       if v.has("cmake"):
