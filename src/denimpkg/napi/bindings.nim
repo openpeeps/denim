@@ -569,75 +569,77 @@ macro export_napi*(fn: untyped) =
   result = newStmtList()
   let fnName = fn[0].strVal
   var
+    fnBody = newStmtList()
     params = fn[3][1..^1]
+    paramsLen = params.len
+    hasParams = paramsLen != 0
     countless: bool # enabled when an argument has `varargs[]` type 
     args = newNimNode(nnkBracket)
     argsCond = nnkIfStmt.newTree()
-  for i in 0 .. params.high:
-    var typedArg = getNimNapiType(params[i][1], countless)
-    var types = nnkTupleConstr.newTree(
-      newLit(params[i][0].strVal),
-      newLit(typedArg[1]),
-      ident(typedArg[0]),
-      newLit(false)
-    )
-    var argCond =
-      nnkElifBranch.newTree(
-        nnkInfix.newTree(ident("=="), ident("argName"), newLit(params[i][0].strVal)),
-        nnkReturnStmt.newTree(
-          nnkBracketExpr.newTree(ident("args"), newLit(i))
-        )
+  if hasParams:
+    for i in 0 .. params.high:
+      var typedArg = getNimNapiType(params[i][1], countless)
+      var types = nnkTupleConstr.newTree(
+        newLit(params[i][0].strVal),
+        newLit(typedArg[1]),
+        ident(typedArg[0]),
+        newLit(false)
       )
-    add args, types
-    add argsCond, argCond
-  add result, newCall(ident("addDocBlock"), newLit(fnName), args)
-
-  let
-    callExpectProc = newCall(
-      ident("expect"),
-      ident("Env"),
-      ident("args"),
-      newLit(""),
-      newLit(fnName)
-    )
-    typeChecker = newIfStmt(
-      (
-        nnkPrefix.newTree(ident("not"), callExpectProc),
-        newStmtList(
+      var argCond =
+        nnkElifBranch.newTree(
+          nnkInfix.newTree(ident("=="), ident("argName"), newLit(params[i][0].strVal)),
           nnkReturnStmt.newTree(
-            newEmptyNode()
+            nnkBracketExpr.newTree(ident("args"), newLit(i))
           )
         )
-      ))
-  var
-    fnBody = newStmtList()
-    paramsLength = if countless: 100 else: params.len
-  var argsGetterProc =
-    newProc(
-      ident("get"),
-      [
-        ident("napi_value"), # return type
-        nnkIdentDefs.newTree(
-          ident("args"),
-          nnkBracketExpr.newTree(ident("seq"), ident("napi_value")),
-          newEmptyNode()
-        ),
-        nnkIdentDefs.newTree(
-          ident("argName"),
-          ident("string"),
-          newEmptyNode()
-        )
-      ],
-      body = newStmtList(argsCond)
-    )
-  add fnBody, typeChecker
-  add fnBody, argsGetterProc
+      add args, types
+      add argsCond, argCond
+    add result, newCall(ident("addDocBlock"), newLit(fnName), args)
+
+    let
+      callExpectProc = newCall(
+        ident("expect"),
+        ident("Env"),
+        ident("args"),
+        newLit(""),
+        newLit(fnName)
+      )
+      typeChecker = newIfStmt(
+        (
+          nnkPrefix.newTree(ident("not"), callExpectProc),
+          newStmtList(
+            nnkReturnStmt.newTree(
+              newEmptyNode()
+            )
+          )
+        ))
+    paramsLen = if countless: 100 else: params.len
+    var argsGetterProc =
+      newProc(
+        ident("get"),
+        [
+          ident("napi_value"), # return type
+          nnkIdentDefs.newTree(
+            ident("args"),
+            nnkBracketExpr.newTree(ident("seq"), ident("napi_value")),
+            newEmptyNode()
+          ),
+          nnkIdentDefs.newTree(
+            ident("argName"),
+            ident("string"),
+            newEmptyNode()
+          )
+        ],
+        body = newStmtList(argsCond)
+      )
+    add fnBody, typeChecker
+    add fnBody, argsGetterProc
   add fnBody, fn[6]
   result.add(
     newCall(
       ident("registerFn"),
       ident("module"),
-      newLit(paramsLength),
+      newLit(paramsLen),
       newLit(fnName),
       fnBody
     )
@@ -664,7 +666,6 @@ proc newPromiseData*[T](jsData: T): ref PromiseData[T] =
 macro promise*(fn: untyped) =
   fn # todo
 
-
 iterator items*(n: napi_value): napi_value =
   if not n.isArray: raise newException(ValueError, "value is not an array")
   for index in 0..<n.len:
@@ -679,7 +680,6 @@ proc toSeq*(n: napi_value): seq[napi_value] =
 # iterator pairs*(n: napi_value): napi_value =
 #     for index in 0..<n.len:
 #         yield n[index]
-
 
 proc defineProperties*(obj: Module) =
   assert napi_define_properties(obj.env, obj.val,

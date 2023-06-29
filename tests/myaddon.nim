@@ -20,6 +20,9 @@ init proc(module: Module) =
     ## Nim comment to JS DocBlock!
     return %*(getWelcomeMessage() & " from Nim. " & args.get("name").getStr)
 
+  proc toConsole(): string {.export_napi.} =
+    return napiCall("console.log", [%*("okay")])
+
   # Expose an instance property. Here we'll use napiCall
   # to convert stringified JSON from Nim to NAPI via native `JSON.parse()`
   var settings: JsonNode = newJObject()
