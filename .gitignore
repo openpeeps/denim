@@ -8,4 +8,4 @@ src/denim.nims
 tests/*
 !tests/*.nims
 !tests/*.nim
-!tests/*.js
+!tests/js
