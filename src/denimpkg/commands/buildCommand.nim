@@ -86,7 +86,7 @@ proc runCommand*(v: Values) =
   if nimCmd.exitCode != 0:
     display(nimCmd.output)
     QuitFailure.quit
-  elif v.has("verbose"):
+  elif v.flag("verbose"):
     display(nimCmd.output)
   var getNimPath = execCmdEx("choosenim show path")
   if getNimPath.exitCode != 0:
@@ -105,7 +105,7 @@ proc runCommand*(v: Values) =
     if cmakeCmd.exitCode != 0:
       display(cmakeCmd.output)
       QuitFailure.quit
-    elif v.has("verbose"):
+    elif v.flag("verbose"):
       display(cmakeCmd.output)
   else:
     display("✨ Building with node-gyp", indent=2, br="after")
@@ -123,11 +123,11 @@ proc runCommand*(v: Values) =
     if gypCmd.exitCode != 0:
       display(gypCmd.output)
       QuitFailure.quit
-    elif v.has("verbose"):
+    elif v.flag("verbose"):
       display(gypCmd.output)
   let
     defaultBinName =
-      if v.has("cmake"):
+      if v.flag("cmake"):
         entryFile.splitFile.name
       else: "main"
     binaryNodePath = utils.getPath(currDir, "" / "denim_build" / "build" / "Release" / defaultBinName & ".node")
