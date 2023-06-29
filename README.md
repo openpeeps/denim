@@ -9,12 +9,9 @@
   <img src="https://github.com/openpeeps/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/denim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
 
-<p align="center">
-  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim-cli-screen.png" alt="Denim CLI" width="676px">
-</p>
-
 ## 😍 Key Features
-- [x] Build with `node-gyp` or CMake.js (faster)
+- [x] CLI build via Nim + `node-gyp` or CMake.js (faster)
+- [ ] CLI publish to NPM
 - [x] Low-level API
 - [x] High-level API
 - [x] Open Source | `MIT` License
@@ -25,14 +22,14 @@
 - Node (latest) and `node-gyp` or CMake.js
 
 ### CLI
-Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon via `Nim` + `NodeGYP`
+Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon via `Nim` + `NodeGYP` and as a library for importing NAPI bindings.
 
 Simply run `denim -h`
 ```
-DENIM 🔥 Native Node/Bun addons powered by Nim language
+DENIM 🔥 Native Node/BunJS addons powered by Nim
 
-  build <entry> --release --yes         Nim to Node addon
-  publish                               Publish addon to NPM
+  build <entry> <links> --cmake --yes --verbose          Build Nim project to a native NodeJS addon
+  publish                                                Publish addon to NPM (requires npm cli)
 ```
 
 Use Denim as a Nimble task:
@@ -40,6 +37,14 @@ Use Denim as a Nimble task:
 task napi, "Build a .node addon":
   exec "denim build src/myprogram.nim"
 ```
+
+Want to pass custom flags to Nim Compiler? Create a `.nims` file:
+```nim
+when defined napibuild:
+  # add some flags
+```
+
+> __Note__ Check fully-working examples in [/tests](https://github.com/openpeeps/denim/tree/main/tests)
 
 ### Defining a module
 
@@ -84,20 +89,11 @@ Since `v0.1.5`, you can use `{.export_napi.}` pragma to export functions and obj
 
 ```nim
 import denim
-import std/json except `%*`
 
 init proc(module: Module): # the name `module` is required
   proc hello(name: string) {.export_napi} =
     ## A simple function from Nim
-    return %*("Hello, " & args.get("name"))
-
-  proc callNimFn(): object {.export_napi} =
-    ## Return a JSON object
-    var data: JsonNode = newJObject()
-    data["say"] = newJString("Hello!")
-    # convert `data` to napi_string using `%*`
-    # then, call native JSON.parse() 
-    return napiCall("JSON.parse", [%* $(data)])
+    return %*("Hello, " & args.get("name").getStr)
 
   var awesome {.export_napi.} = "Nim is Awesome!"
 ```
@@ -107,11 +103,9 @@ Calling a function/property from Node/Bun
 const app = require('myaddon.node')
 console.log(app.hello("World!"))       // Hello, World!
 console.log(app.awesome)               // Nim is Awesome!
-
-console.log(app.callNimFn().say)     // Hello!
 ```
 
-# Built-in type checker
+### Built-in type checker
 ```js
 app.hello()
 ```
@@ -131,7 +125,6 @@ Type mismatch parameter: `name`. Got `undefined`, expected `string`
 - Add yours!
 
 ### Todo
-- Option to pass flags to Nim/C Compiler
 - Option to link external C Headers/libraries
 - Extend High-level API with compile-time functionality. 
 
