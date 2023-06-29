@@ -19,8 +19,5 @@ let path = getHomeDir() & ".nimble/bin"
 task dev, "Compile denim":
   exec "nim c --gc:arc -d:denimcli -o:" & path & "/denim src/denim.nim"
 
-task prod, "Compile denim":
-  exec "nim c --gc:arc -d:release -d:denimcli -d:danger --opt:size -o:" & path & "/denim src/denim.nim"
-
 task docgenx, "Build documentation website":
   exec "nim doc --index:on -d:napibuild --project --git.url:https://github.com/openpeeps/denim --git.commit:main src/denim.nim"

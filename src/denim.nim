@@ -1,4 +1,9 @@
-when isMainModule:
+when defined napibuild:
+  # Denim as a library exporting NAPI bindings
+  import denimpkg/napi/bindings
+  export bindings
+
+elif isMainModule:
   # Denim as a CLI tool for building your Nim program to native Node addon
   # This requires latest version of `node-gyp`
   # todo add support for CMake.js 
@@ -14,8 +19,3 @@ when isMainModule:
         ? "Build Nim project to a native NodeJS addon"
       $ "publish":
         ? "Publish addon to NPM (requires npm cli)"
-
-elif defined napibuild:
-  # Denim as a library exporting NAPI bindings
-  import denimpkg/napi/bindings
-  export bindings

@@ -499,10 +499,6 @@ proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
 
 macro `%*`*(x: typed): untyped =
   ## An elegant way to convert Nim types to `napi_value`.
-  runnableExamples:
-    var nvStr: napi_value = %* "This is a string"
-    var nvInt: napi_value = %* 1234
-    var nvBool = %* true
   return toNapiValue(x)
 
 proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType, bool)]) =

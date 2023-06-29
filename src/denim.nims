@@ -1,5 +1,4 @@
-switch("passC", "-I /usr/include/node -I /usr/local/include/node")
-# switch("define", "denimcli")
+--passC:"-I/usr/include/node -I/usr/local/include/node"
 --gc:arc
 --define:danger
 --opt:size
