@@ -1,12 +1,12 @@
 NapiErrorType	denimpkg/napi/bindings.html#NapiErrorType	bindings: NapiErrorType	
+Module	denimpkg/napi/bindings.html#Module	bindings: Module	
 Env	denimpkg/napi/bindings.html#Env	bindings: Env	
 assert	denimpkg/napi/bindings.html#assert,NapiStatus	bindings: assert(status: NapiStatus)	
-Module	denimpkg/napi/bindings.html#Module	bindings: Module	
 error	denimpkg/napi/bindings.html#error.t,string,string,NapiErrorType,napi_value	bindings: error(msg: string; code = &quot;&quot;; errorType: NapiErrorType = napiError;\n      customError: napi_value = nil): untyped	
 throwError	denimpkg/napi/bindings.html#throwError,napi_env,string,string,NapiErrorType,napi_value	bindings: throwError(env: napi_env; msg: string; code = &quot;&quot;;\n           errorType: NapiErrorType = napiError; customError: napi_value = nil): NapiStatus	
 newNodeValue	denimpkg/napi/bindings.html#newNodeValue,napi_value,napi_env	bindings: newNodeValue(val: napi_value; env: napi_env): Module	
 expect	denimpkg/napi/bindings.html#expect,napi_env,napi_value,NapiValueType	bindings: expect(env: napi_env; n: napi_value; expectKind: NapiValueType): bool	
-expect	denimpkg/napi/bindings.html#expect,napi_env,seq[napi_value],string,varargs[]	bindings: expect(env: napi_env; v: seq[napi_value]; errorName = &quot;&quot;;\n       expectKind: varargs[(string, NapiValueType)]): bool	
+expect	denimpkg/napi/bindings.html#expect,napi_env,seq[napi_value],string,string	bindings: expect(env: napi_env; v: seq[napi_value]; errorName, fnIdent: string): bool	
 createFn	denimpkg/napi/bindings.html#createFn,napi_env,string,napi_callback	bindings: createFn(env: napi_env; fname: string; cb: napi_callback): napi_value	
 create	denimpkg/napi/bindings.html#create,Module,T	bindings: create[T](n: Module; t: T): napi_value	
 kind	denimpkg/napi/bindings.html#kind,napi_value	bindings: kind(val: napi_value): NapiValueType	
@@ -14,6 +14,7 @@ getInt64	denimpkg/napi/bindings.html#getInt64,napi_value	bindings: getInt64(n: n
 getInt64	denimpkg/napi/bindings.html#getInt64,napi_value,int64	bindings: getInt64(n: napi_value; default: int64): int64	
 getNull	denimpkg/napi/bindings.html#getNull	bindings: getNull(): napi_value	
 getUndefined	denimpkg/napi/bindings.html#getUndefined	bindings: getUndefined(): napi_value	
+undefined	denimpkg/napi/bindings.html#undefined	bindings: undefined(): napi_value	
 getGlobal	denimpkg/napi/bindings.html#getGlobal	bindings: getGlobal(): napi_value	
 getInt32	denimpkg/napi/bindings.html#getInt32,napi_value	bindings: getInt32(n: napi_value): int32	
 getInt32	denimpkg/napi/bindings.html#getInt32,napi_value,int32	bindings: getInt32(n: napi_value; default: int32): int32	
@@ -40,10 +41,10 @@ setElement	denimpkg/napi/bindings.html#setElement,napi_value,int,napi_value	bind
 len	denimpkg/napi/bindings.html#len,napi_value	bindings: len(arr: napi_value): int	
 `[]`	denimpkg/napi/bindings.html#[],napi_value,int	bindings: `[]`(obj: napi_value; index: int): napi_value	
 `[]=`	denimpkg/napi/bindings.html#[]=,napi_value,int,napi_value	bindings: `[]=`(obj: napi_value; index: int; value: napi_value)	
-register	denimpkg/napi/bindings.html#register,Module,string,T,int	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    value: T; attr: int = 0)	
-register	denimpkg/napi/bindings.html#register,Module,string,openArray[T],int	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[T]; attr: int = 0)	
-register	denimpkg/napi/bindings.html#register,Module,string,openArray[],int	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[(string, T)]; attr: int = 0)	
-register	denimpkg/napi/bindings.html#register,Module,string,napi_callback	bindings: register(obj: Module; name: string; cb: napi_callback)	
+register	denimpkg/napi/bindings.html#register,Module,string,T,NapiPropertyAttributes	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    value: T; attr: NapiPropertyAttributes = napi_default)	
+register	denimpkg/napi/bindings.html#register,Module,string,openArray[T],NapiPropertyAttributes	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)	
+register	denimpkg/napi/bindings.html#register,Module,string,openArray[],NapiPropertyAttributes	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)	
+register	denimpkg/napi/bindings.html#register,Module,string,napi_callback,NapiPropertyAttributes	bindings: register(obj: Module; name: string; cb: napi_callback;\n         attr: NapiPropertyAttributes = napi_default)	
 `%`	denimpkg/napi/bindings.html#%,T	bindings: `%`[T](t: T): napi_value	
 callFunction	denimpkg/napi/bindings.html#callFunction,napi_value,openArray[napi_value]	bindings: callFunction(fn: napi_value; args: openArray[napi_value] = []; this = %[]): napi_value	
 callMethod	denimpkg/napi/bindings.html#callMethod,napi_value,string,openArray[napi_value]	bindings: callMethod(instance: napi_value; methd: string; args: openArray[napi_value] = []): napi_value	
@@ -52,8 +53,18 @@ tryGetJson	denimpkg/napi/bindings.html#tryGetJson,napi_value	bindings: tryGetJso
 getIdentStr	denimpkg/napi/bindings.html#getIdentStr.t,untyped	bindings: getIdentStr(n: untyped): string	
 fn	denimpkg/napi/bindings.html#fn.t,int,untyped,untyped	bindings: fn(paramCt: int; name, cushy: untyped): untyped	
 registerFn	denimpkg/napi/bindings.html#registerFn.t,Module,int,string,untyped	bindings: registerFn(exports: Module; paramCt: int; name: string; cushy: untyped): untyped	
-defineProperties	denimpkg/napi/bindings.html#defineProperties,Module	bindings: defineProperties(obj: Module)	
 napiCreate	denimpkg/napi/bindings.html#napiCreate,T	bindings: napiCreate[T](t: T): napi_value	
-`%*`	denimpkg/napi/bindings.html#%*.m,untyped	bindings: `%*`(x: untyped): untyped	
+`%*`	denimpkg/napi/bindings.html#%*.m,typed	bindings: `%*`(x: typed): untyped	
+addDocBlock	denimpkg/napi/bindings.html#addDocBlock,string,openArray[]	bindings: addDocBlock(fnName: string;\n            args: openArray[(string, string, NapiValueType, bool)])	
+export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped,untyped,typed	bindings: export_napi(vName, vType: untyped; vVal: typed)	
+export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped	bindings: export_napi(fn: untyped)	
+asyncActionSuccess	denimpkg/napi/bindings.html#asyncActionSuccess	AsyncActionStatus.asyncActionSuccess	
+asyncActionFail	denimpkg/napi/bindings.html#asyncActionFail	AsyncActionStatus.asyncActionFail	
+AsyncActionStatus	denimpkg/napi/bindings.html#AsyncActionStatus	bindings: AsyncActionStatus	
+PromiseData	denimpkg/napi/bindings.html#PromiseData	bindings: PromiseData	
+newPromiseData	denimpkg/napi/bindings.html#newPromiseData,T	bindings: newPromiseData[T](jsData: T): ref PromiseData[T]	
+promise	denimpkg/napi/bindings.html#promise.m,untyped	bindings: promise(fn: untyped)	
 items	denimpkg/napi/bindings.html#items.i,napi_value	bindings: items(n: napi_value): napi_value	
+toSeq	denimpkg/napi/bindings.html#toSeq,napi_value	bindings: toSeq(n: napi_value): seq[napi_value]	
+defineProperties	denimpkg/napi/bindings.html#defineProperties,Module	bindings: defineProperties(obj: Module)	
 init	denimpkg/napi/bindings.html#init.m,proc(Module)	bindings: init(initHook: proc (exports: Module)): void	

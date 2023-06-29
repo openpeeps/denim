@@ -107,7 +107,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li>
   <a class="reference reference-toplevel" href="#7" id="57">Types</a>
   <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#Module"
+      <li><a class="reference" href="#AsyncActionStatus"
+    title="AsyncActionStatus = enum
+  asyncActionSuccess, asyncActionFail">AsyncActionStatus</a></li>
+  <li><a class="reference" href="#Module"
     title="Module = ref object
   val*: napi_value
   env*: napi_env
@@ -115,6 +118,12 @@ window.addEventListener('DOMContentLoaded', main);
   <li><a class="reference" href="#NapiErrorType"
     title="NapiErrorType {.pure.} = enum
   napiError, napiTypeError, napiRangeError, napiCustomError">NapiErrorType</a></li>
+  <li><a class="reference" href="#PromiseData"
+    title="PromiseData[T] = object
+  status*: AsyncActionStatus
+  deferred*: napi_deferred
+  work*: napi_async_work
+  jsData*: T">PromiseData</a></li>
 
   </ul>
 </li>
@@ -146,6 +155,13 @@ window.addEventListener('DOMContentLoaded', main);
     title="`[]=`(obj: napi_value; index: int; value: napi_value)">`[]=`(obj: napi_value; index: int; value: napi_value)</a></li>
   <li><a class="reference" href="#%5B%5D%3D%2Cnapi_value%2Cstring%2Cnapi_value"
     title="`[]=`(obj: napi_value; key: string; value: napi_value)">`[]=`(obj: napi_value; key: string; value: napi_value)</a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">addDocBlock
+      <li><a class="reference" href="#addDocBlock%2Cstring%2CopenArray%5B%5D"
+    title="addDocBlock(fnName: string;
+            args: openArray[(string, string, NapiValueType, bool)])">addDocBlock(fnName: string;
+            args: openArray[(string, string, NapiValueType, bool)])</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">assert
@@ -181,10 +197,8 @@ window.addEventListener('DOMContentLoaded', main);
   <ul class="simple nested-toc-section">expect
       <li><a class="reference" href="#expect%2Cnapi_env%2Cnapi_value%2CNapiValueType"
     title="expect(env: napi_env; n: napi_value; expectKind: NapiValueType): bool">expect(env: napi_env; n: napi_value; expectKind: NapiValueType): bool</a></li>
-  <li><a class="reference" href="#expect%2Cnapi_env%2Cseq%5Bnapi_value%5D%2Cstring%2Cvarargs%5B%5D"
-    title="expect(env: napi_env; v: seq[napi_value]; errorName = &quot;&quot;;
-       expectKind: varargs[(string, NapiValueType)]): bool">expect(env: napi_env; v: seq[napi_value]; errorName = &quot;&quot;;
-       expectKind: varargs[(string, NapiValueType)]): bool</a></li>
+  <li><a class="reference" href="#expect%2Cnapi_env%2Cseq%5Bnapi_value%5D%2Cstring%2Cstring"
+    title="expect(env: napi_env; v: seq[napi_value]; errorName, fnIdent: string): bool">expect(env: napi_env; v: seq[napi_value]; errorName, fnIdent: string): bool</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">get
@@ -293,21 +307,28 @@ window.addEventListener('DOMContentLoaded', main);
     title="newNodeValue(val: napi_value; env: napi_env): Module">newNodeValue(val: napi_value; env: napi_env): Module</a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">newPromiseData
+      <li><a class="reference" href="#newPromiseData%2CT"
+    title="newPromiseData[T](jsData: T): ref PromiseData[T]">newPromiseData[T](jsData: T): ref PromiseData[T]</a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">register
-      <li><a class="reference" href="#register%2CModule%2Cstring%2Cnapi_callback"
-    title="register(obj: Module; name: string; cb: napi_callback)">register(obj: Module; name: string; cb: napi_callback)</a></li>
-  <li><a class="reference" href="#register%2CModule%2Cstring%2CT%2Cint"
+      <li><a class="reference" href="#register%2CModule%2Cstring%2Cnapi_callback%2CNapiPropertyAttributes"
+    title="register(obj: Module; name: string; cb: napi_callback;
+         attr: NapiPropertyAttributes = napi_default)">register(obj: Module; name: string; cb: napi_callback;
+         attr: NapiPropertyAttributes = napi_default)</a></li>
+  <li><a class="reference" href="#register%2CModule%2Cstring%2CT%2CNapiPropertyAttributes"
     title="register[T: int | uint | string | napi_value](obj: Module; name: string;
-    value: T; attr: int = 0)">register[T: int | uint | string | napi_value](obj: Module; name: string;
-    value: T; attr: int = 0)</a></li>
-  <li><a class="reference" href="#register%2CModule%2Cstring%2CopenArray%5B%5D%2Cint"
+    value: T; attr: NapiPropertyAttributes = napi_default)">register[T: int | uint | string | napi_value](obj: Module; name: string;
+    value: T; attr: NapiPropertyAttributes = napi_default)</a></li>
+  <li><a class="reference" href="#register%2CModule%2Cstring%2CopenArray%5B%5D%2CNapiPropertyAttributes"
     title="register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[(string, T)]; attr: int = 0)">register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[(string, T)]; attr: int = 0)</a></li>
-  <li><a class="reference" href="#register%2CModule%2Cstring%2CopenArray%5BT%5D%2Cint"
+    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)">register[T: int | uint | string | napi_value](obj: Module; name: string;
+    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)</a></li>
+  <li><a class="reference" href="#register%2CModule%2Cstring%2CopenArray%5BT%5D%2CNapiPropertyAttributes"
     title="register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[T]; attr: int = 0)">register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[T]; attr: int = 0)</a></li>
+    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)">register[T: int | uint | string | napi_value](obj: Module; name: string;
+    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">setElement
@@ -327,9 +348,19 @@ window.addEventListener('DOMContentLoaded', main);
            errorType: NapiErrorType = napiError; customError: napi_value = nil): NapiStatus</a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">toSeq
+      <li><a class="reference" href="#toSeq%2Cnapi_value"
+    title="toSeq(n: napi_value): seq[napi_value]">toSeq(n: napi_value): seq[napi_value]</a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">tryGetJson
       <li><a class="reference" href="#tryGetJson%2Cnapi_value"
     title="tryGetJson(n: napi_value): JsonNode">tryGetJson(n: napi_value): JsonNode</a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">undefined
+      <li><a class="reference" href="#undefined"
+    title="undefined(): napi_value">undefined(): napi_value</a></li>
 
   </ul>
 
@@ -350,13 +381,25 @@ window.addEventListener('DOMContentLoaded', main);
   <a class="reference reference-toplevel" href="#17" id="67">Macros</a>
   <ul class="simple simple-toc-section">
       <ul class="simple nested-toc-section">%*
-      <li><a class="reference" href="#%25%2A.m%2Cuntyped"
-    title="`%*`(x: untyped): untyped">`%*`(x: untyped): untyped</a></li>
+      <li><a class="reference" href="#%25%2A.m%2Ctyped"
+    title="`%*`(x: typed): untyped">`%*`(x: typed): untyped</a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">export_napi
+      <li><a class="reference" href="#export_napi.m%2Cuntyped"
+    title="export_napi(fn: untyped)">export_napi(fn: untyped)</a></li>
+  <li><a class="reference" href="#export_napi.m%2Cuntyped%2Cuntyped%2Ctyped"
+    title="export_napi(vName, vType: untyped; vVal: typed)">export_napi(vName, vType: untyped; vVal: typed)</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">init
       <li><a class="reference" href="#init.m%2Cproc%28Module%29"
     title="init(initHook: proc (exports: Module)): void">init(initHook: proc (exports: Module)): void</a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">promise
+      <li><a class="reference" href="#promise.m%2Cuntyped"
+    title="promise(fn: untyped)">promise(fn: untyped)</a></li>
 
   </ul>
 
@@ -415,7 +458,7 @@ class="link-seesrc" target="_blank">Source</a>
   <div class="nine columns" id="content">
   <div id="tocRoot"></div>
   
-  <p class="module-desc">Global environment variable; state maintained by various hooks; used internally</p>
+  <p class="module-desc"></p>
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
@@ -424,6 +467,19 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="7">
 <h1><a class="toc-backref" href="#7">Types</a></h1>
 <dl class="item">
+<div id="AsyncActionStatus">
+<dt><pre><a href="bindings.html#AsyncActionStatus"><span class="Identifier">AsyncActionStatus</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">asyncActionSuccess</span><span class="Other">,</span> <span class="Identifier">asyncActionFail</span></pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L650"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L650" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
 <div id="Module">
 <dt><pre><a href="bindings.html#Module"><span class="Identifier">Module</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
   <span class="Identifier">val</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a>
@@ -434,9 +490,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L30"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L20"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L30" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L20" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -447,9 +503,26 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L16"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L14"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L16" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L14" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="PromiseData">
+<dt><pre><a href="bindings.html#PromiseData"><span class="Identifier">PromiseData</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">status</span><span class="Operator">*</span><span class="Other">:</span> <a href="bindings.html#AsyncActionStatus"><span class="Identifier">AsyncActionStatus</span></a>
+  <span class="Identifier">deferred</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_deferred"><span class="Identifier">napi_deferred</span></a>
+  <span class="Identifier">work</span><span class="Operator">*</span><span class="Other">:</span> <a href="nodeApiTypes.html#napi_async_work"><span class="Identifier">napi_async_work</span></a>
+  <span class="Identifier">jsData</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">T</span>
+</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L654"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L654" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -462,11 +535,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><a href="bindings.html#Env"><span class="Identifier">Env</span></a><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a> <span class="Other">=</span> <span class="Keyword">nil</span></pre></dt>
 <dd>
 
-
+Global environment variable; state maintained by various hooks; used internally
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L22"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L28"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L22" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L28" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -481,9 +554,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L353"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L385"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L353" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L385" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -494,22 +567,22 @@ class="link-seesrc" target="_blank">Source</a>
 
 Alias for <tt class="docutils literal"><span class="pre">setElement</span></tt>; raises exception
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L316"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L343"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L316" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L343" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="[]=,napi_value,string,napi_value">
 <dt><pre><span class="Keyword">proc</span> <a href="#%5B%5D%3D%2Cnapi_value%2Cstring%2Cnapi_value"><span class="Identifier">`[]=`</span></a><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">NapiStatusError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 Alias for <tt class="docutils literal"><span class="pre">setProperty</span></tt>, raises exception
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L280"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L307"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L280" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L307" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -520,9 +593,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Alias for <tt class="docutils literal"><span class="pre">getElement</span></tt>; raises exception
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L313"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L339"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L313" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L339" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -533,9 +606,23 @@ class="link-seesrc" target="_blank">Source</a>
 
 Alias for <tt class="docutils literal"><span class="pre">getProperty</span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L246"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L274"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L246" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L274" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="addDocBlock,string,openArray[]">
+<dt><pre><span class="Keyword">proc</span> <a href="#addDocBlock%2Cstring%2CopenArray%5B%5D"><span class="Identifier">addDocBlock</span></a><span class="Other">(</span><span class="Identifier">fnName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                 <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">,</span> <a href="jsNativeApiTypes.html#NapiValueType"><span class="Identifier">NapiValueType</span></a><span class="Other">,</span> <span class="Identifier">bool</span><span class="Other">)</span><span class="Other">]</span><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L504"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L504" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -545,9 +632,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Asserts that a call returns correctly;
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L25"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L32"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L25" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L32" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -558,9 +645,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Call a function by <tt class="docutils literal"><span class="pre"><span class="Identifier">napi_value</span></span></tt> with given <tt class="docutils literal"><span class="pre"><span class="Identifier">args</span></span></tt> and <tt class="docutils literal"><span class="pre"><span class="Identifier">this</span></span></tt> context.
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L358"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L390"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L358" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L390" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -572,9 +659,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Call a method from <tt class="docutils literal"><span class="pre"><span class="Identifier">instance</span></span></tt> by name with given <tt class="docutils literal"><span class="pre"><span class="Identifier">args</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L363"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L396"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L363" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L396" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -584,9 +671,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L148"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L171"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L148" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L171" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -597,9 +684,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create a new function
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L142"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L165"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L142" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L165" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -609,9 +696,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L426"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L684"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L426" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L684" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -622,25 +709,23 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L57"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L63"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L57" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L63" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
-<div id="expect,napi_env,seq[napi_value],string,varargs[]">
-<dt><pre><span class="Keyword">proc</span> <a href="#expect%2Cnapi_env%2Cseq%5Bnapi_value%5D%2Cstring%2Cvarargs%5B%5D"><span class="Identifier">expect</span></a><span class="Other">(</span><span class="Identifier">env</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a><span class="Other">;</span> <span class="Identifier">v</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">errorName</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span>
-            <span class="Identifier">expectKind</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <a href="jsNativeApiTypes.html#NapiValueType"><span class="Identifier">NapiValueType</span></a><span class="Other">)</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="expect,napi_env,seq[napi_value],string,string">
+<dt><pre><span class="Keyword">proc</span> <a href="#expect%2Cnapi_env%2Cseq%5Bnapi_value%5D%2Cstring%2Cstring"><span class="Identifier">expect</span></a><span class="Other">(</span><span class="Identifier">env</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a><span class="Other">;</span> <span class="Identifier">v</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">errorName</span><span class="Other">,</span> <span class="Identifier">fnIdent</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-<p>Check a seq of <tt class="docutils literal"><span class="pre"><span class="Identifier">napi_value</span></span></tt> based on given <tt class="docutils literal"><span class="pre"><span class="Identifier">expectKind</span></span></tt>. If not match will throw a <tt class="docutils literal"><span class="pre"><span class="Identifier">NapiErrorType</span></span></tt> with the following message:</p>
-<p><pre class="listing"> mismatch parameter 'x'. Got 'A', expected 'B'</pre></p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L60"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L66"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L60" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L66" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -651,9 +736,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Alias of <tt class="docutils literal"><span class="pre"><span class="Identifier">getProperty</span></span></tt> for accessing global properties. This proc supports dot annotations <tt class="docutils literal"><span class="pre"><span class="Identifier">get</span><span class="Punctuation">(</span><span class="StringLit">&quot;JSON.parse&quot;</span><span class="Punctuation">)</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L254"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L282"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L254" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L282" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -664,9 +749,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Alias for <tt class="docutils literal"><span class="pre"><span class="Identifier">getProperty</span></span></tt> with default support
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L269"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L297"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L269" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L297" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -677,9 +762,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Alias of <tt class="docutils literal"><span class="pre"><span class="Identifier">getProperty</span></span></tt> for accessing a property from a specific object
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L250"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L278"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L250" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L278" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -687,11 +772,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">proc</span> <a href="#getBool%2Cnapi_value"><span class="Identifier">getBool</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-Retrieves value from node; raises exception on failure
+Return a <tt class="docutils literal"><span class="pre"><span class="Identifier">bool</span></span></tt> value from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L198"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L225"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L198" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L225" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -699,11 +784,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">proc</span> <a href="#getBool%2Cnapi_value%2Cbool"><span class="Identifier">getBool</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">default</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-Retrieves value from node; returns default on failure
+Return a <tt class="docutils literal"><span class="pre"><span class="Identifier">bool</span></span></tt> from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>. Returns <tt class="docutils literal"><span class="pre"><span class="Identifier">default</span></span></tt> on failure
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L202"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L229"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L202" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L229" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -717,9 +802,9 @@ class="link-seesrc" target="_blank">Source</a>
 </dl>
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L294"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L320"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L294" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L320" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -730,9 +815,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L300"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L326"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L300" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L326" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -742,9 +827,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns NodeJS global variable
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L171"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L198"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L171" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L198" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -754,9 +839,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Retrieves value from node; raises exception on failure
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L175"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L202"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L175" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L202" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -766,9 +851,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Retrieves value from node; returns default on failure
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L179"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L206"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L179" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L206" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -778,9 +863,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Retrieves value from node; raises exception on failure
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L154"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L177"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L154" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L177" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -790,9 +875,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Retrieves value from node; returns default on failure
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L158"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L181"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L158" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L181" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -802,9 +887,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns JavaScript <tt class="docutils literal"><span class="pre">null</span></tt> value
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L163"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L186"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L163" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L186" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -815,9 +900,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Retrieves property <tt class="docutils literal"><span class="pre">key</span></tt> from <tt class="docutils literal"><span class="pre">obj</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L233"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L261"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L233" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L261" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -828,9 +913,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Retrieves property <tt class="docutils literal"><span class="pre">key</span></tt> from <tt class="docutils literal"><span class="pre">obj</span></tt>; returns default if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object or does not contain <tt class="docutils literal"><span class="pre">key</span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L240"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L268"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L240" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L268" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -838,11 +923,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">proc</span> <a href="#getStr%2Cnapi_value"><span class="Identifier">getStr</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-
+Return a <tt class="docutils literal"><span class="pre"><span class="Identifier">string</span></span></tt> from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L207"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L234"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L207" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L234" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -853,9 +938,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Retrieves utf8 encoded value from node; returns default on failure Maximum return string length is equal to <tt class="docutils literal"><span class="pre">bufsize</span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L216"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L244"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L216" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L244" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -865,9 +950,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns JavaScript <tt class="docutils literal"><span class="pre">undefined</span></tt> value
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L167"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L190"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L167" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L190" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -878,9 +963,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Checks whether element is contained in <tt class="docutils literal"><span class="pre">obj</span></tt>; raises exception if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an array
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L288"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L314"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L288" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L314" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -891,9 +976,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Checks whether or not <tt class="docutils literal"><span class="pre">obj</span></tt> has a property <tt class="docutils literal"><span class="pre">key</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L228"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L256"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L228" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L256" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -903,9 +988,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L285"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L311"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L285" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L311" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -915,9 +1000,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L151"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L174"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L151" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L174" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -928,9 +1013,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L309"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L335"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L309" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L335" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -941,9 +1026,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 A short-hand procedure for calling global <tt class="docutils literal"><span class="pre"><span class="Identifier">Napi</span></span></tt> functions by string. You can use dot annotation for accessing and calling from object properties. For example <tt class="docutils literal"><span class="pre"><span class="Identifier">napiCall</span><span class="Punctuation">(</span><span class="StringLit">&quot;JSON.parse&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;{}&quot;</span><span class="Punctuation">)</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L368"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L401"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L368" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L401" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -951,11 +1036,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">proc</span> <a href="#napiCreate%2CT"><span class="Identifier">napiCreate</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">t</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">)</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a></pre></dt>
 <dd>
 
-
+Create a new <tt class="docutils literal"><span class="pre"><span class="Identifier">napi_value</span></span></tt> of <tt class="docutils literal"><span class="pre"><span class="Identifier">T</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L432"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L460"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L432" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L460" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -965,61 +1050,74 @@ class="link-seesrc" target="_blank">Source</a>
 
 Used internally, disregard
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L50"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L56"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L50" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L56" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
-<div id="register,Module,string,napi_callback">
-<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2Cnapi_callback"><span class="Identifier">register</span></a><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">cb</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_callback"><span class="Identifier">napi_callback</span></a><span class="Other">)</span> {.
+<div id="newPromiseData,T">
+<dt><pre><span class="Keyword">proc</span> <a href="#newPromiseData%2CT"><span class="Identifier">newPromiseData</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">jsData</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">ref</span> <a href="bindings.html#PromiseData"><span class="Identifier">PromiseData</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span></pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L660"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L660" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="register,Module,string,napi_callback,NapiPropertyAttributes">
+<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2Cnapi_callback%2CNapiPropertyAttributes"><span class="Identifier">register</span></a><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">cb</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_callback"><span class="Identifier">napi_callback</span></a><span class="Other">;</span>
+              <span class="Identifier">attr</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#NapiPropertyAttributes"><span class="Identifier">NapiPropertyAttributes</span></a> <span class="Other">=</span> <span class="Identifier">napi_default</span><span class="Other">)</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-
+Register a new property field to <tt class="docutils literal"><span class="pre"><span class="Identifier">obj</span></span></tt> Module.
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L350"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L380"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L350" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L380" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
-<div id="register,Module,string,T,int">
-<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2CT%2Cint"><span class="Identifier">register</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Operator">|</span> <span class="Identifier">uint</span> <span class="Operator">|</span> <span class="Identifier">string</span> <span class="Operator">|</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-    <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">;</span> <span class="Identifier">attr</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">)</span></pre></dt>
+<div id="register,Module,string,T,NapiPropertyAttributes">
+<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2CT%2CNapiPropertyAttributes"><span class="Identifier">register</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Operator">|</span> <span class="Identifier">uint</span> <span class="Operator">|</span> <span class="Identifier">string</span> <span class="Operator">|</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+    <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">;</span> <span class="Identifier">attr</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#NapiPropertyAttributes"><span class="Identifier">NapiPropertyAttributes</span></a> <span class="Other">=</span> <span class="Identifier">napi_default</span><span class="Other">)</span></pre></dt>
 <dd>
 
 Adds field to exports object <tt class="docutils literal"><span class="pre">obj</span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L329"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L358"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L329" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L358" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
-<div id="register,Module,string,openArray[],int">
-<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2CopenArray%5B%5D%2Cint"><span class="Identifier">register</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Operator">|</span> <span class="Identifier">uint</span> <span class="Operator">|</span> <span class="Identifier">string</span> <span class="Operator">|</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-    <span class="Identifier">values</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">T</span><span class="Other">)</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">attr</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">)</span></pre></dt>
+<div id="register,Module,string,openArray[],NapiPropertyAttributes">
+<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2CopenArray%5B%5D%2CNapiPropertyAttributes"><span class="Identifier">register</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Operator">|</span> <span class="Identifier">uint</span> <span class="Operator">|</span> <span class="Identifier">string</span> <span class="Operator">|</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+    <span class="Identifier">values</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">T</span><span class="Other">)</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">attr</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#NapiPropertyAttributes"><span class="Identifier">NapiPropertyAttributes</span></a> <span class="Other">=</span> <span class="Identifier">napi_default</span><span class="Other">)</span></pre></dt>
+<dd>
+
+Register a new property field to <tt class="docutils literal"><span class="pre"><span class="Identifier">obj</span></span></tt> Module.
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L371"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L371" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="register,Module,string,openArray[T],NapiPropertyAttributes">
+<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2CopenArray%5BT%5D%2CNapiPropertyAttributes"><span class="Identifier">register</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Operator">|</span> <span class="Identifier">uint</span> <span class="Operator">|</span> <span class="Identifier">string</span> <span class="Operator">|</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+    <span class="Identifier">values</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">attr</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#NapiPropertyAttributes"><span class="Identifier">NapiPropertyAttributes</span></a> <span class="Other">=</span> <span class="Identifier">napi_default</span><span class="Other">)</span></pre></dt>
 <dd>
 
 Adds field to exports object <tt class="docutils literal"><span class="pre">obj</span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L342"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L363"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L342" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="register,Module,string,openArray[T],int">
-<dt><pre><span class="Keyword">proc</span> <a href="#register%2CModule%2Cstring%2CopenArray%5BT%5D%2Cint"><span class="Identifier">register</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Operator">|</span> <span class="Identifier">uint</span> <span class="Operator">|</span> <span class="Identifier">string</span> <span class="Operator">|</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-    <span class="Identifier">values</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">attr</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">)</span></pre></dt>
-<dd>
-
-Adds field to exports object <tt class="docutils literal"><span class="pre">obj</span></tt>
-&nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L334"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L334" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L363" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1030,22 +1128,22 @@ class="link-seesrc" target="_blank">Source</a>
 
 Sets value at <tt class="docutils literal"><span class="pre">index</span></tt>; raises exception if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an array
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L304"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L330"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L304" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L330" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="setProperty,napi_value,string,napi_value">
 <dt><pre><span class="Keyword">proc</span> <a href="#setProperty%2Cnapi_value%2Cstring%2Cnapi_value"><span class="Identifier">setProperty</span></a><span class="Other">(</span><span class="Identifier">obj</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">NapiStatusError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 Sets property <tt class="docutils literal"><span class="pre">key</span></tt> in <tt class="docutils literal"><span class="pre">obj</span></tt> to <tt class="docutils literal"><span class="pre">value</span></tt>; raises exception if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L274"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L302"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L274" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L302" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1058,9 +1156,22 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L43"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L45"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L43" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L45" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="toSeq,napi_value">
+<dt><pre><span class="Keyword">proc</span> <a href="#toSeq%2Cnapi_value"><span class="Identifier">toSeq</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+Return unpacked Array <tt class="docutils literal"><span class="pre"><span class="Keyword">object</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">napi_value</span><span class="Punctuation">]</span></span></tt>   
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L673"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L673" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1072,9 +1183,21 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L385"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L418"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L385" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L418" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="undefined">
+<dt><pre><span class="Keyword">proc</span> <a href="#undefined"><span class="Identifier">undefined</span></a><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+Returns an <tt class="docutils literal"><span class="pre"><span class="Identifier">undefined</span></span></tt> napi_value
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L194"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L194" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1090,9 +1213,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L457"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L668"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L457" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L668" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1101,15 +1224,46 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="17">
 <h1><a class="toc-backref" href="#17">Macros</a></h1>
 <dl class="item">
-<div id="%*.m,untyped">
-<dt><pre><span class="Keyword">macro</span> <a href="#%25%2A.m%2Cuntyped"><span class="Identifier">`%*`</span></a><span class="Other">(</span><span class="Identifier">x</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+<div id="%*.m,typed">
+<dt><pre><span class="Keyword">macro</span> <a href="#%25%2A.m%2Ctyped"><span class="Identifier">`%*`</span></a><span class="Other">(</span><span class="Identifier">x</span><span class="Other">:</span> <span class="Identifier">typed</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
 <dd>
 
+An elegant way to convert Nim types to <tt class="docutils literal"><span class="pre"><span class="Identifier">napi_value</span></span></tt>.
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L500"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L500" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="export_napi.m,untyped">
+<dt><pre><span class="Keyword">macro</span> <a href="#export_napi.m%2Cuntyped"><span class="Identifier">export_napi</span></a><span class="Other">(</span><span class="Identifier">fn</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span></pre></dt>
+<dd>
+
+<p>A fancy compile-time macro to export NAPI functions</p>
+<p><pre class="listing"><span class="Keyword">proc</span> <span class="Identifier">hello</span><span class="Punctuation">(</span><span class="Identifier">name</span><span class="Punctuation">:</span> <span class="Identifier">string</span><span class="Punctuation">)</span><span class="Punctuation">:</span> <span class="Identifier">string</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">export_napi</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
+  <span class="Keyword">return</span> <span class="Operator">%*</span> <span class="Identifier">args</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="StringLit">&quot;name&quot;</span><span class="Punctuation">)</span>
+</pre></p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L450"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L560"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L450" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L560" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="export_napi.m,untyped,untyped,typed">
+<dt><pre><span class="Keyword">macro</span> <a href="#export_napi.m%2Cuntyped%2Cuntyped%2Ctyped"><span class="Identifier">export_napi</span></a><span class="Other">(</span><span class="Identifier">vName</span><span class="Other">,</span> <span class="Identifier">vType</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">vVal</span><span class="Other">:</span> <span class="Identifier">typed</span><span class="Other">)</span></pre></dt>
+<dd>
+
+<p>A fancy compile-time macro to export object properties</p>
+<p><pre class="listing"><span class="Keyword">var</span> <span class="Identifier">name</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">export_napi</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span> <span class="StringLit">&quot;Denim is Awesome!&quot;</span>
+</pre></p>
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L544"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L544" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1117,12 +1271,26 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">macro</span> <a href="#init.m%2Cproc%28Module%29"><span class="Identifier">init</span></a><span class="Other">(</span><span class="Identifier">initHook</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">exports</span><span class="Other">:</span> <a href="bindings.html#Module"><span class="Identifier">Module</span></a><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">void</span></pre></dt>
 <dd>
 
-Bootstraps module; use by calling <tt class="docutils literal"><span class="pre">register</span></tt> to add properties to <tt class="docutils literal"><span class="pre">exports</span></tt><pre class="listing"><span class="Identifier">init</span> <span class="Keyword">proc</span><span class="Punctuation">(</span><span class="Identifier">exports</span><span class="Punctuation">:</span> <span class="Identifier">Module</span><span class="Punctuation">)</span> <span class="Operator">=</span>
-  <span class="Identifier">exports</span><span class="Operator">.</span><span class="Identifier">register</span><span class="Punctuation">(</span><span class="StringLit">&quot;hello&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;hello world&quot;</span><span class="Punctuation">)</span></pre>
+Bootstraps module; use by calling <tt class="docutils literal"><span class="pre"><span class="Identifier">register</span></span></tt> to add properties to <tt class="docutils literal"><span class="pre"><span class="Identifier">exports</span></span></tt><blockquote><p><pre class="listing"><span class="Identifier">init</span> <span class="Keyword">proc</span><span class="Punctuation">(</span><span class="Identifier">module</span><span class="Punctuation">:</span> <span class="Identifier">Module</span><span class="Punctuation">)</span> <span class="Operator">=</span>
+    <span class="Identifier">module</span><span class="Operator">.</span><span class="Identifier">register</span><span class="Punctuation">(</span><span class="StringLit">&quot;hello&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;hello world&quot;</span><span class="Punctuation">)</span>
+ </pre></p></blockquote>
+
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L466"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L690"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L466" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L690" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="promise.m,untyped">
+<dt><pre><span class="Keyword">macro</span> <a href="#promise.m%2Cuntyped"><span class="Identifier">promise</span></a><span class="Other">(</span><span class="Identifier">fn</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span></pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L664"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L664" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1138,9 +1306,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Throw an exception using <tt class="docutils literal"><span class="pre"><span class="Identifier">napi_throw_error</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L35"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L37"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L35" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L37" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1148,11 +1316,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">template</span> <a href="#fn.t%2Cint%2Cuntyped%2Cuntyped"><span class="Identifier">fn</span></a><span class="Other">(</span><span class="Identifier">paramCt</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">cushy</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span> {.<span class="Identifier">dirty</span>.}</pre></dt>
 <dd>
 
-
+Register a function
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L391"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L424"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L391" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L424" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1162,9 +1330,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L389"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L422"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L389" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L422" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1172,11 +1340,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">template</span> <a href="#getInt.t%2Cnapi_value"><span class="Identifier">getInt</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
 <dd>
 
-Retrieves value from node based on bitness of architecture; raises exception on failure
+Return <tt class="docutils literal"><span class="pre"><span class="Identifier">int</span></span></tt> value from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L184"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L211"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L184" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L211" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1184,11 +1352,11 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">template</span> <a href="#getInt.t%2Cnapi_value%2Cint"><span class="Identifier">getInt</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">default</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
 <dd>
 
-Retrieves value from node based on bitness of architecture; returns default on failure
+Return <tt class="docutils literal"><span class="pre"><span class="Identifier">int</span></span></tt> value from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>. Returns <tt class="docutils literal"><span class="pre"><span class="Identifier">default</span></span></tt> on failure
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L191"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L218"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L191" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L218" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1197,11 +1365,11 @@ class="link-seesrc" target="_blank">Source</a>
     <span class="Identifier">dirty</span>.}</pre></dt>
 <dd>
 
-
+Register and export a function
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L408"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L442"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L408" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L442" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -1210,7 +1378,7 @@ class="link-seesrc" target="_blank">Source</a>
 <div class="section" id="19">
 <h1><a class="toc-backref" href="#19">Exports</a></h1>
 <dl class="item">
-<a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a>, <a href="jsNativeApiTypes.html#napi_object"><span class="Identifier">napi_object</span></a>, <a href="jsNativeApiTypes.html#napi_deferred"><span class="Identifier">napi_deferred</span></a>, <a href="jsNativeApiTypes.html#napi_symbol"><span class="Identifier">napi_symbol</span></a>, <a href="jsNativeApiTypes.html#napi_ref"><span class="Identifier">napi_ref</span></a>, <a href="jsNativeApiTypes.html#napi_external"><span class="Identifier">napi_external</span></a>, <a href="jsNativeApiTypes.html#NapiPropertyDescriptor"><span class="Identifier">NapiPropertyDescriptor</span></a>, <a href="jsNativeApiTypes.html#napi_callback"><span class="Identifier">napi_callback</span></a>, <a href="jsNativeApiTypes.html#NApiTypedArrayType"><span class="Identifier">NApiTypedArrayType</span></a>, <a href="jsNativeApiTypes.html#napi_undefined"><span class="Identifier">napi_undefined</span></a>, <a href="jsNativeApiTypes.html#napi_number"><span class="Identifier">napi_number</span></a>, <a href="jsNativeApiTypes.html#napi_finalize"><span class="Identifier">napi_finalize</span></a>, <a href="jsNativeApiTypes.html#NapiValueType"><span class="Identifier">NapiValueType</span></a>, <a href="jsNativeApiTypes.html#napi_bigint"><span class="Identifier">napi_bigint</span></a>, <a href="jsNativeApiTypes.html#napi_callback_info"><span class="Identifier">napi_callback_info</span></a>, <a href="jsNativeApiTypes.html#NApiPropertyAttributes"><span class="Identifier">NApiPropertyAttributes</span></a>, <a href="jsNativeApiTypes.html#napi_function"><span class="Identifier">napi_function</span></a>, <a href="jsNativeApiTypes.html#NapiStatus"><span class="Identifier">NapiStatus</span></a>, <a href="jsNativeApiTypes.html#napi_string"><span class="Identifier">napi_string</span></a>, <a href="jsNativeApiTypes.html#napi_null"><span class="Identifier">napi_null</span></a>, <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a>, <a href="jsNativeApiTypes.html#NapiExtendedErrorInfo"><span class="Identifier">NapiExtendedErrorInfo</span></a>, <a href="jsNativeApiTypes.html#napi_escapable_handle_scope"><span class="Identifier">napi_escapable_handle_scope</span></a>, <a href="jsNativeApiTypes.html#napi_handle_scope"><span class="Identifier">napi_handle_scope</span></a>, <a href="jsNativeApiTypes.html#napi_boolean"><span class="Identifier">napi_boolean</span></a>, <a href="jsNativeApi.html#napi_set_property,napi_env,napi_value,napi_value,napi_value"><span class="Identifier">napi_set_property</span></a>, <a href="jsNativeApi.html#napi_is_date,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_date</span></a>, <a href="jsNativeApi.html#napi_get_and_clear_last_exception,napi_env,ptr.napi_value"><span class="Identifier">napi_get_and_clear_last_exception</span></a>, <a href="jsNativeApi.html#napi_define_properties,napi_env,napi_value,csize_t,ptr.NapiPropertyDescriptor"><span class="Identifier">napi_define_properties</span></a>, <a href="jsNativeApi.html#napi_create_uint64,napi_env,uint64,ptr.napi_value"><span class="Identifier">napi_create_uint64</span></a>, <a href="jsNativeApi.html#napi_unrwap,napi_env,napi_value,ptr.pointer"><span class="Identifier">napi_unrwap</span></a>, <a href="jsNativeApi.html#napi_create_range_error,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_create_range_error</span></a>, <a href="jsNativeApi.html#napi_create_error,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_create_error</span></a>, <a href="jsNativeApi.html#napi_typeof,napi_env,napi_value,ptr.NapiValueType"><span class="Identifier">napi_typeof</span></a>, <a href="jsNativeApi.html#napi_create_external_arraybuffer,napi_env,pointer,csize_t,napi_finalize,pointer,ptr.napi_value"><span class="Identifier">napi_create_external_arraybuffer</span></a>, <a href="jsNativeApi.html#napi_get_value_bool,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_get_value_bool</span></a>, <a href="jsNativeApi.html#napi_get_array_length,napi_env,napi_value,ptr.uint32"><span class="Identifier">napi_get_array_length</span></a>, <a href="jsNativeApi.html#napi_strict_equals,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_strict_equals</span></a>, <a href="jsNativeApi.html#napi_create_array_with_length,napi_env,csize_t,ptr.napi_value"><span class="Identifier">napi_create_array_with_length</span></a>, <a href="jsNativeApi.html#napi_coerce_to_number,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_number</span></a>, <a href="jsNativeApi.html#napi_get_arraybuffer_info,napi_env,napi_value,ptr.pointer,ptr.csize_t"><span class="Identifier">napi_get_arraybuffer_info</span></a>, <a href="jsNativeApi.html#napi_coerce_to_string,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_string</span></a>, <a href="jsNativeApi.html#napi_get_version,napi_env,ptr.uint32"><span class="Identifier">napi_get_version</span></a>, <a href="jsNativeApi.html#napi_call_function,napi_env,napi_value,napi_value,csize_t,ptr.napi_value,ptr.napi_value"><span class="Identifier">napi_call_function</span></a>, <a href="jsNativeApi.html#napi_get_value_double,napi_env,napi_value,ptr.float64"><span class="Identifier">napi_get_value_double</span></a>, <a href="jsNativeApi.html#napi_is_arraybuffer,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_arraybuffer</span></a>, <a href="jsNativeApi.html#napi_throw_type_error,napi_env,cstring,cstring"><span class="Identifier">napi_throw_type_error</span></a>, <a href="jsNativeApi.html#napi_has_property,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_has_property</span></a>, <a href="jsNativeApi.html#napi_get_value_int64,napi_env,napi_value,ptr.int64"><span class="Identifier">napi_get_value_int64</span></a>, <a href="jsNativeApi.html#napi_get_null,napi_env,ptr.napi_value"><span class="Identifier">napi_get_null</span></a>, <a href="jsNativeApi.html#napi_create_promise,napi_env,ptr.napi_deferred,ptr.napi_value"><span class="Identifier">napi_create_promise</span></a>, <a href="jsNativeApi.html#napi_remove_wrap,napi_env,napi_value,ptr.pointer"><span class="Identifier">napi_remove_wrap</span></a>, <a href="jsNativeApi.html#napi_create_dataview,napi_env,csize_t,napi_value,csize_t,ptr.napi_value"><span class="Identifier">napi_create_dataview</span></a>, <a href="jsNativeApi.html#napi_is_typedarray,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_typedarray</span></a>, <a href="jsNativeApi.html#napi_throw_error,napi_env,cstring,cstring"><span class="Identifier">napi_throw_error</span></a>, <a href="jsNativeApi.html#napi_is_exception_pending,napi_env,ptr.bool"><span class="Identifier">napi_is_exception_pending</span></a>, <a href="jsNativeApi.html#napi_has_named_property,napi_env,napi_value,cstring,ptr.bool"><span class="Identifier">napi_has_named_property</span></a>, <a href="jsNativeApi.html#napi_has_own_property,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_has_own_property</span></a>, <a href="jsNativeApi.html#napi_is_array,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_array</span></a>, <a href="jsNativeApi.html#napi_create_typedarray,napi_env,NApiTypedArrayType,csize_t,napi_value,csize_t,ptr.napi_value"><span class="Identifier">napi_create_typedarray</span></a>, <a href="jsNativeApi.html#napi_throw,napi_env,napi_value"><span class="Identifier">napi_throw</span></a>, <a href="jsNativeApi.html#napi_delete_property,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_delete_property</span></a>, <a href="jsNativeApi.html#napi_get_date_value,napi_env,napi_value,ptr.float64"><span class="Identifier">napi_get_date_value</span></a>, <a href="jsNativeApi.html#napi_set_named_property,napi_env,napi_value,cstring,napi_value"><span class="Identifier">napi_set_named_property</span></a>, <a href="jsNativeApi.html#napi_create_object,napi_env,ptr.napi_value"><span class="Identifier">napi_create_object</span></a>, <a href="jsNativeApi.html#napi_add_finalizer,napi_env,napi_value,pointer,napi_finalize,pointer,ptr.napi_ref"><span class="Identifier">napi_add_finalizer</span></a>, <a href="jsNativeApi.html#napi_is_promise,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_promise</span></a>, <a href="jsNativeApi.html#napi_get_value_string_latin1,napi_env,napi_value,cstring,csize_t,ptr.csize_t"><span class="Identifier">napi_get_value_string_latin1</span></a>, <a href="jsNativeApi.html#napi_get_boolean,napi_env,bool,ptr.napi_value"><span class="Identifier">napi_get_boolean</span></a>, <a href="jsNativeApi.html#napi_get_cb_info,napi_env,napi_callback_info,ptr.csize_t,ptr.UncheckedArray[napi_value],napi_value,ptr.pointer"><span class="Identifier">napi_get_cb_info</span></a>, <a href="jsNativeApi.html#napi_get_last_error_info,napi_env,UncheckedArray[NapiExtendedErrorInfo]"><span class="Identifier">napi_get_last_error_info</span></a>, <a href="jsNativeApi.html#napi_wrap,napi_env,napi_value,pointer,napi_finalize,pointer,ptr.napi_ref"><span class="Identifier">napi_wrap</span></a>, <a href="jsNativeApi.html#napi_get_value_string_utf8,napi_env,napi_value,cstring,csize_t,ptr.csize_t"><span class="Identifier">napi_get_value_string_utf8</span></a>, <a href="jsNativeApi.html#napi_is_error,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_error</span></a>, <a href="jsNativeApi.html#napi_get_property,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_get_property</span></a>, <a href="jsNativeApi.html#napi_is_dataview,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_dataview</span></a>, <a href="jsNativeApi.html#napi_throw_range_error,napi_env,cstring,cstring"><span class="Identifier">napi_throw_range_error</span></a>, <a href="jsNativeApi.html#napi_get_value_external,napi_env,napi_value,ptr.pointer"><span class="Identifier">napi_get_value_external</span></a>, <a href="jsNativeApi.html#napi_get_typedarray_info,napi_env,napi_value,ptr.NApiTypedArrayType,ptr.csize_t,ptr.pointer,ptr.napi_value,csize_t"><span class="Identifier">napi_get_typedarray_info</span></a>, <a href="jsNativeApi.html#napi_create_symbol,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_create_symbol</span></a>, <a href="jsNativeApi.html#napi_has_element,napi_env,napi_value,uint32,ptr.bool"><span class="Identifier">napi_has_element</span></a>, <a href="jsNativeApi.html#napi_get_undefined,napi_env,ptr.napi_value"><span class="Identifier">napi_get_undefined</span></a>, <a href="jsNativeApi.html#napi_coerce_to_object,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_object</span></a>, <a href="jsNativeApi.html#napi_get_global,napi_env,ptr.napi_value"><span class="Identifier">napi_get_global</span></a>, <a href="jsNativeApi.html#napi_run_script,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_run_script</span></a>, <a href="jsNativeApi.html#napi_get_property_names,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_get_property_names</span></a>, <a href="jsNativeApi.html#napi_get_value_int32,napi_env,napi_value,ptr.int32"><span class="Identifier">napi_get_value_int32</span></a>, <a href="jsNativeApi.html#napi_adjust_external_memory,napi_env,int64,ptr.int64"><span class="Identifier">napi_adjust_external_memory</span></a>, <a href="jsNativeApi.html#napi_create_string_latin1,napi_env,cstring,csize_t,ptr.napi_value"><span class="Identifier">napi_create_string_latin1</span></a>, <a href="jsNativeApi.html#napi_create_int32,napi_env,int32,ptr.napi_value"><span class="Identifier">napi_create_int32</span></a>, <a href="jsNativeApi.html#napi_create_string_utf8,napi_env,cstring,csize_t,ptr.napi_value"><span class="Identifier">napi_create_string_utf8</span></a>, <a href="jsNativeApi.html#napi_create_function,napi_env,cstring,csize_t,napi_callback,pointer,ptr.napi_value"><span class="Identifier">napi_create_function</span></a>, <a href="jsNativeApi.html#napi_coerce_to_bool,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_bool</span></a>, <a href="jsNativeApi.html#napi_get_prototype,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_get_prototype</span></a>, <a href="jsNativeApi.html#napi_new_instance,napi_env,napi_value,csize_t,ptr.napi_value,ptr.napi_value"><span class="Identifier">napi_new_instance</span></a>, <a href="jsNativeApi.html#napi_create_external,napi_env,pointer,napi_finalize,pointer,ptr.napi_value"><span class="Identifier">napi_create_external</span></a>, <a href="jsNativeApi.html#napi_resolve_deferred,napi_env,napi_deferred,napi_value"><span class="Identifier">napi_resolve_deferred</span></a>, <a href="jsNativeApi.html#napi_get_dataview_info,napi_env,napi_value,ptr.csize_t,ptr.pointer,ptr.napi_value,ptr.csize_t"><span class="Identifier">napi_get_dataview_info</span></a>, <a href="jsNativeApi.html#napi_create_array,napi_env,ptr.napi_value"><span class="Identifier">napi_create_array</span></a>, <a href="jsNativeApi.html#napi_define_class,napi_env,cstring,csize_t,napi_callback,pointer,csize_t,ptr.NapiPropertyDescriptor,ptr.napi_value"><span class="Identifier">napi_define_class</span></a>, <a href="jsNativeApi.html#napi_get_value_uint32,napi_env,napi_value,ptr.uint32"><span class="Identifier">napi_get_value_uint32</span></a>, <a href="jsNativeApi.html#napi_reject_deferred,napi_env,napi_deferred,napi_value"><span class="Identifier">napi_reject_deferred</span></a>, <a href="jsNativeApi.html#napi_create_double,napi_env,float64,ptr.napi_value"><span class="Identifier">napi_create_double</span></a>, <a href="jsNativeApi.html#napi_delete_element,napi_env,napi_value,uint32,ptr.bool"><span class="Identifier">napi_delete_element</span></a>, <a href="jsNativeApi.html#napi_set_element,napi_env,napi_value,uint32,napi_value"><span class="Identifier">napi_set_element</span></a>, <a href="jsNativeApi.html#napi_create_uint32,napi_env,uint32,ptr.napi_value"><span class="Identifier">napi_create_uint32</span></a>, <a href="jsNativeApi.html#napi_create_date,napi_env,float64,ptr.napi_value"><span class="Identifier">napi_create_date</span></a>, <a href="jsNativeApi.html#napi_create_type_error,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_create_type_error</span></a>, <a href="jsNativeApi.html#napi_get_new_target,napi_env,napi_callback_info,ptr.napi_value"><span class="Identifier">napi_get_new_target</span></a>, <a href="jsNativeApi.html#napi_get_element,napi_env,napi_value,uint32,ptr.napi_value"><span class="Identifier">napi_get_element</span></a>, <a href="jsNativeApi.html#napi_get_named_property,napi_env,napi_value,cstring,ptr.napi_value"><span class="Identifier">napi_get_named_property</span></a>, <a href="jsNativeApi.html#napi_instanceof,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_instanceof</span></a>, <a href="jsNativeApi.html#napi_create_arraybuffer,napi_env,csize_t,ptr.pointer,ptr.napi_value"><span class="Identifier">napi_create_arraybuffer</span></a>, <a href="jsNativeApi.html#napi_create_int64,napi_env,int64,ptr.napi_value"><span class="Identifier">napi_create_int64</span></a>, <a href="nodeApi.html#napi_create_external_buffer,napi_env,csize_t,pointer,napi_finalize,pointer,ptr.napi_value"><span class="Identifier">napi_create_external_buffer</span></a>, <a href="nodeApiTypes.html#napi_async_execute_callback,napi_env,pointer"><span class="Identifier">napi_async_execute_callback</span></a>, <a href="nodeApiTypes.html#NapiNodeVersion"><span class="Identifier">NapiNodeVersion</span></a>, <a href="nodeApiTypes.html#napi_async_context"><span class="Identifier">napi_async_context</span></a>, <a href="nodeApi.html#napi_async_destroy,napi_env,napi_async_context"><span class="Identifier">napi_async_destroy</span></a>, <a href="nodeApi.html#napi_create_async_work,napi_env,napi_value,napi_value,,,pointer,ptr.napi_async_work"><span class="Identifier">napi_create_async_work</span></a>, <a href="nodeApi.html#napi_async_init,napi_env,napi_value,napi_value,ptr.napi_async_context"><span class="Identifier">napi_async_init</span></a>, <a href="nodeApiTypes.html#napi_threadsafe_function"><span class="Identifier">napi_threadsafe_function</span></a>, <a href="nodeApi.html#napi_get_buffer_info,napi_env,napi_value,ptr.pointer,ptr.csize_t"><span class="Identifier">napi_get_buffer_info</span></a>, <a href="nodeApi.html#napi_make_callback,napi_env,napi_async_context,napi_value,napi_value,csize_t,ptr.napi_value,ptr.napi_value"><span class="Identifier">napi_make_callback</span></a>, <a href="nodeApi.html#napi_addon_register_func,napi_env,napi_value"><span class="Identifier">napi_addon_register_func</span></a>, <a href="nodeApi.html#napi_cancel_async_work,napi_env,napi_async_work"><span class="Identifier">napi_cancel_async_work</span></a>, <a href="nodeApi.html#napi_get_node_version,napi_env,ptr.NapiNodeVersion"><span class="Identifier">napi_get_node_version</span></a>, <a href="nodeApi.html#napi_queue_async_work,napi_env,napi_async_work"><span class="Identifier">napi_queue_async_work</span></a>, <a href="nodeApiTypes.html#napi_callback_scope"><span class="Identifier">napi_callback_scope</span></a>, <a href="nodeApi.html#napi_is_buffer,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_buffer</span></a>, <a href="nodeApi.html#napi_create_buffer,napi_env,csize_t,ptr.pointer,ptr.napi_value"><span class="Identifier">napi_create_buffer</span></a>, <a href="nodeApi.html#NapiModule"><span class="Identifier">NapiModule</span></a>, <a href="nodeApi.html#napi_delete_async_work,napi_env,napi_async_work"><span class="Identifier">napi_delete_async_work</span></a>, <a href="nodeApi.html#napi_module_register,NapiModule"><span class="Identifier">napi_module_register</span></a>, <a href="nodeApiTypes.html#napi_async_work"><span class="Identifier">napi_async_work</span></a>, <a href="nodeApi.html#napi_create_buffer_copy,napi_env,csize_t,pointer,ptr.pointer,ptr.napi_value"><span class="Identifier">napi_create_buffer_copy</span></a>, <a href="nodeApi.html#napi_fatal_error,cstring,csize_t,cstring,csize_t"><span class="Identifier">napi_fatal_error</span></a>, <a href="nodeApi.html#napiModule.m,proc(napi_env,napi_value)"><span class="Identifier">napiModule</span></a>, <a href="nodeApiTypes.html#napi_async_complete_callback,napi_env,NapiStatus,pointer"><span class="Identifier">napi_async_complete_callback</span></a>
+<a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a>, <a href="jsNativeApiTypes.html#napi_object"><span class="Identifier">napi_object</span></a>, <a href="jsNativeApiTypes.html#napi_deferred"><span class="Identifier">napi_deferred</span></a>, <a href="jsNativeApiTypes.html#napi_symbol"><span class="Identifier">napi_symbol</span></a>, <a href="jsNativeApiTypes.html#napi_ref"><span class="Identifier">napi_ref</span></a>, <a href="jsNativeApiTypes.html#napi_external"><span class="Identifier">napi_external</span></a>, <a href="jsNativeApiTypes.html#NapiPropertyDescriptor"><span class="Identifier">NapiPropertyDescriptor</span></a>, <a href="jsNativeApiTypes.html#napi_callback"><span class="Identifier">napi_callback</span></a>, <a href="jsNativeApiTypes.html#NApiTypedArrayType"><span class="Identifier">NApiTypedArrayType</span></a>, <a href="jsNativeApiTypes.html#napi_number"><span class="Identifier">napi_number</span></a>, <a href="jsNativeApiTypes.html#napi_finalize"><span class="Identifier">napi_finalize</span></a>, <a href="jsNativeApiTypes.html#NapiValueType"><span class="Identifier">NapiValueType</span></a>, <a href="jsNativeApiTypes.html#napi_bigint"><span class="Identifier">napi_bigint</span></a>, <a href="jsNativeApiTypes.html#napi_callback_info"><span class="Identifier">napi_callback_info</span></a>, <a href="jsNativeApiTypes.html#napi_string"><span class="Identifier">napi_string</span></a>, <a href="jsNativeApiTypes.html#NapiPropertyAttributes"><span class="Identifier">NapiPropertyAttributes</span></a>, <a href="jsNativeApiTypes.html#napi_function"><span class="Identifier">napi_function</span></a>, <a href="jsNativeApiTypes.html#napi_threadsafe_function_call_js"><span class="Identifier">napi_threadsafe_function_call_js</span></a>, <a href="jsNativeApiTypes.html#NapiStatus"><span class="Identifier">NapiStatus</span></a>, <a href="jsNativeApiTypes.html#NapiExtendedErrorInfo"><span class="Identifier">NapiExtendedErrorInfo</span></a>, <a href="jsNativeApiTypes.html#napi_undefined"><span class="Identifier">napi_undefined</span></a>, <a href="jsNativeApiTypes.html#napi_null"><span class="Identifier">napi_null</span></a>, <a href="jsNativeApiTypes.html#NapiThreadSafeFunction"><span class="Identifier">NapiThreadSafeFunction</span></a>, <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a>, <a href="jsNativeApiTypes.html#napi_escapable_handle_scope"><span class="Identifier">napi_escapable_handle_scope</span></a>, <a href="jsNativeApiTypes.html#napi_handle_scope"><span class="Identifier">napi_handle_scope</span></a>, <a href="jsNativeApiTypes.html#napi_boolean"><span class="Identifier">napi_boolean</span></a>, <a href="jsNativeApi.html#napi_set_property,napi_env,napi_value,napi_value,napi_value"><span class="Identifier">napi_set_property</span></a>, <a href="jsNativeApi.html#napi_is_date,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_date</span></a>, <a href="jsNativeApi.html#napi_get_and_clear_last_exception,napi_env,ptr.napi_value"><span class="Identifier">napi_get_and_clear_last_exception</span></a>, <a href="jsNativeApi.html#napi_define_properties,napi_env,napi_value,csize_t,ptr.NapiPropertyDescriptor"><span class="Identifier">napi_define_properties</span></a>, <a href="jsNativeApi.html#napi_create_uint64,napi_env,uint64,ptr.napi_value"><span class="Identifier">napi_create_uint64</span></a>, <a href="jsNativeApi.html#napi_unrwap,napi_env,napi_value,ptr.pointer"><span class="Identifier">napi_unrwap</span></a>, <a href="jsNativeApi.html#napi_create_range_error,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_create_range_error</span></a>, <a href="jsNativeApi.html#napi_create_error,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_create_error</span></a>, <a href="jsNativeApi.html#napi_typeof,napi_env,napi_value,ptr.NapiValueType"><span class="Identifier">napi_typeof</span></a>, <a href="jsNativeApi.html#napi_create_external_arraybuffer,napi_env,pointer,csize_t,napi_finalize,pointer,ptr.napi_value"><span class="Identifier">napi_create_external_arraybuffer</span></a>, <a href="jsNativeApi.html#napi_get_value_bool,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_get_value_bool</span></a>, <a href="jsNativeApi.html#napi_get_array_length,napi_env,napi_value,ptr.uint32"><span class="Identifier">napi_get_array_length</span></a>, <a href="jsNativeApi.html#napi_strict_equals,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_strict_equals</span></a>, <a href="jsNativeApi.html#napi_create_array_with_length,napi_env,csize_t,ptr.napi_value"><span class="Identifier">napi_create_array_with_length</span></a>, <a href="jsNativeApi.html#napi_coerce_to_number,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_number</span></a>, <a href="jsNativeApi.html#napi_get_arraybuffer_info,napi_env,napi_value,ptr.pointer,ptr.csize_t"><span class="Identifier">napi_get_arraybuffer_info</span></a>, <a href="jsNativeApi.html#napi_coerce_to_string,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_string</span></a>, <a href="jsNativeApi.html#napi_get_version,napi_env,ptr.uint32"><span class="Identifier">napi_get_version</span></a>, <a href="jsNativeApi.html#napi_call_function,napi_env,napi_value,napi_value,csize_t,ptr.napi_value,ptr.napi_value"><span class="Identifier">napi_call_function</span></a>, <a href="jsNativeApi.html#napi_get_value_double,napi_env,napi_value,ptr.float64"><span class="Identifier">napi_get_value_double</span></a>, <a href="jsNativeApi.html#napi_is_arraybuffer,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_arraybuffer</span></a>, <a href="jsNativeApi.html#napi_throw_type_error,napi_env,cstring,cstring"><span class="Identifier">napi_throw_type_error</span></a>, <a href="jsNativeApi.html#napi_has_property,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_has_property</span></a>, <a href="jsNativeApi.html#napi_get_value_int64,napi_env,napi_value,ptr.int64"><span class="Identifier">napi_get_value_int64</span></a>, <a href="jsNativeApi.html#napi_get_null,napi_env,ptr.napi_value"><span class="Identifier">napi_get_null</span></a>, <a href="jsNativeApi.html#napi_create_promise,napi_env,ptr.napi_deferred,ptr.napi_value"><span class="Identifier">napi_create_promise</span></a>, <a href="jsNativeApi.html#napi_remove_wrap,napi_env,napi_value,ptr.pointer"><span class="Identifier">napi_remove_wrap</span></a>, <a href="jsNativeApi.html#napi_create_dataview,napi_env,csize_t,napi_value,csize_t,ptr.napi_value"><span class="Identifier">napi_create_dataview</span></a>, <a href="jsNativeApi.html#napi_is_typedarray,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_typedarray</span></a>, <a href="jsNativeApi.html#napi_throw_error,napi_env,cstring,cstring"><span class="Identifier">napi_throw_error</span></a>, <a href="jsNativeApi.html#napi_is_exception_pending,napi_env,ptr.bool"><span class="Identifier">napi_is_exception_pending</span></a>, <a href="jsNativeApi.html#napi_has_named_property,napi_env,napi_value,cstring,ptr.bool"><span class="Identifier">napi_has_named_property</span></a>, <a href="jsNativeApi.html#napi_has_own_property,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_has_own_property</span></a>, <a href="jsNativeApi.html#napi_is_array,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_array</span></a>, <a href="jsNativeApi.html#napi_create_typedarray,napi_env,NApiTypedArrayType,csize_t,napi_value,csize_t,ptr.napi_value"><span class="Identifier">napi_create_typedarray</span></a>, <a href="jsNativeApi.html#napi_throw,napi_env,napi_value"><span class="Identifier">napi_throw</span></a>, <a href="jsNativeApi.html#napi_delete_property,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_delete_property</span></a>, <a href="jsNativeApi.html#napi_get_date_value,napi_env,napi_value,ptr.float64"><span class="Identifier">napi_get_date_value</span></a>, <a href="jsNativeApi.html#napi_set_named_property,napi_env,napi_value,cstring,napi_value"><span class="Identifier">napi_set_named_property</span></a>, <a href="jsNativeApi.html#napi_create_object,napi_env,ptr.napi_value"><span class="Identifier">napi_create_object</span></a>, <a href="jsNativeApi.html#napi_add_finalizer,napi_env,napi_value,pointer,napi_finalize,pointer,ptr.napi_ref"><span class="Identifier">napi_add_finalizer</span></a>, <a href="jsNativeApi.html#napi_is_promise,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_promise</span></a>, <a href="jsNativeApi.html#napi_get_value_string_latin1,napi_env,napi_value,cstring,csize_t,ptr.csize_t"><span class="Identifier">napi_get_value_string_latin1</span></a>, <a href="jsNativeApi.html#napi_get_boolean,napi_env,bool,ptr.napi_value"><span class="Identifier">napi_get_boolean</span></a>, <a href="jsNativeApi.html#napi_get_cb_info,napi_env,napi_callback_info,ptr.csize_t,ptr.UncheckedArray[napi_value],napi_value,ptr.pointer"><span class="Identifier">napi_get_cb_info</span></a>, <a href="jsNativeApi.html#napi_get_last_error_info,napi_env,UncheckedArray[NapiExtendedErrorInfo]"><span class="Identifier">napi_get_last_error_info</span></a>, <a href="jsNativeApi.html#napi_wrap,napi_env,napi_value,pointer,napi_finalize,pointer,ptr.napi_ref"><span class="Identifier">napi_wrap</span></a>, <a href="jsNativeApi.html#napi_get_value_string_utf8,napi_env,napi_value,cstring,csize_t,ptr.csize_t"><span class="Identifier">napi_get_value_string_utf8</span></a>, <a href="jsNativeApi.html#napi_is_error,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_error</span></a>, <a href="jsNativeApi.html#napi_get_property,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_get_property</span></a>, <a href="jsNativeApi.html#napi_is_dataview,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_dataview</span></a>, <a href="jsNativeApi.html#napi_throw_range_error,napi_env,cstring,cstring"><span class="Identifier">napi_throw_range_error</span></a>, <a href="jsNativeApi.html#napi_get_value_external,napi_env,napi_value,ptr.pointer"><span class="Identifier">napi_get_value_external</span></a>, <a href="jsNativeApi.html#napi_get_typedarray_info,napi_env,napi_value,ptr.NApiTypedArrayType,ptr.csize_t,ptr.pointer,ptr.napi_value,csize_t"><span class="Identifier">napi_get_typedarray_info</span></a>, <a href="jsNativeApi.html#napi_create_symbol,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_create_symbol</span></a>, <a href="jsNativeApi.html#napi_has_element,napi_env,napi_value,uint32,ptr.bool"><span class="Identifier">napi_has_element</span></a>, <a href="jsNativeApi.html#napi_get_undefined,napi_env,ptr.napi_value"><span class="Identifier">napi_get_undefined</span></a>, <a href="jsNativeApi.html#napi_coerce_to_object,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_object</span></a>, <a href="jsNativeApi.html#napi_get_global,napi_env,ptr.napi_value"><span class="Identifier">napi_get_global</span></a>, <a href="jsNativeApi.html#napi_run_script,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_run_script</span></a>, <a href="jsNativeApi.html#napi_get_property_names,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_get_property_names</span></a>, <a href="jsNativeApi.html#napi_get_value_int32,napi_env,napi_value,ptr.int32"><span class="Identifier">napi_get_value_int32</span></a>, <a href="jsNativeApi.html#napi_adjust_external_memory,napi_env,int64,ptr.int64"><span class="Identifier">napi_adjust_external_memory</span></a>, <a href="jsNativeApi.html#napi_create_string_latin1,napi_env,cstring,csize_t,ptr.napi_value"><span class="Identifier">napi_create_string_latin1</span></a>, <a href="jsNativeApi.html#napi_create_int32,napi_env,int32,ptr.napi_value"><span class="Identifier">napi_create_int32</span></a>, <a href="jsNativeApi.html#napi_create_string_utf8,napi_env,cstring,csize_t,ptr.napi_value"><span class="Identifier">napi_create_string_utf8</span></a>, <a href="jsNativeApi.html#napi_create_function,napi_env,cstring,csize_t,napi_callback,pointer,ptr.napi_value"><span class="Identifier">napi_create_function</span></a>, <a href="jsNativeApi.html#napi_coerce_to_bool,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_coerce_to_bool</span></a>, <a href="jsNativeApi.html#napi_get_prototype,napi_env,napi_value,ptr.napi_value"><span class="Identifier">napi_get_prototype</span></a>, <a href="jsNativeApi.html#napi_new_instance,napi_env,napi_value,csize_t,ptr.napi_value,ptr.napi_value"><span class="Identifier">napi_new_instance</span></a>, <a href="jsNativeApi.html#napi_create_external,napi_env,pointer,napi_finalize,pointer,ptr.napi_value"><span class="Identifier">napi_create_external</span></a>, <a href="jsNativeApi.html#napi_resolve_deferred,napi_env,napi_deferred,napi_value"><span class="Identifier">napi_resolve_deferred</span></a>, <a href="jsNativeApi.html#napi_get_dataview_info,napi_env,napi_value,ptr.csize_t,ptr.pointer,ptr.napi_value,ptr.csize_t"><span class="Identifier">napi_get_dataview_info</span></a>, <a href="jsNativeApi.html#napi_create_array,napi_env,ptr.napi_value"><span class="Identifier">napi_create_array</span></a>, <a href="jsNativeApi.html#napi_define_class,napi_env,cstring,csize_t,napi_callback,pointer,csize_t,ptr.NapiPropertyDescriptor,ptr.napi_value"><span class="Identifier">napi_define_class</span></a>, <a href="jsNativeApi.html#napi_get_value_uint32,napi_env,napi_value,ptr.uint32"><span class="Identifier">napi_get_value_uint32</span></a>, <a href="jsNativeApi.html#napi_reject_deferred,napi_env,napi_deferred,napi_value"><span class="Identifier">napi_reject_deferred</span></a>, <a href="jsNativeApi.html#napi_create_double,napi_env,float64,ptr.napi_value"><span class="Identifier">napi_create_double</span></a>, <a href="jsNativeApi.html#napi_delete_element,napi_env,napi_value,uint32,ptr.bool"><span class="Identifier">napi_delete_element</span></a>, <a href="jsNativeApi.html#napi_set_element,napi_env,napi_value,uint32,napi_value"><span class="Identifier">napi_set_element</span></a>, <a href="jsNativeApi.html#napi_create_uint32,napi_env,uint32,ptr.napi_value"><span class="Identifier">napi_create_uint32</span></a>, <a href="jsNativeApi.html#napi_create_date,napi_env,float64,ptr.napi_value"><span class="Identifier">napi_create_date</span></a>, <a href="jsNativeApi.html#napi_create_type_error,napi_env,napi_value,napi_value,ptr.napi_value"><span class="Identifier">napi_create_type_error</span></a>, <a href="jsNativeApi.html#napi_get_new_target,napi_env,napi_callback_info,ptr.napi_value"><span class="Identifier">napi_get_new_target</span></a>, <a href="jsNativeApi.html#napi_get_element,napi_env,napi_value,uint32,ptr.napi_value"><span class="Identifier">napi_get_element</span></a>, <a href="jsNativeApi.html#napi_get_named_property,napi_env,napi_value,cstring,ptr.napi_value"><span class="Identifier">napi_get_named_property</span></a>, <a href="jsNativeApi.html#napi_instanceof,napi_env,napi_value,napi_value,ptr.bool"><span class="Identifier">napi_instanceof</span></a>, <a href="jsNativeApi.html#napi_create_arraybuffer,napi_env,csize_t,ptr.pointer,ptr.napi_value"><span class="Identifier">napi_create_arraybuffer</span></a>, <a href="jsNativeApi.html#napi_create_int64,napi_env,int64,ptr.napi_value"><span class="Identifier">napi_create_int64</span></a>, <a href="nodeApi.html#napi_create_external_buffer,napi_env,csize_t,pointer,napi_finalize,pointer,ptr.napi_value"><span class="Identifier">napi_create_external_buffer</span></a>, <a href="nodeApiTypes.html#napi_async_execute_callback,napi_env,pointer"><span class="Identifier">napi_async_execute_callback</span></a>, <a href="nodeApiTypes.html#NapiNodeVersion"><span class="Identifier">NapiNodeVersion</span></a>, <a href="nodeApiTypes.html#napi_async_context"><span class="Identifier">napi_async_context</span></a>, <a href="nodeApi.html#napi_async_destroy,napi_env,napi_async_context"><span class="Identifier">napi_async_destroy</span></a>, <a href="nodeApi.html#napi_create_async_work,napi_env,napi_value,napi_value,,,pointer,ptr.napi_async_work"><span class="Identifier">napi_create_async_work</span></a>, <a href="nodeApi.html#napi_async_init,napi_env,napi_value,napi_value,ptr.napi_async_context"><span class="Identifier">napi_async_init</span></a>, <a href="nodeApiTypes.html#napi_threadsafe_function"><span class="Identifier">napi_threadsafe_function</span></a>, <a href="nodeApi.html#napi_get_buffer_info,napi_env,napi_value,ptr.pointer,ptr.csize_t"><span class="Identifier">napi_get_buffer_info</span></a>, <a href="nodeApi.html#napi_make_callback,napi_env,napi_async_context,napi_value,napi_value,csize_t,ptr.napi_value,ptr.napi_value"><span class="Identifier">napi_make_callback</span></a>, <a href="nodeApi.html#napi_addon_register_func,napi_env,napi_value"><span class="Identifier">napi_addon_register_func</span></a>, <a href="nodeApi.html#napi_cancel_async_work,napi_env,napi_async_work"><span class="Identifier">napi_cancel_async_work</span></a>, <a href="nodeApi.html#napi_get_node_version,napi_env,ptr.NapiNodeVersion"><span class="Identifier">napi_get_node_version</span></a>, <a href="nodeApi.html#napi_queue_async_work,napi_env,napi_async_work"><span class="Identifier">napi_queue_async_work</span></a>, <a href="nodeApiTypes.html#napi_callback_scope"><span class="Identifier">napi_callback_scope</span></a>, <a href="nodeApi.html#napi_is_buffer,napi_env,napi_value,ptr.bool"><span class="Identifier">napi_is_buffer</span></a>, <a href="nodeApi.html#napi_create_buffer,napi_env,csize_t,ptr.pointer,ptr.napi_value"><span class="Identifier">napi_create_buffer</span></a>, <a href="nodeApi.html#NapiModule"><span class="Identifier">NapiModule</span></a>, <a href="nodeApi.html#napi_delete_async_work,napi_env,napi_async_work"><span class="Identifier">napi_delete_async_work</span></a>, <a href="nodeApi.html#napi_module_register,NapiModule"><span class="Identifier">napi_module_register</span></a>, <a href="nodeApiTypes.html#napi_async_work"><span class="Identifier">napi_async_work</span></a>, <a href="nodeApi.html#napi_create_buffer_copy,napi_env,csize_t,pointer,ptr.pointer,ptr.napi_value"><span class="Identifier">napi_create_buffer_copy</span></a>, <a href="nodeApi.html#napi_fatal_error,cstring,csize_t,cstring,csize_t"><span class="Identifier">napi_fatal_error</span></a>, <a href="nodeApi.html#napiModule.m,proc(napi_env,napi_value)"><span class="Identifier">napiModule</span></a>, <a href="nodeApiTypes.html#napi_async_complete_callback,napi_env,NapiStatus,pointer"><span class="Identifier">napi_async_complete_callback</span></a>
 </dl></div>
 
   </div>
@@ -1220,7 +1388,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-08 17:51:58 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-29 19:29:32 UTC</small>
       </div>
     </div>
   </div>

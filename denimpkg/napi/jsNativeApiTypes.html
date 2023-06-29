@@ -114,11 +114,14 @@ window.addEventListener('DOMContentLoaded', main);
     title="napi_escapable_handle_scope {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_escapable_handle_scope</a></li>
   <li><a class="reference" href="#napi_finalize"
     title="napi_finalize = proc (environment: napi_env;
-                      finalize_data, finalize_hint: pointer): void {.cdecl.}">napi_finalize</a></li>
+                      finalize_data, finalize_hint: pointer) {.cdecl.}">napi_finalize</a></li>
   <li><a class="reference" href="#napi_handle_scope"
     title="napi_handle_scope {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_handle_scope</a></li>
   <li><a class="reference" href="#napi_ref"
     title="napi_ref {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_ref</a></li>
+  <li><a class="reference" href="#napi_threadsafe_function_call_js"
+    title="napi_threadsafe_function_call_js = proc (env: napi_env; js_callback: napi_value;
+    context, data: pointer) {.cdecl.}">napi_threadsafe_function_call_js</a></li>
   <li><a class="reference" href="#napi_value"
     title="napi_value {.header: &quot;&lt;node_api.h&gt;&quot;.} = pointer">napi_value</a></li>
   <li><a class="reference" href="#NapiExtendedErrorInfo"
@@ -128,17 +131,17 @@ window.addEventListener('DOMContentLoaded', main);
   engine_reserved*: pointer
   engine_error_code*: uint32
   error_code*: NapiStatus">NapiExtendedErrorInfo</a></li>
-  <li><a class="reference" href="#NApiPropertyAttributes"
-    title="NApiPropertyAttributes {.importc: &quot;napi_property_attributes&quot;,
+  <li><a class="reference" href="#NapiPropertyAttributes"
+    title="NapiPropertyAttributes {.importc: &quot;napi_property_attributes&quot;,
                          header: &quot;&lt;node_api.h&gt;&quot;.} = enum
   napi_default = 0, napi_writable = 1, napi_enumerable = 2,
-  napi_configurable = 4, napi_static = 1024">NApiPropertyAttributes</a></li>
+  napi_configurable = 4, napi_static = 1024">NapiPropertyAttributes</a></li>
   <li><a class="reference" href="#NapiPropertyDescriptor"
     title="NapiPropertyDescriptor {.importc: &quot;napi_property_descriptor&quot;,
                          header: &quot;&lt;node_api.h&gt;&quot;.} = object
   utf8name*: cstring
   name*, value*: napi_value
-  attributes*: NApiPropertyAttributes
+  attributes*: NapiPropertyAttributes
   `method`*, getter*, setter*: napi_callback
   data*: pointer">NapiPropertyDescriptor</a></li>
   <li><a class="reference" href="#NapiStatus"
@@ -150,6 +153,10 @@ window.addEventListener('DOMContentLoaded', main);
   napi_handle_scope_mismatch, napi_callback_scope_mismatch, napi_queue_full,
   napi_closing, napi_bigint_expected, napi_date_expected,
   napi_arraybuffer_expected, napi_detachable_arraybuffer_expected">NapiStatus</a></li>
+  <li><a class="reference" href="#NapiThreadSafeFunction"
+    title="NapiThreadSafeFunction {.importc: &quot;napi_threadsafe_function&quot;,
+                         header: &quot;&lt;node_api&gt;&quot;.} = enum
+  napi_tsfn_release, napi_tsfn_abort">NapiThreadSafeFunction</a></li>
   <li><a class="reference" href="#NApiTypedArrayType"
     title="NApiTypedArrayType {.importc: &quot;napi_typedarray_type&quot;, header: &quot;&lt;node_api.h&gt;&quot;.} = enum
   napi_int8_array, napi_uint8_array, napi_uint8_clamped_array, napi_int16_array,
@@ -187,9 +194,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L69"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L73"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L69" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L73" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -243,14 +250,14 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 <div id="napi_finalize">
 <dt><pre><a href="jsNativeApiTypes.html#napi_finalize"><span class="Identifier">napi_finalize</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">environment</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a><span class="Other">;</span>
-                      <span class="Identifier">finalize_data</span><span class="Other">,</span> <span class="Identifier">finalize_hint</span><span class="Other">:</span> <span class="Identifier">pointer</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">void</span> {.<span class="Identifier">cdecl</span>.}</pre></dt>
+                      <span class="Identifier">finalize_data</span><span class="Other">,</span> <span class="Identifier">finalize_hint</span><span class="Other">:</span> <span class="Identifier">pointer</span><span class="Other">)</span> {.<span class="Identifier">cdecl</span>.}</pre></dt>
 <dd>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L71"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L74"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L71" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L74" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -278,6 +285,19 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
+<div id="napi_threadsafe_function_call_js">
+<dt><pre><a href="jsNativeApiTypes.html#napi_threadsafe_function_call_js"><span class="Identifier">napi_threadsafe_function_call_js</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">env</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_env"><span class="Identifier">napi_env</span></a><span class="Other">;</span> <span class="Identifier">js_callback</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span>
+    <span class="Identifier">context</span><span class="Other">,</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">pointer</span><span class="Other">)</span> {.<span class="Identifier">cdecl</span>.}</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L75"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L75" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
 <div id="napi_value">
 <dt><pre><a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a> {.<span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Identifier">pointer</span></pre></dt>
 <dd>
@@ -302,14 +322,14 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L80"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L84"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L80" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L84" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
-<div id="NApiPropertyAttributes">
-<dt><pre><a href="jsNativeApiTypes.html#NApiPropertyAttributes"><span class="Identifier">NApiPropertyAttributes</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_property_attributes&quot;</span><span class="Other">,</span>
+<div id="NapiPropertyAttributes">
+<dt><pre><a href="jsNativeApiTypes.html#NapiPropertyAttributes"><span class="Identifier">NapiPropertyAttributes</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_property_attributes&quot;</span><span class="Other">,</span>
                          <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">napi_default</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">,</span> <span class="Identifier">napi_writable</span> <span class="Other">=</span> <span class="DecNumber">1</span><span class="Other">,</span> <span class="Identifier">napi_enumerable</span> <span class="Other">=</span> <span class="DecNumber">2</span><span class="Other">,</span>
   <span class="Identifier">napi_configurable</span> <span class="Other">=</span> <span class="DecNumber">4</span><span class="Other">,</span> <span class="Identifier">napi_static</span> <span class="Other">=</span> <span class="DecNumber">1024</span></pre></dt>
@@ -328,7 +348,7 @@ class="link-seesrc" target="_blank">Source</a>
                          <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api.h&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">utf8name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
   <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">value</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a>
-  <span class="Identifier">attributes</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#NApiPropertyAttributes"><span class="Identifier">NApiPropertyAttributes</span></a>
+  <span class="Identifier">attributes</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#NapiPropertyAttributes"><span class="Identifier">NapiPropertyAttributes</span></a>
   <span class="Other">`</span><span class="Keyword">method</span><span class="Other">`</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">getter</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">setter</span><span class="Operator">*</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_callback"><span class="Identifier">napi_callback</span></a>
   <span class="Identifier">data</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">pointer</span>
 </pre></dt>
@@ -336,9 +356,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L73"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L77"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L73" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L77" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -358,6 +378,20 @@ class="link-seesrc" target="_blank">Source</a>
 href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L46"
 class="link-seesrc" target="_blank">Source</a>
 &nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L46" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="NapiThreadSafeFunction">
+<dt><pre><a href="jsNativeApiTypes.html#NapiThreadSafeFunction"><span class="Identifier">NapiThreadSafeFunction</span></a> {.<span class="Identifier">importc</span><span class="Other">:</span> <span class="StringLit">&quot;napi_threadsafe_function&quot;</span><span class="Other">,</span>
+                         <span class="Identifier">header</span><span class="Other">:</span> <span class="StringLit">&quot;&lt;node_api&gt;&quot;</span>.} <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">napi_tsfn_release</span><span class="Other">,</span> <span class="Identifier">napi_tsfn_abort</span></pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L69"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L69" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -386,9 +420,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L20"
+href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/jsNativeApiTypes.nim#L19"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L20" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/jsNativeApiTypes.nim#L19" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -402,7 +436,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-08 17:51:58 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-29 19:29:32 UTC</small>
       </div>
     </div>
   </div>

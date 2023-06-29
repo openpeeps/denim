@@ -73,7 +73,7 @@ window.addEventListener('DOMContentLoaded', main);
     Modules: <a href="denimpkg/napi/bindings.html">denimpkg/napi/bindings</a>, <a href="denimpkg/napi/jsNativeApi.html">denimpkg/napi/jsNativeApi</a>, <a href="denimpkg/napi/jsNativeApiTypes.html">denimpkg/napi/jsNativeApiTypes</a>, <a href="denimpkg/napi/nodeApi.html">denimpkg/napi/nodeApi</a>, <a href="denimpkg/napi/nodeApiTypes.html">denimpkg/napi/nodeApiTypes</a>, <a href="denimpkg/napi/utils.html">denimpkg/napi/utils</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="%60%25%2A%60" href="#%60%25%2A%60"><span>`%*`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="bindings: `%*`(x: untyped): untyped" href="denimpkg/napi/bindings.html#%25%2A.m%2Cuntyped">bindings: `%*`(x: untyped): untyped</a></li>
+          data-doc-search-tag="bindings: `%*`(x: typed): untyped" href="denimpkg/napi/bindings.html#%25%2A.m%2Ctyped">bindings: `%*`(x: typed): untyped</a></li>
           </ul></dd>
 <dt><a name="%60%25%60" href="#%60%25%60"><span>`%`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -91,9 +91,27 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="bindings: `[]`(obj: napi_value; key: string): napi_value" href="denimpkg/napi/bindings.html#%5B%5D%2Cnapi_value%2Cstring">bindings: `[]`(obj: napi_value; key: string): napi_value</a></li>
           </ul></dd>
+<dt><a name="addDocBlock" href="#addDocBlock"><span>addDocBlock:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: addDocBlock(fnName: string;
+            args: openArray[(string, string, NapiValueType, bool)])" href="denimpkg/napi/bindings.html#addDocBlock%2Cstring%2CopenArray%5B%5D">bindings: addDocBlock(fnName: string;
+            args: openArray[(string, string, NapiValueType, bool)])</a></li>
+          </ul></dd>
 <dt><a name="assert" href="#assert"><span>assert:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="bindings: assert(status: NapiStatus)" href="denimpkg/napi/bindings.html#assert%2CNapiStatus">bindings: assert(status: NapiStatus)</a></li>
+          </ul></dd>
+<dt><a name="asyncActionFail" href="#asyncActionFail"><span>asyncActionFail:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="AsyncActionStatus.asyncActionFail" href="denimpkg/napi/bindings.html#asyncActionFail">AsyncActionStatus.asyncActionFail</a></li>
+          </ul></dd>
+<dt><a name="AsyncActionStatus" href="#AsyncActionStatus"><span>AsyncActionStatus:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: AsyncActionStatus" href="denimpkg/napi/bindings.html#AsyncActionStatus">bindings: AsyncActionStatus</a></li>
+          </ul></dd>
+<dt><a name="asyncActionSuccess" href="#asyncActionSuccess"><span>asyncActionSuccess:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="AsyncActionStatus.asyncActionSuccess" href="denimpkg/napi/bindings.html#asyncActionSuccess">AsyncActionStatus.asyncActionSuccess</a></li>
           </ul></dd>
 <dt><a name="callFunction" href="#callFunction"><span>callFunction:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -133,9 +151,13 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="bindings: expect(env: napi_env; n: napi_value; expectKind: NapiValueType): bool" href="denimpkg/napi/bindings.html#expect%2Cnapi_env%2Cnapi_value%2CNapiValueType">bindings: expect(env: napi_env; n: napi_value; expectKind: NapiValueType): bool</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="bindings: expect(env: napi_env; v: seq[napi_value]; errorName = &quot;&quot;;
-       expectKind: varargs[(string, NapiValueType)]): bool" href="denimpkg/napi/bindings.html#expect%2Cnapi_env%2Cseq%5Bnapi_value%5D%2Cstring%2Cvarargs%5B%5D">bindings: expect(env: napi_env; v: seq[napi_value]; errorName = &quot;&quot;;
-       expectKind: varargs[(string, NapiValueType)]): bool</a></li>
+          data-doc-search-tag="bindings: expect(env: napi_env; v: seq[napi_value]; errorName, fnIdent: string): bool" href="denimpkg/napi/bindings.html#expect%2Cnapi_env%2Cseq%5Bnapi_value%5D%2Cstring%2Cstring">bindings: expect(env: napi_env; v: seq[napi_value]; errorName, fnIdent: string): bool</a></li>
+          </ul></dd>
+<dt><a name="export_napi" href="#export_napi"><span>export_napi:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: export_napi(fn: untyped)" href="denimpkg/napi/bindings.html#export_napi.m%2Cuntyped">bindings: export_napi(fn: untyped)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="bindings: export_napi(vName, vType: untyped; vVal: typed)" href="denimpkg/napi/bindings.html#export_napi.m%2Cuntyped%2Cuntyped%2Ctyped">bindings: export_napi(vName, vType: untyped; vVal: typed)</a></li>
           </ul></dd>
 <dt><a name="fn" href="#fn"><span>fn:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -791,9 +813,9 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="nodeApiTypes: NapiNodeVersion" href="denimpkg/napi/nodeApiTypes.html#NapiNodeVersion">nodeApiTypes: NapiNodeVersion</a></li>
           </ul></dd>
-<dt><a name="NApiPropertyAttributes" href="#NApiPropertyAttributes"><span>NApiPropertyAttributes:</span></a></dt><dd><ul class="simple">
+<dt><a name="NapiPropertyAttributes" href="#NapiPropertyAttributes"><span>NapiPropertyAttributes:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="jsNativeApiTypes: NApiPropertyAttributes" href="denimpkg/napi/jsNativeApiTypes.html#NApiPropertyAttributes">jsNativeApiTypes: NApiPropertyAttributes</a></li>
+          data-doc-search-tag="jsNativeApiTypes: NapiPropertyAttributes" href="denimpkg/napi/jsNativeApiTypes.html#NapiPropertyAttributes">jsNativeApiTypes: NapiPropertyAttributes</a></li>
           </ul></dd>
 <dt><a name="NapiPropertyDescriptor" href="#NapiPropertyDescriptor"><span>NapiPropertyDescriptor:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -855,9 +877,17 @@ window.addEventListener('DOMContentLoaded', main);
                    result: ptr bool): NapiStatus" href="denimpkg/napi/jsNativeApi.html#napi_strict_equals%2Cnapi_env%2Cnapi_value%2Cnapi_value%2Cptr.bool">jsNativeApi: napi_strict_equals(env: napi_env; lhs: napi_value; rhs: napi_value;
                    result: ptr bool): NapiStatus</a></li>
           </ul></dd>
+<dt><a name="NapiThreadSafeFunction" href="#NapiThreadSafeFunction"><span>NapiThreadSafeFunction:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="jsNativeApiTypes: NapiThreadSafeFunction" href="denimpkg/napi/jsNativeApiTypes.html#NapiThreadSafeFunction">jsNativeApiTypes: NapiThreadSafeFunction</a></li>
+          </ul></dd>
 <dt><a name="napi_threadsafe_function" href="#napi_threadsafe_function"><span>napi_threadsafe_function:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nodeApiTypes: napi_threadsafe_function" href="denimpkg/napi/nodeApiTypes.html#napi_threadsafe_function">nodeApiTypes: napi_threadsafe_function</a></li>
+          </ul></dd>
+<dt><a name="napi_threadsafe_function_call_js" href="#napi_threadsafe_function_call_js"><span>napi_threadsafe_function_call_js:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="jsNativeApiTypes: napi_threadsafe_function_call_js" href="denimpkg/napi/jsNativeApiTypes.html#napi_threadsafe_function_call_js">jsNativeApiTypes: napi_threadsafe_function_call_js</a></li>
           </ul></dd>
 <dt><a name="napi_throw" href="#napi_throw"><span>napi_throw:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -907,21 +937,35 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="bindings: newNodeValue(val: napi_value; env: napi_env): Module" href="denimpkg/napi/bindings.html#newNodeValue%2Cnapi_value%2Cnapi_env">bindings: newNodeValue(val: napi_value; env: napi_env): Module</a></li>
           </ul></dd>
+<dt><a name="newPromiseData" href="#newPromiseData"><span>newPromiseData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: newPromiseData[T](jsData: T): ref PromiseData[T]" href="denimpkg/napi/bindings.html#newPromiseData%2CT">bindings: newPromiseData[T](jsData: T): ref PromiseData[T]</a></li>
+          </ul></dd>
+<dt><a name="promise" href="#promise"><span>promise:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: promise(fn: untyped)" href="denimpkg/napi/bindings.html#promise.m%2Cuntyped">bindings: promise(fn: untyped)</a></li>
+          </ul></dd>
+<dt><a name="PromiseData" href="#PromiseData"><span>PromiseData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: PromiseData" href="denimpkg/napi/bindings.html#PromiseData">bindings: PromiseData</a></li>
+          </ul></dd>
 <dt><a name="register" href="#register"><span>register:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="bindings: register(obj: Module; name: string; cb: napi_callback)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2Cnapi_callback">bindings: register(obj: Module; name: string; cb: napi_callback)</a></li>
+          data-doc-search-tag="bindings: register(obj: Module; name: string; cb: napi_callback;
+         attr: NapiPropertyAttributes = napi_default)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2Cnapi_callback%2CNapiPropertyAttributes">bindings: register(obj: Module; name: string; cb: napi_callback;
+         attr: NapiPropertyAttributes = napi_default)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[(string, T)]; attr: int = 0)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2CopenArray%5B%5D%2Cint">bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[(string, T)]; attr: int = 0)</a></li>
+    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2CopenArray%5B%5D%2CNapiPropertyAttributes">bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
+    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[T]; attr: int = 0)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2CopenArray%5BT%5D%2Cint">bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
-    values: openArray[T]; attr: int = 0)</a></li>
+    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2CopenArray%5BT%5D%2CNapiPropertyAttributes">bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
+    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
-    value: T; attr: int = 0)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2CT%2Cint">bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
-    value: T; attr: int = 0)</a></li>
+    value: T; attr: NapiPropertyAttributes = napi_default)" href="denimpkg/napi/bindings.html#register%2CModule%2Cstring%2CT%2CNapiPropertyAttributes">bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;
+    value: T; attr: NapiPropertyAttributes = napi_default)</a></li>
           </ul></dd>
 <dt><a name="registerFn" href="#registerFn"><span>registerFn:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -941,6 +985,10 @@ window.addEventListener('DOMContentLoaded', main);
            errorType: NapiErrorType = napiError; customError: napi_value = nil): NapiStatus" href="denimpkg/napi/bindings.html#throwError%2Cnapi_env%2Cstring%2Cstring%2CNapiErrorType%2Cnapi_value">bindings: throwError(env: napi_env; msg: string; code = &quot;&quot;;
            errorType: NapiErrorType = napiError; customError: napi_value = nil): NapiStatus</a></li>
           </ul></dd>
+<dt><a name="toSeq" href="#toSeq"><span>toSeq:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: toSeq(n: napi_value): seq[napi_value]" href="denimpkg/napi/bindings.html#toSeq%2Cnapi_value">bindings: toSeq(n: napi_value): seq[napi_value]</a></li>
+          </ul></dd>
 <dt><a name="toUnchecked" href="#toUnchecked"><span>toUnchecked:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="utils: toUnchecked[T](open: openArray[T]): ptr UncheckedArray[T]" href="denimpkg/napi/utils.html#toUnchecked%2CopenArray%5BT%5D">utils: toUnchecked[T](open: openArray[T]): ptr UncheckedArray[T]</a></li>
@@ -949,12 +997,16 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="bindings: tryGetJson(n: napi_value): JsonNode" href="denimpkg/napi/bindings.html#tryGetJson%2Cnapi_value">bindings: tryGetJson(n: napi_value): JsonNode</a></li>
           </ul></dd>
+<dt><a name="undefined" href="#undefined"><span>undefined:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: undefined(): napi_value" href="denimpkg/napi/bindings.html#undefined">bindings: undefined(): napi_value</a></li>
+          </ul></dd>
 </dl>
     <div class="row">
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-08 17:51:58 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-29 19:29:32 UTC</small>
       </div>
     </div>
   </div>
