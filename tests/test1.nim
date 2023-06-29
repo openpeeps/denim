@@ -1,7 +1,7 @@
 import std/[unittest, strutils, osproc]
 
 when not defined skipbuild:
-  var addons = ["myaddon", "myobject"]
+  var addons = ["myaddon", "myobject", "mypromise"]
   test "can build addons with node-gyp":
     for addonName in addons:
       let status = execCmdEx("denim build ./tests/" & addonName & ".nim --yes")
