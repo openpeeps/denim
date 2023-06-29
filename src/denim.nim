@@ -10,7 +10,7 @@ when isMainModule:
       "DENIM 🔥 Native Node/BunJS addons powered by Nim"
 
     commands:
-      $ "build" `entry` `links` "--release" "--cmake" "--yes":
+      $ "build" `entry` `links` "--release" "--cmake" "--yes" "--verbose":
         ? "Build Nim project to a native NodeJS addon"
       $ "publish":
         ? "Publish addon to NPM (requires npm cli)"
