@@ -18,11 +18,15 @@ test "can run myaddon (NodeJS)":
   let status = execCmdEx("node tests/js/myaddon.js")
   let hello = status.output.strip()
   echo hello
-  assert hello == "Hello, World!"
+  assert hello == "Hello, World! from Nim. This is awesome!"
+  assert status.exitCode == 0
+
+test "can run mypromise (NodeJS)":
+  let status = execCmdEx("node tests/js/mypromise.js")
+  echo status.output.strip()
   assert status.exitCode == 0
 
 test "can run myobject (NodeJS)":
   let status = execCmdEx("node tests/js/myobject.js")
-  let hello = status.output.strip()
-  echo hello
+  echo status.output.strip()
   assert status.exitCode == 0

@@ -12,17 +12,13 @@ type
     languages: seq[string]
 
 init proc(module: Module) =
-    
-  module.registerFn(0, "getWelcomeMessage"):
-    # A low-level method to register and export functions 
-    return %* getWelcomeMessage()
 
-  proc hello(name: string): string {.export_napi.} =
+  proc getWelcomeMessage(name: string): string {.export_napi.} =
     # A high-level method to register and export functions
     # using `{.export_napi.}` pragma. Here we use `nnkProcDef`
     # to collect `nnkFormalParams` and create a type checker
     ## Nim comment to JS DocBlock!
-    return %* args[0].getStr
+    return %*(getWelcomeMessage() & " from Nim. " & args.get("name").getStr)
 
   # Expose an instance property. Here we'll use napiCall
   # to convert stringified JSON from Nim to NAPI via native `JSON.parse()`

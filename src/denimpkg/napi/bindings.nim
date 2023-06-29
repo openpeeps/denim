@@ -89,7 +89,6 @@ proc expect*(env: napi_env, v: seq[napi_value], errorName, fnIdent: string): boo
   #   if expectKind.len > 1: add arglabel, "s"
   #   assert env.throwError(fnDesc.docblock & "\n" & "This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
 
-
 proc create(env: napi_env, n: bool): napi_value =
   ## Create a new `Boolean` `napi_value`
   assert (napi_get_boolean(env, n, addr result))
@@ -577,15 +576,24 @@ macro export_napi*(fn: untyped) =
     params = fn[3][1..^1]
     countless: bool # enabled when an argument has `varargs[]` type 
     args = newNimNode(nnkBracket)
-  for p in params:
-    var typedArg = getNimNapiType(p[1], countless)
+    argsCond = nnkIfStmt.newTree()
+  for i in 0 .. params.high:
+    var typedArg = getNimNapiType(params[i][1], countless)
     var types = nnkTupleConstr.newTree(
-      newLit(p[0].strVal),
+      newLit(params[i][0].strVal),
       newLit(typedArg[1]),
       ident(typedArg[0]),
       newLit(false)
     )
+    var argCond =
+      nnkElifBranch.newTree(
+        nnkInfix.newTree(ident("=="), ident("argName"), newLit(params[i][0].strVal)),
+        nnkReturnStmt.newTree(
+          nnkBracketExpr.newTree(ident("args"), newLit(i))
+        )
+      )
     add args, types
+    add argsCond, argCond
   add result, newCall(ident("addDocBlock"), newLit(fnName), args)
 
   let
@@ -608,7 +616,26 @@ macro export_napi*(fn: untyped) =
   var
     fnBody = newStmtList()
     paramsLength = if countless: 100 else: params.len
+  var argsGetterProc =
+    newProc(
+      ident("get"),
+      [
+        ident("napi_value"), # return type
+        nnkIdentDefs.newTree(
+          ident("args"),
+          nnkBracketExpr.newTree(ident("seq"), ident("napi_value")),
+          newEmptyNode()
+        ),
+        nnkIdentDefs.newTree(
+          ident("argName"),
+          ident("string"),
+          newEmptyNode()
+        )
+      ],
+      body = newStmtList(argsCond)
+    )
   add fnBody, typeChecker
+  add fnBody, argsGetterProc
   add fnBody, fn[6]
   result.add(
     newCall(
