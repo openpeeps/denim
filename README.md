@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <code>nimble install denim@#head</code><br><br>
+  <code>nimble install denim</code><br><br>
   <a href="https://openpeeps.github.io/denim">API reference</a><br>
   <img src="https://github.com/openpeeps/denim/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/denim/workflows/docs/badge.svg" alt="Github Actions">
 </p>
