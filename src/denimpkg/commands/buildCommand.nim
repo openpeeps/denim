@@ -62,14 +62,12 @@ proc runCommand*(v: Values) =
     else:
       os.removeDir(addonPathDirectory)
   display("🔥 Running Nim Compiler", indent=2, br="both")
-  
-  # TODO expose nim flags
+    
   var args = @[
     "--nimcache:$1",
     "-d:napibuild",
     "--compileOnly",
     "--noMain",
-    "-d:useMalloc"
   ]
 
   if v.flag("release"):
