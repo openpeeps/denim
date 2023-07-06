@@ -1,17 +1,21 @@
 import std/[unittest, strutils, osproc]
 
 when not defined skipbuild:
-  var addons = ["myaddon", "myobject", "mypromise"]
+  var addons = ["myaddon", "myobject", "mypromise", "myexceptions"]
   test "can build addons with node-gyp":
     for addonName in addons:
       let status = execCmdEx("denim build ./tests/" & addonName & ".nim --yes")
       echo "[OK] " & addonName & ".nim"
+      if status.exitCode != 0:
+        echo status.output
       assert status.exitCode == 0
 
   test "can build addons with CMake":
     for addonName in addons:
       let status = execCmdEx("denim build ./tests/" & addonName & ".nim --cmake --yes")
       echo "[OK] " & addonName & ".nim"
+      if status.exitCode != 0:
+        echo status.output
       assert status.exitCode == 0
 
 test "can run myaddon (NodeJS)":
@@ -30,3 +34,8 @@ test "can run myobject (NodeJS)":
   let status = execCmdEx("node tests/js/myobject.js")
   echo status.output.strip()
   assert status.exitCode == 0
+
+test "can run myexceptions (NodeJS)":
+  let status = execCmdEx("node tests/js/myexceptions.js")
+  echo status.output.strip()
+  assert status.exitCode == 1
