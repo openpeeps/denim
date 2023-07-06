@@ -1,4 +1,5 @@
-import std/[macros, json, strutils, sequtils, tables]
+import std/[macros, strutils, sequtils, tables]
+import std/json except `%*`
 
 import
   jsNativeApiTypes,
@@ -637,13 +638,22 @@ macro export_napi*(fn: untyped) =
     add fnBody, typeChecker
     add fnBody, argsGetterProc
   add fnBody, fn[6]
+
+  template runtimeErrorWrapper(fnBody) =
+    try:
+      fnBody
+    except:
+      var runtimeError: napi_value
+      assert env.napi_create_error(%* "NimRuntime", %*(getCurrentExceptionMsg() & "\n" & getCurrentException().getStackTrace), runtimeError.addr)
+      assert env.napi_throw(runtimeError)
+
   result.add(
     newCall(
       ident("registerFn"),
       ident("module"),
       newLit(paramsLen),
       newLit(fnName),
-      fnBody
+      getAst(runtimeErrorWrapper(fnBody))
     )
   )
 
