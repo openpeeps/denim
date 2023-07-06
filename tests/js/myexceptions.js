@@ -6,4 +6,10 @@ try {
   console.error(e)
 }
 
-nim.parseInt("some bad int")
+try {
+  nim.myCatchable(1)
+} catch(e) {
+  console.log("Something went wrong")
+}
+
+nim.parseInt("some bad int") // uncaught exception with non-zero exit code 
