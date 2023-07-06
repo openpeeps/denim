@@ -1,5 +1,4 @@
 import std/[macros, json, strutils, sequtils, tables]
-from std/sequtils import delete
 
 import
   jsNativeApiTypes,
@@ -47,11 +46,10 @@ proc throwError*(env: napi_env, msg: string, code = "", errorType: NapiErrorType
   of napiError:       env.napi_throw_error(code.cstring, msg.cstring)
   of napiTypeError:   env.napi_throw_type_error(code.cstring, msg.cstring)
   of napiRangeError:  env.napi_throw_range_error(code.cstring, msg.cstring)
-  of napiCustomError: env.napi_throw(customError)  
+  of napiCustomError: env.napi_throw(customError)
 
 # fwd
 proc isArray*(obj: napi_value): bool
-
 
 proc newNodeValue*(val: napi_value, env: napi_env): Module =
   ## Used internally, disregard
@@ -149,8 +147,7 @@ proc create[T: int | uint | string](env: napi_env, a: openarray[T]): napi_value 
   env.create(elements)
 
 proc create[T](env: napi_env, a: seq[T]): napi_value =
-  ## Create a new seq[seq[T]]. Produce an `napi_value` of type `array`
-  ## containing one or more arrays.
+  ## Create a new seq[seq[T]]
   var elements = newSeq[napi_value]()
   for elem in a:
     elements.add(env.create(elem))
@@ -159,7 +156,7 @@ proc create[T](env: napi_env, a: seq[T]): napi_value =
 proc create[T: int | uint | string](env: napi_env, a: openarray[(string, T)]): napi_value =
   var properties = newSeq[(string, napi_value)]()
   for prop in a:
-    properties.add((prop[0], create(prop[1])))
+    properties.add((prop[0], env.create(prop[1])))
   env.create(a)
 
 proc createFn*(env: napi_env, fname: string, cb: napi_callback): napi_value =
@@ -170,6 +167,58 @@ proc create(env: napi_env, v: napi_value): napi_value = v
 
 proc create*[T](n: Module, t: T): napi_value =
   n.env.create(t)
+
+proc napiCreate*[T](t: T): napi_value =
+  ## Create a new `napi_value` of `T`
+  Env.create(t)
+
+proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
+  case x.kind
+  of nnkBracket:
+    var brackets = newNimNode(nnkBracket)
+    for i in 0..<x.len: brackets.add(toNapiValue(x[i]))
+    result = newCall("napiCreate", brackets)
+  of nnkTableConstr:
+    var table = newNimNode(nnkTableConstr)
+    for i in 0..<x.len:
+      x[i].expectKind nnkExprColonExpr
+      table.add newTree(nnkExprColonExpr, x[i][0], toNapiValue(x[i][1]))
+    result = newCall("napiCreate", table)
+  else:
+    case x.kind
+    of nnkSym:
+      case x.getType.kind
+      of nnkObjectTy:
+        # x.getTypeInst.repr
+        # x.getType.repr
+        let objStruct = x.getTypeImpl
+        expectKind(objStruct[2], nnkRecList)
+        var objFields = nnkBracket.newTree()
+        for objField in objStruct[2]:
+          case objField.kind:
+          of nnkIdentDefs:
+            objFields.add(
+              nnkTupleConstr.newTree(
+                newLit(objField[0].strVal),
+                newCall("napiCreate", nnkDotExpr.newTree(x, objField[0]))
+              )
+            )
+          else: discard # dont know what to do, yet
+        result = newCall("napiCreate", objFields)
+      else: result = newCall("napiCreate", x)
+    else: result = newCall("napiCreate", x)
+
+macro `%*`*(x: typed): untyped =
+  ## An elegant way to convert Nim types to `napi_value`.
+  return toNapiValue(x)
+
+macro toObject*(x: untyped): untyped =
+  ## Convert {"a": "val", "b": "val"} to JavaScript Object
+  var table = newNimNode(nnkTableConstr)
+  for i in 0..<x.len:
+    x[i].expectKind nnkExprColonExpr
+    table.add newTree(nnkExprColonExpr, x[i][0], toNapiValue(x[i][1]))
+  result = newCall("napiCreate", table)
 
 proc kind*(val: napi_value): NapiValueType =
   kind(Env, val)
@@ -281,7 +330,7 @@ proc get*(obj: napi_value, key: string): napi_value =
 
 proc get*(key: string): napi_value =
   ## Alias of `getProperty` for accessing global properties.
-  ## This proc supports dot annotations `get("JSON.parse")`
+  ## This proc supports dot annotations: `get("JSON.parse")`
   let globals = getGlobal()
   if key.contains("."):
     var keys = key.split(".")
@@ -382,13 +431,10 @@ proc register*(obj: Module, name: string, cb: napi_callback,
   ## Register a new property field to `obj` Module.
   obj.registerBase(name, createFn(obj.env, name, cb), attr)
 
-proc `%`*[T](t: T): napi_value =
-  Env.create(t)
 
 const emptyArr: array[0, (string, napi_value)] = []
-
 proc callFunction*(fn: napi_value, args: openarray[napi_value] = [],
-                  this = %emptyArr): napi_value =
+                  this = %* emptyArr): napi_value =
   ## Call a function by `napi_value` with given `args` and `this` context.
   assert napi_call_function(Env, this, fn,
     args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
@@ -456,50 +502,6 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
       dealloc(`argv$`)
       cushy
     exports.register(name, `wrapper$`)
-
-proc napiCreate*[T](t: T): napi_value =
-  ## Create a new `napi_value` of `T`
-  Env.create(t)
-
-proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
-  case x.kind
-  of nnkBracket:
-    var brackets = newNimNode(nnkBracket)
-    for i in 0..<x.len: brackets.add(toNapiValue(x[i]))
-    result = newCall("napiCreate", brackets)
-  of nnkTableConstr:
-    var table = newNimNode(nnkTableConstr)
-    for i in 0..<x.len:
-      x[i].expectKind nnkExprColonExpr
-      table.add newTree(nnkExprColonExpr, x[i][0], toNapiValue(x[i][1]))
-    result = newCall("napiCreate", table)
-  else:
-    case x.kind
-    of nnkSym:
-      case x.getType.kind
-      of nnkObjectTy:
-        # x.getTypeInst.repr
-        # x.getType.repr
-        let objStruct = x.getTypeImpl
-        expectKind(objStruct[2], nnkRecList)
-        var objFields = nnkBracket.newTree()
-        for objField in objStruct[2]:
-          case objField.kind:
-          of nnkIdentDefs:
-            objFields.add(
-              nnkTupleConstr.newTree(
-                newLit(objField[0].strVal),
-                newCall("napiCreate", nnkDotExpr.newTree(x, objField[0]))
-              )
-            )
-          else: discard # dont know what to do, yet
-        result = newCall("napiCreate", objFields)
-      else: result = newCall("napiCreate", x)
-    else: result = newCall("napiCreate", x)
-
-macro `%*`*(x: typed): untyped =
-  ## An elegant way to convert Nim types to `napi_value`.
-  return toNapiValue(x)
 
 proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType, bool)]) =
   # OrderedTableRef[string, tuple[argName, argValue: string, argNapiValue: napi_value, isOptional: bool]]
