@@ -6,5 +6,4 @@ try {
   console.error(e)
 }
 
-
-nim.parseInt("some bad json")
+nim.parseInt("some bad int")
