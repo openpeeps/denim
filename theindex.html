@@ -75,10 +75,6 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="bindings: `%*`(x: typed): untyped" href="denimpkg/napi/bindings.html#%25%2A.m%2Ctyped">bindings: `%*`(x: typed): untyped</a></li>
           </ul></dd>
-<dt><a name="%60%25%60" href="#%60%25%60"><span>`%`:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="bindings: `%`[T](t: T): napi_value" href="denimpkg/napi/bindings.html#%25%2CT">bindings: `%`[T](t: T): napi_value</a></li>
-          </ul></dd>
 <dt><a name="%60%5B%5D%3D%60" href="#%60%5B%5D%3D%60"><span>`[]=`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="bindings: `[]=`(obj: napi_value; index: int; value: napi_value)" href="denimpkg/napi/bindings.html#%5B%5D%3D%2Cnapi_value%2Cint%2Cnapi_value">bindings: `[]=`(obj: napi_value; index: int; value: napi_value)</a></li>
@@ -115,7 +111,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="callFunction" href="#callFunction"><span>callFunction:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="bindings: callFunction(fn: napi_value; args: openArray[napi_value] = []; this = %[]): napi_value" href="denimpkg/napi/bindings.html#callFunction%2Cnapi_value%2CopenArray%5Bnapi_value%5D">bindings: callFunction(fn: napi_value; args: openArray[napi_value] = []; this = %[]): napi_value</a></li>
+          data-doc-search-tag="bindings: callFunction(fn: napi_value; args: openArray[napi_value] = []; this = %*[]): napi_value" href="denimpkg/napi/bindings.html#callFunction%2Cnapi_value%2CopenArray%5Bnapi_value%5D">bindings: callFunction(fn: napi_value; args: openArray[napi_value] = []; this = %*[]): napi_value</a></li>
           </ul></dd>
 <dt><a name="callMethod" href="#callMethod"><span>callMethod:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -985,6 +981,10 @@ window.addEventListener('DOMContentLoaded', main);
            errorType: NapiErrorType = napiError; customError: napi_value = nil): NapiStatus" href="denimpkg/napi/bindings.html#throwError%2Cnapi_env%2Cstring%2Cstring%2CNapiErrorType%2Cnapi_value">bindings: throwError(env: napi_env; msg: string; code = &quot;&quot;;
            errorType: NapiErrorType = napiError; customError: napi_value = nil): NapiStatus</a></li>
           </ul></dd>
+<dt><a name="toObject" href="#toObject"><span>toObject:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="bindings: toObject(x: untyped): untyped" href="denimpkg/napi/bindings.html#toObject.m%2Cuntyped">bindings: toObject(x: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="toSeq" href="#toSeq"><span>toSeq:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="bindings: toSeq(n: napi_value): seq[napi_value]" href="denimpkg/napi/bindings.html#toSeq%2Cnapi_value">bindings: toSeq(n: napi_value): seq[napi_value]</a></li>
@@ -1006,7 +1006,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-06-29 22:17:49 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2023-07-08 01:23:18 UTC</small>
       </div>
     </div>
   </div>

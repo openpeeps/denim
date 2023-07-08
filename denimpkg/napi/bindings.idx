@@ -9,6 +9,9 @@ expect	denimpkg/napi/bindings.html#expect,napi_env,napi_value,NapiValueType	bind
 expect	denimpkg/napi/bindings.html#expect,napi_env,seq[napi_value],string,string	bindings: expect(env: napi_env; v: seq[napi_value]; errorName, fnIdent: string): bool	
 createFn	denimpkg/napi/bindings.html#createFn,napi_env,string,napi_callback	bindings: createFn(env: napi_env; fname: string; cb: napi_callback): napi_value	
 create	denimpkg/napi/bindings.html#create,Module,T	bindings: create[T](n: Module; t: T): napi_value	
+napiCreate	denimpkg/napi/bindings.html#napiCreate,T	bindings: napiCreate[T](t: T): napi_value	
+`%*`	denimpkg/napi/bindings.html#%*.m,typed	bindings: `%*`(x: typed): untyped	
+toObject	denimpkg/napi/bindings.html#toObject.m,untyped	bindings: toObject(x: untyped): untyped	
 kind	denimpkg/napi/bindings.html#kind,napi_value	bindings: kind(val: napi_value): NapiValueType	
 getInt64	denimpkg/napi/bindings.html#getInt64,napi_value	bindings: getInt64(n: napi_value): int64	
 getInt64	denimpkg/napi/bindings.html#getInt64,napi_value,int64	bindings: getInt64(n: napi_value; default: int64): int64	
@@ -45,16 +48,13 @@ register	denimpkg/napi/bindings.html#register,Module,string,T,NapiPropertyAttrib
 register	denimpkg/napi/bindings.html#register,Module,string,openArray[T],NapiPropertyAttributes	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)	
 register	denimpkg/napi/bindings.html#register,Module,string,openArray[],NapiPropertyAttributes	bindings: register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)	
 register	denimpkg/napi/bindings.html#register,Module,string,napi_callback,NapiPropertyAttributes	bindings: register(obj: Module; name: string; cb: napi_callback;\n         attr: NapiPropertyAttributes = napi_default)	
-`%`	denimpkg/napi/bindings.html#%,T	bindings: `%`[T](t: T): napi_value	
-callFunction	denimpkg/napi/bindings.html#callFunction,napi_value,openArray[napi_value]	bindings: callFunction(fn: napi_value; args: openArray[napi_value] = []; this = %[]): napi_value	
+callFunction	denimpkg/napi/bindings.html#callFunction,napi_value,openArray[napi_value]	bindings: callFunction(fn: napi_value; args: openArray[napi_value] = []; this = %*[]): napi_value	
 callMethod	denimpkg/napi/bindings.html#callMethod,napi_value,string,openArray[napi_value]	bindings: callMethod(instance: napi_value; methd: string; args: openArray[napi_value] = []): napi_value	
 napiCall	denimpkg/napi/bindings.html#napiCall,string,openArray[napi_value]	bindings: napiCall(fname: string; args: openArray[napi_value] = []): napi_value	
 tryGetJson	denimpkg/napi/bindings.html#tryGetJson,napi_value	bindings: tryGetJson(n: napi_value): JsonNode	
 getIdentStr	denimpkg/napi/bindings.html#getIdentStr.t,untyped	bindings: getIdentStr(n: untyped): string	
 fn	denimpkg/napi/bindings.html#fn.t,int,untyped,untyped	bindings: fn(paramCt: int; name, cushy: untyped): untyped	
 registerFn	denimpkg/napi/bindings.html#registerFn.t,Module,int,string,untyped	bindings: registerFn(exports: Module; paramCt: int; name: string; cushy: untyped): untyped	
-napiCreate	denimpkg/napi/bindings.html#napiCreate,T	bindings: napiCreate[T](t: T): napi_value	
-`%*`	denimpkg/napi/bindings.html#%*.m,typed	bindings: `%*`(x: typed): untyped	
 addDocBlock	denimpkg/napi/bindings.html#addDocBlock,string,openArray[]	bindings: addDocBlock(fnName: string;\n            args: openArray[(string, string, NapiValueType, bool)])	
 export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped,untyped,typed	bindings: export_napi(vName, vType: untyped; vVal: typed)	
 export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped	bindings: export_napi(fn: untyped)	
