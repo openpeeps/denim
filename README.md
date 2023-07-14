@@ -62,7 +62,7 @@ elif isMainModule:
 ```
 
 ### Nim Type to NapiValueType
-Use low-level API to convert Nim values to `napi_value` (`NapiValueType`) such as `number`, `string`, `object`, `bool`, and so on.
+Use low-level API to convert Nim values to `napi_value` (`NapiValueType`).
 Use `assert` to check if a low-level function returns a success or failure. [Currently, the following status codes are supported](https://nodejs.org/api/n-api.html#napi_status)
 
 ```nim
