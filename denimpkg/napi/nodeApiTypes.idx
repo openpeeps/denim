@@ -1,7 +1,8 @@
-napi_callback_scope	denimpkg/napi/nodeApiTypes.html#napi_callback_scope	nodeApiTypes: napi_callback_scope	
-napi_async_context	denimpkg/napi/nodeApiTypes.html#napi_async_context	nodeApiTypes: napi_async_context	
-napi_async_work	denimpkg/napi/nodeApiTypes.html#napi_async_work	nodeApiTypes: napi_async_work	
-napi_threadsafe_function	denimpkg/napi/nodeApiTypes.html#napi_threadsafe_function	nodeApiTypes: napi_threadsafe_function	
-napi_async_execute_callback	denimpkg/napi/nodeApiTypes.html#napi_async_execute_callback,napi_env,pointer	nodeApiTypes: napi_async_execute_callback(env: napi_env; data: pointer)	
-napi_async_complete_callback	denimpkg/napi/nodeApiTypes.html#napi_async_complete_callback,napi_env,NapiStatus,pointer	nodeApiTypes: napi_async_complete_callback(env: napi_env; status: NapiStatus; data: pointer)	
-NapiNodeVersion	denimpkg/napi/nodeApiTypes.html#NapiNodeVersion	nodeApiTypes: NapiNodeVersion	
+nimTitle	nodeApiTypes	denimpkg/napi/nodeApiTypes.html	module src/denimpkg/napi/nodeApiTypes		0
+nim	napi_callback_scope	denimpkg/napi/nodeApiTypes.html#napi_callback_scope	type napi_callback_scope		3
+nim	napi_async_context	denimpkg/napi/nodeApiTypes.html#napi_async_context	type napi_async_context		4
+nim	napi_async_work	denimpkg/napi/nodeApiTypes.html#napi_async_work	type napi_async_work		5
+nim	napi_threadsafe_function	denimpkg/napi/nodeApiTypes.html#napi_threadsafe_function	type napi_threadsafe_function		6
+nim	napi_async_execute_callback	denimpkg/napi/nodeApiTypes.html#napi_async_execute_callback,napi_env,pointer	proc napi_async_execute_callback(env: napi_env; data: pointer)		8
+nim	napi_async_complete_callback	denimpkg/napi/nodeApiTypes.html#napi_async_complete_callback,napi_env,NapiStatus,pointer	proc napi_async_complete_callback(env: napi_env; status: NapiStatus; data: pointer)		9
+nim	NapiNodeVersion	denimpkg/napi/nodeApiTypes.html#NapiNodeVersion	object NapiNodeVersion		11

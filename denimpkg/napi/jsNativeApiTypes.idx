@@ -1,17 +1,18 @@
-napi_env	denimpkg/napi/jsNativeApiTypes.html#napi_env	jsNativeApiTypes: napi_env	
-napi_value	denimpkg/napi/jsNativeApiTypes.html#napi_value	jsNativeApiTypes: napi_value	
-napi_ref	denimpkg/napi/jsNativeApiTypes.html#napi_ref	jsNativeApiTypes: napi_ref	
-napi_handle_scope	denimpkg/napi/jsNativeApiTypes.html#napi_handle_scope	jsNativeApiTypes: napi_handle_scope	
-napi_escapable_handle_scope	denimpkg/napi/jsNativeApiTypes.html#napi_escapable_handle_scope	jsNativeApiTypes: napi_escapable_handle_scope	
-napi_callback_info	denimpkg/napi/jsNativeApiTypes.html#napi_callback_info	jsNativeApiTypes: napi_callback_info	
-napi_deferred	denimpkg/napi/jsNativeApiTypes.html#napi_deferred	jsNativeApiTypes: napi_deferred	
-NapiPropertyAttributes	denimpkg/napi/jsNativeApiTypes.html#NapiPropertyAttributes	jsNativeApiTypes: NapiPropertyAttributes	
-NapiValueType	denimpkg/napi/jsNativeApiTypes.html#NapiValueType	jsNativeApiTypes: NapiValueType	
-NApiTypedArrayType	denimpkg/napi/jsNativeApiTypes.html#NApiTypedArrayType	jsNativeApiTypes: NApiTypedArrayType	
-NapiStatus	denimpkg/napi/jsNativeApiTypes.html#NapiStatus	jsNativeApiTypes: NapiStatus	
-NapiThreadSafeFunction	denimpkg/napi/jsNativeApiTypes.html#NapiThreadSafeFunction	jsNativeApiTypes: NapiThreadSafeFunction	
-napi_callback	denimpkg/napi/jsNativeApiTypes.html#napi_callback	jsNativeApiTypes: napi_callback	
-napi_finalize	denimpkg/napi/jsNativeApiTypes.html#napi_finalize	jsNativeApiTypes: napi_finalize	
-napi_threadsafe_function_call_js	denimpkg/napi/jsNativeApiTypes.html#napi_threadsafe_function_call_js	jsNativeApiTypes: napi_threadsafe_function_call_js	
-NapiPropertyDescriptor	denimpkg/napi/jsNativeApiTypes.html#NapiPropertyDescriptor	jsNativeApiTypes: NapiPropertyDescriptor	
-NapiExtendedErrorInfo	denimpkg/napi/jsNativeApiTypes.html#NapiExtendedErrorInfo	jsNativeApiTypes: NapiExtendedErrorInfo	
+nimTitle	jsNativeApiTypes	denimpkg/napi/jsNativeApiTypes.html	module src/denimpkg/napi/jsNativeApiTypes		0
+nim	napi_env	denimpkg/napi/jsNativeApiTypes.html#napi_env	type napi_env		2
+nim	napi_value	denimpkg/napi/jsNativeApiTypes.html#napi_value	type napi_value		3
+nim	napi_ref	denimpkg/napi/jsNativeApiTypes.html#napi_ref	type napi_ref		4
+nim	napi_handle_scope	denimpkg/napi/jsNativeApiTypes.html#napi_handle_scope	type napi_handle_scope		5
+nim	napi_escapable_handle_scope	denimpkg/napi/jsNativeApiTypes.html#napi_escapable_handle_scope	type napi_escapable_handle_scope		6
+nim	napi_callback_info	denimpkg/napi/jsNativeApiTypes.html#napi_callback_info	type napi_callback_info		7
+nim	napi_deferred	denimpkg/napi/jsNativeApiTypes.html#napi_deferred	type napi_deferred		8
+nim	NapiPropertyAttributes	denimpkg/napi/jsNativeApiTypes.html#NapiPropertyAttributes	enum NapiPropertyAttributes		10
+nim	NapiValueType	denimpkg/napi/jsNativeApiTypes.html#NapiValueType	enum NapiValueType		19
+nim	NApiTypedArrayType	denimpkg/napi/jsNativeApiTypes.html#NApiTypedArrayType	enum NApiTypedArrayType		33
+nim	NapiStatus	denimpkg/napi/jsNativeApiTypes.html#NapiStatus	enum NapiStatus		46
+nim	NapiThreadSafeFunction	denimpkg/napi/jsNativeApiTypes.html#NapiThreadSafeFunction	enum NapiThreadSafeFunction		69
+nim	napi_callback	denimpkg/napi/jsNativeApiTypes.html#napi_callback	type napi_callback		73
+nim	napi_finalize	denimpkg/napi/jsNativeApiTypes.html#napi_finalize	type napi_finalize		74
+nim	napi_threadsafe_function_call_js	denimpkg/napi/jsNativeApiTypes.html#napi_threadsafe_function_call_js	type napi_threadsafe_function_call_js		75
+nim	NapiPropertyDescriptor	denimpkg/napi/jsNativeApiTypes.html#NapiPropertyDescriptor	object NapiPropertyDescriptor		77
+nim	NapiExtendedErrorInfo	denimpkg/napi/jsNativeApiTypes.html#NapiExtendedErrorInfo	object NapiExtendedErrorInfo		84
