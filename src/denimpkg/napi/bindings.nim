@@ -57,7 +57,7 @@ proc newNodeValue*(val: napi_value, env: napi_env): Module =
   Module(val: val, env: env, descriptors: @[])
 
 proc kind(env: napi_env, val: napi_value): NapiValueType =
-  assert ( napi_typeof(env, val, addr result) )
+    assert ( napi_typeof(env, val, addr result) )
 
 proc expect*(env: napi_env, n: napi_value, expectKind: NapiValueType): bool =
   return kind(env, n) == expectKind
@@ -213,12 +213,17 @@ macro `%*`*(x: typed): untyped =
   ## An elegant way to convert Nim types to `napi_value`.
   return toNapiValue(x)
 
+macro toJsObject*(x: typed): untyped =
+  ## An elegant way to convert Nim types to `napi_value`.
+  return toNapiValue(x)
+
 macro toObject*(x: untyped): untyped =
   ## Convert {"a": "val", "b": "val"} to JavaScript Object
   var table = newNimNode(nnkTableConstr)
   for i in 0..<x.len:
+    echo treeRepr x
     x[i].expectKind nnkExprColonExpr
-    table.add newTree(nnkExprColonExpr, x[i][0], toNapiValue(x[i][1]))
+    table.add newTree(nnkExprColonExpr, x[i][0], newCall("toJsObject", x[i][1]))
   result = newCall("napiCreate", table)
 
 proc kind*(val: napi_value): NapiValueType =
@@ -307,6 +312,12 @@ proc hasProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, Nap
   ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
   if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
   assert napi_has_named_property(Env, obj, (key), addr result)
+
+proc hasOwnProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, NapiStatusError].} =
+  ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
+  if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
+  assert napi_has_own_property(Env, obj, %*(key), addr result)
+  
 
 proc getProperty*(obj: napi_value, key: string):
   napi_value {.raises: [KeyError, ValueError, NapiStatusError].} =
@@ -433,14 +444,15 @@ proc register*(obj: Module, name: string, cb: napi_callback,
   obj.registerBase(name, createFn(obj.env, name, cb), attr)
 
 
-const emptyArr: array[0, (string, napi_value)] = []
+var emptyArr: array[0, (string, napi_value)] = []
+
 proc callFunction*(fn: napi_value, args: openarray[napi_value] = [],
-                  this = %* emptyArr): napi_value =
+                   this: napi_value = %* emptyArr): napi_value {.discardable.} =
   ## Call a function by `napi_value` with given `args` and `this` context.
   assert napi_call_function(Env, this, fn,
     args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
 
-proc callMethod*(instance: napi_value, methd: string, args: openarray[napi_value] = []): napi_value =
+proc callMethod*(instance: napi_value, methd: string, args: openarray[napi_value] = []): napi_value {.discardable.} =
   ## Call a method from `instance` by name with given `args`
   assert napi_call_function(Env, instance, instance.getProperty(methd),
     args.len.csize_t, cast[ptr napi_value](args.toUnchecked()), addr result)
@@ -521,19 +533,19 @@ proc getNimNapiType(n: NimNode, countless: var bool): tuple[nimArgType, napiArgT
   elif n.eqIdent("nil"):
     # nil > napi_null
     result = ("napi_null", n.strVal)
-  elif n.eqIdent("int"):
+  elif n.kind == nnkIdent and ($n).startsWith("int"):
     # int > napi_number
     result = ("napi_number", n.strVal)
   elif n.eqIdent("symbol"):
     # symbol > napi_symbol
     result = ("napi_symbol", "symbol")
-  elif n.kind == nnkObjectTy:
+  elif n.kind == nnkObjectTy or n.eqIdent("napi_object"):
     # object > napi_object
     result = ("napi_object", "object")
-  elif n.kind == nnkProcTy:
+  elif n.kind == nnkProcTy or n.eqIdent("napi_function"):
     # func > napi_function
     result = ("napi_function", "func")
-  elif n.eqIdent("array"):
+  elif n.eqIdent("array") or n.eqIdent("napi_array"):
     result = ("napi_object", "array")
   elif n.eqIdent("external"):
     result = ("napi_external", n.strVal)
@@ -566,96 +578,111 @@ macro export_napi*(fn: untyped) =
   ## proc hello(name: string): string {.export_napi.} =
   ##   return %* args.get("name")
   ## ```
-  expectKind(fn, nnkProcDef)
-  expectKind(fn[6], nnkStmtList) # body
-  expectKind(fn[3], nnkFormalParams) # params
-  result = newStmtList()
-  let fnName = fn[0].strVal
-  var
-    fnBody = newStmtList()
-    params = fn[3][1..^1]
-    paramsLen = params.len
-    hasParams = paramsLen != 0
-    countless: bool # enabled when an argument has `varargs[]` type 
-    args = newNimNode(nnkBracket)
-    argsCond = nnkIfStmt.newTree()
-  if hasParams:
-    for i in 0 .. params.high:
-      var typedArg = getNimNapiType(params[i][1], countless)
-      var types = nnkTupleConstr.newTree(
-        newLit(params[i][0].strVal),
-        newLit(typedArg[1]),
-        ident(typedArg[0]),
-        newLit(false)
-      )
-      var argCond =
-        nnkElifBranch.newTree(
-          nnkInfix.newTree(ident("=="), ident("argName"), newLit(params[i][0].strVal)),
-          nnkReturnStmt.newTree(
-            nnkBracketExpr.newTree(ident("args"), newLit(i))
-          )
+  if fn.kind == nnkProcDef:
+    expectKind(fn[6], nnkStmtList) # body
+    expectKind(fn[3], nnkFormalParams) # params
+    result = newStmtList()
+    let fnName = fn[0].strVal
+    var
+      fnBody = newStmtList()
+      params = fn[3][1..^1]
+      paramsLen = params.len
+      hasParams = paramsLen != 0
+      countless: bool # enabled when an argument has `varargs[]` type 
+      args = newNimNode(nnkBracket)
+      argsCond = nnkIfStmt.newTree()
+    if hasParams:
+      for i in 0 .. params.high:
+        var typedArg = getNimNapiType(params[i][1], countless)
+        var types = nnkTupleConstr.newTree(
+          newLit(params[i][0].strVal),
+          newLit(typedArg[1]),
+          ident(typedArg[0]),
+          newLit(false)
         )
-      add args, types
-      add argsCond, argCond
-    add result, newCall(ident("addDocBlock"), newLit(fnName), args)
-
-    let
-      callExpectProc = newCall(
-        ident("expect"),
-        ident("Env"),
-        ident("args"),
-        newLit(""),
-        newLit(fnName)
-      )
-      typeChecker = newIfStmt(
-        (
-          nnkPrefix.newTree(ident("not"), callExpectProc),
-          newStmtList(
+        var argCond =
+          nnkElifBranch.newTree(
+            nnkInfix.newTree(ident("=="), ident("argName"), newLit(params[i][0].strVal)),
             nnkReturnStmt.newTree(
-              newEmptyNode()
+              nnkBracketExpr.newTree(ident("args"), newLit(i))
             )
           )
-        ))
-    paramsLen = if countless: 100 else: params.len
-    var argsGetterProc =
-      newProc(
-        ident("get"),
-        [
-          ident("napi_value"), # return type
-          nnkIdentDefs.newTree(
-            ident("args"),
-            nnkBracketExpr.newTree(ident("seq"), ident("napi_value")),
-            newEmptyNode()
-          ),
-          nnkIdentDefs.newTree(
-            ident("argName"),
-            ident("string"),
-            newEmptyNode()
-          )
-        ],
-        body = newStmtList(argsCond)
+        add args, types
+        add argsCond, argCond
+      add result, newCall(ident("addDocBlock"), newLit(fnName), args)
+
+      let
+        callExpectProc = newCall(
+          ident("expect"),
+          ident("Env"),
+          ident("args"),
+          newLit(""),
+          newLit(fnName)
+        )
+        typeChecker = newIfStmt(
+          (
+            nnkPrefix.newTree(ident("not"), callExpectProc),
+            newStmtList(
+              nnkReturnStmt.newTree(
+                newEmptyNode()
+              )
+            )
+          ))
+      paramsLen = if countless: 100 else: params.len
+      var argsGetterProc =
+        newProc(
+          ident("get"),
+          [
+            ident("napi_value"), # return type
+            nnkIdentDefs.newTree(
+              ident("args"),
+              nnkBracketExpr.newTree(ident("seq"), ident("napi_value")),
+              newEmptyNode()
+            ),
+            nnkIdentDefs.newTree(
+              ident("argName"),
+              ident("string"),
+              newEmptyNode()
+            )
+          ],
+          body = newStmtList(argsCond)
+        )
+      add fnBody, typeChecker
+      add fnBody, argsGetterProc
+    add fnBody, fn[6]
+
+    template runtimeErrorWrapper(fnBody) =
+      try:
+        fnBody
+      except:
+        var runtimeError: napi_value
+        assert env.napi_create_error(%* "NimRuntime", %*(getCurrentExceptionMsg() & "\n" & getCurrentException().getStackTrace), runtimeError.addr)
+        assert env.napi_throw(runtimeError)
+
+    result.add(
+      newCall(
+        ident("registerFn"),
+        ident("module"),
+        newLit(paramsLen),
+        newLit(fnName),
+        getAst(runtimeErrorWrapper(fnBody))
       )
-    add fnBody, typeChecker
-    add fnBody, argsGetterProc
-  add fnBody, fn[6]
-
-  template runtimeErrorWrapper(fnBody) =
-    try:
-      fnBody
-    except:
-      var runtimeError: napi_value
-      assert env.napi_create_error(%* "NimRuntime", %*(getCurrentExceptionMsg() & "\n" & getCurrentException().getStackTrace), runtimeError.addr)
-      assert env.napi_throw(runtimeError)
-
-  result.add(
-    newCall(
-      ident("registerFn"),
-      ident("module"),
-      newLit(paramsLen),
-      newLit(fnName),
-      getAst(runtimeErrorWrapper(fnBody))
     )
-  )
+  elif fn.kind in {nnkVarSection, nnkLetSection}:  # This will works only since Nim 2.0.0
+    for identDef in fn.children:
+      var
+        vName = identDef[0]
+        vVal = identDef[2]
+      expectKind(vName, nnkIdent)
+      result = newStmtList()
+      result.add(
+        newCall(
+          ident("register"),
+          ident("module"),
+          newLit(vName.strVal),
+          vVal
+        )
+      )
 
 #
 # Promise - High-Level API
@@ -689,15 +716,73 @@ proc toSeq*(n: napi_value): seq[napi_value] =
   for i in n:
     add result, i
 
-# iterator pairs*(n: napi_value): napi_value =
-#     for index in 0..<n.len:
-#         yield n[index]
+
+# Additional procedures to work with napi_coerce
+
+proc toString*(n: napi_value): napi_value =
+  var result: napi_value
+  assert napi_coerce_to_string(Env, n, addr result)
+
+proc toBool*(n: napi_value): napi_value =
+  var result: napi_value
+  assert napi_coerce_to_bool(Env, n, addr result)
+
+proc toNumber*(n: napi_value): napi_value =
+  var result: napi_value
+  assert napi_coerce_to_number(Env, n, addr result)
+  
+
+proc getPropertyNames*(obj: napi_value): napi_value {.raises: [ValueError, NapiStatusError].} =
+  ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
+  if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
+  assert napi_get_property_names(Env, obj, addr result)
+  
+
+proc getPropertyNamesArr*(obj: napi_value): seq[napi_value] {.raises: [ValueError, NapiStatusError].} =
+  ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
+  if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
+  var res: napi_value
+  assert napi_get_property_names(Env, obj, addr res)
+  for i in res:
+    result.add(i)
+  
+
+proc getPropertyNamesArrStr*(obj: napi_value): seq[string] {.raises: [ValueError, NapiStatusError].} =
+  ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
+  if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
+  var res: napi_value
+  assert napi_get_property_names(Env, obj, addr res)
+  for i in res:
+    result.add(i.getStr)
+
+iterator pairs*(n: napi_value): (string, napi_value) =
+  ## Yields every key and value
+  if n.isArray: raise newException(ValueError, "value is not an object")
+  for key in n.getPropertyNamesArr():
+    yield (key.getStr, n[key.getStr])
 
 proc defineProperties*(obj: Module) =
   assert napi_define_properties(obj.env, obj.val,
     obj.descriptors.len.csize_t,
     cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked)
   )
+
+proc `$`*(o: napi_value): string =
+  case o.kind
+  of napi_undefined:
+    return "undefined"
+  of napi_null:
+    return "null"
+  of napi_boolean:
+    return $o.getBool
+  of napi_number:
+    return $o.getInt
+  of napi_string:
+    return o.getStr
+  of napi_object:
+    return napiCall("JSON.stringify", [o]).getStr
+  else:
+    return ""
 
 macro init*(initHook: proc(exports: Module)): void =
   ##Bootstraps module; use by calling `register` to add properties to `exports`
