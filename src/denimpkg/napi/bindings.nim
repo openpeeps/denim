@@ -554,6 +554,22 @@ proc getNimNapiType(n: NimNode, countless: var bool): tuple[nimArgType, napiArgT
     error("Cannot convert to NapiValueType", n)
 
 
+macro export_napi*(vName, vType: untyped, vVal: typed) =
+  ## A fancy compile-time macro to export object properties
+  ## ```nim
+  ## var name {.export_napi.} = "Denim is Awesome!"
+  ## ```
+  expectKind(vName, nnkIdent)
+  result = newStmtList()
+  result.add(
+    newCall(
+      ident("register"),
+      ident("module"),
+      newLit(vName.strVal),
+      vVal
+    )
+  )
+
 macro export_napi*(fn: untyped, withModule: untyped = nil) =
   ## A fancy compile-time macro to export NAPI functions
   ## 
