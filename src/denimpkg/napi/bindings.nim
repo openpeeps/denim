@@ -221,7 +221,6 @@ macro toObject*(x: untyped): untyped =
   ## Convert {"a": "val", "b": "val"} to JavaScript Object
   var table = newNimNode(nnkTableConstr)
   for i in 0..<x.len:
-    echo treeRepr x
     x[i].expectKind nnkExprColonExpr
     table.add newTree(nnkExprColonExpr, x[i][0], newCall("toJsObject", x[i][1]))
   result = newCall("napiCreate", table)
@@ -310,12 +309,10 @@ proc getStr*(n: napi_value, default: string, bufsize: int = 40): string =
 
 proc hasProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, NapiStatusError].} =
   ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
-  if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
   assert napi_has_named_property(Env, obj, (key), addr result)
 
 proc hasOwnProperty*(obj: napi_value, key: string): bool {.raises: [ValueError, NapiStatusError].} =
   ##Checks whether or not ``obj`` has a property ``key``; Panics if ``obj`` is not an object
-  if kind(obj) != napi_object: raise newException(ValueError, "value is not an object")
   assert napi_has_own_property(Env, obj, %*(key), addr result)
   
 
@@ -480,23 +477,23 @@ proc tryGetJson*(n: napi_value): JsonNode =
 
 template getIdentStr*(n: untyped): string = $n
 
-template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
+template fn*(paramCt: int, fnName, fnNameStrinfigy, cushy: untyped): untyped {.dirty.} =
   ## Register a function
-  var name {.inject.}: napi_value
-  block:
+  var `fnName` = block:
     proc `wrapper$`(environment: napi_env, info: napi_callback_info): napi_value {.cdecl.} =
       var
         `argv$` = cast[ptr UncheckedArray[napi_value]](alloc(paramCt * sizeof(napi_value)))
         argc: csize_t = paramCt
         this: napi_value
         args = newSeq[napi_value]()
+        env = environment
       Env = environment
       assert napi_get_cb_info(environment, info, addr argc, `argv$`, addr this, nil)
       for i in 0..<min(argc, paramCt):
         args.add(`argv$`[][i])
       dealloc(`argv$`)
       cushy
-    name = Env.createFn(name.getStr(), `wrapper$`)
+    Env.createFn(fnNameStrinfigy, `wrapper$`.napi_callback)
 
 template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.} =
   ## Register and export a function
@@ -583,6 +580,9 @@ macro export_napi*(fn: untyped) =
     expectKind(fn[3], nnkFormalParams) # params
     result = newStmtList()
     let fnName = fn[0].strVal
+    var useModule = true
+    if fnName.endsWith("WITHOUT_MODULE"):
+      useModule = false
     var
       fnBody = newStmtList()
       params = fn[3][1..^1]
@@ -660,13 +660,22 @@ macro export_napi*(fn: untyped) =
         assert env.napi_throw(runtimeError)
 
     result.add(
-      newCall(
-        ident("registerFn"),
-        ident("module"),
-        newLit(paramsLen),
-        newLit(fnName),
-        getAst(runtimeErrorWrapper(fnBody))
-      )
+      if useModule:
+        newCall(
+          ident("registerFn"),
+          ident("module"),
+          newLit(paramsLen),
+          newLit(fnName),
+          getAst(runtimeErrorWrapper(fnBody))
+        )
+      else:
+        newCall(
+          ident("fn"),
+          newLit(paramsLen),
+          ident(fnName),
+          newLit(fnName),
+          getAst(runtimeErrorWrapper(fnBody))
+        )
     )
   elif fn.kind in {nnkVarSection, nnkLetSection}:  # This will works only since Nim 2.0.0
     for identDef in fn.children:
@@ -781,6 +790,11 @@ proc `$`*(o: napi_value): string =
     return o.getStr
   of napi_object:
     return napiCall("JSON.stringify", [o]).getStr
+  of napi_function:
+    var ret = o.toString()
+    ret = ret.callMethod("substr", [%*(9)])
+    ret = ret.callMethod("substr", [%*0, ret.callMethod("indexOf", [%*("(")])])
+    return ret.getStr
   else:
     return ""
 
