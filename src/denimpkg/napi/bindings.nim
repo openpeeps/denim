@@ -553,35 +553,34 @@ proc getNimNapiType(n: NimNode, countless: var bool): tuple[nimArgType, napiArgT
   else:
     error("Cannot convert to NapiValueType", n)
 
-macro export_napi*(vName, vType: untyped, vVal: typed) =
-  ## A fancy compile-time macro to export object properties
-  ## ```nim
-  ## var name {.export_napi.} = "Denim is Awesome!"
-  ## ```
-  expectKind(vName, nnkIdent)
-  result = newStmtList()
-  result.add(
-    newCall(
-      ident("register"),
-      ident("module"),
-      newLit(vName.strVal),
-      vVal
-    )
-  )
 
-macro export_napi*(fn: untyped) =
+macro export_napi*(fn: untyped, withModule: untyped = nil) =
   ## A fancy compile-time macro to export NAPI functions
+  ## 
   ## ```nim
   ## proc hello(name: string): string {.export_napi.} =
   ##   return %* args.get("name")
   ## ```
+  ## 
+  ## If you want use it within module than use `withModule` arg:
+  ## ```nim
+  ## proc hello(name: string): string {.export_napi: false.} =
+  ##   return %* args.get("name")
+  ## ```
+  var
+    fn: NimNode = fn
+    withModule: NimNode = withModule
+  if withModule.kind != nnkNilLit:
+    let x = withModule.copy()
+    withModule = fn.copy()
+    fn = x.copy()
   if fn.kind == nnkProcDef:
     expectKind(fn[6], nnkStmtList) # body
     expectKind(fn[3], nnkFormalParams) # params
     result = newStmtList()
     let fnName = fn[0].strVal
     var useModule = true
-    if fnName.endsWith("WITHOUT_MODULE"):
+    if withModule.kind != nnkNilLit and withModule == newLit(false):
       useModule = false
     var
       fnBody = newStmtList()
@@ -776,7 +775,9 @@ proc defineProperties*(obj: Module) =
     cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked)
   )
 
+
 proc `$`*(o: napi_value): string =
+  ## Convenient procedure to convert `napi_value` to string representation
   case o.kind
   of napi_undefined:
     return "undefined"
@@ -791,15 +792,59 @@ proc `$`*(o: napi_value): string =
   of napi_object:
     return napiCall("JSON.stringify", [o]).getStr
   of napi_function:
-    var ret = o.toString()
-    ret = ret.callMethod("substr", [%*(9)])
-    ret = ret.callMethod("substr", [%*0, ret.callMethod("indexOf", [%*("(")])])
-    return ret.getStr
+    # output is JS function name or constructor name
+    try:
+      var ret = o.toString()
+      ret = ret.callMethod("substr", [%*(9)])
+      ret = ret.callMethod("substr", [%*0, ret.callMethod("indexOf", [%*("(")])])
+      return ret.getStr
+    except:
+      return o.getProperty("constructor").getProperty("name").getStr
   else:
     return ""
 
+
+{.experimental: "dotOperators".}
+macro `.`*(val: napi_value, field: untyped): untyped =
+  newCall(
+    "getProperty",
+    val,
+    newLit($field)
+  )
+
+macro `.=`*(val: napi_value, field: untyped, value: napi_value): untyped =
+  newCall(
+    "setProperty",
+    val,
+    newLit($field),
+    value
+  )
+
+macro `.=`*(val: napi_value, field: untyped, value: typed): untyped =
+  newCall(
+    "setProperty",
+    val,
+    newLit($field),
+    newCall("toJsObject", value)
+  )
+
+macro `.()`*(val: napi_value, field: untyped, args: varargs[typed]): untyped =
+  var arguments = newNimNode(nnkBracket)
+  for arg in args:
+    if arg.kind in AtomicNodes:
+      arguments.add(newCall("toJsObject", arg))
+    else:
+      arguments.add(arg)
+  newCall(
+    "callMethod",
+    val,
+    newLit($field),
+    arguments
+  )
+
+
 macro init*(initHook: proc(exports: Module)): void =
-  ##Bootstraps module; use by calling `register` to add properties to `exports`
+  ## Bootstraps module; use by calling `register` to add properties to `exports`
   ##
   ## ```nim
   ##  init proc(module: Module) =
