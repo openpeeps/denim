@@ -120,9 +120,9 @@ Type mismatch parameter: `name`. Got `undefined`, expected `string`
 ```
 
 ## Real-World Examples
-- **Tim Engine**, a template engine written in Nim. [Here is the code for building Tim to Node/Bun via NAPI](https://github.com/openpeeps/tim/blob/main/src/tim.nim#L8-L133), 
-- **Bro**, a better stylesheet language, alternative to SassC, DartSass... [Here is the code](https://github.com/openpeeps/bro/blob/main/src/bro.nim#L6)
-- Add yours!
+- **Tim Engine** &mdash; A template engine. [GitHub](https://github.com/openpeeps/tim)
+- **Bro** &mdash; A fast stylesheet language, alternative to SassC, DartSass. [GitHub](https://github.com/openpeeps/bro)
+- **HappyX** &mdash; Macro-oriented asynchronous web-framework written in Nim. [GitHub](https://github.com/HapticX/happyx)
 
 ### Todo
 - Option to link external C Headers/libraries
