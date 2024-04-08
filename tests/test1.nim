@@ -4,7 +4,7 @@ when not defined skipbuild:
   var addons = ["myaddon", "myobject", "mypromise", "myexceptions"]
   test "can build addons with node-gyp":
     for addonName in addons:
-      let status = execCmdEx("denim build ./tests/" & addonName & ".nim --yes")
+      let status = execCmdEx("denim build ./tests/" & addonName & ".nim -y")
       echo "[OK] " & addonName & ".nim"
       if status.exitCode != 0:
         echo status.output
@@ -12,7 +12,7 @@ when not defined skipbuild:
 
   test "can build addons with CMake":
     for addonName in addons:
-      let status = execCmdEx("denim build ./tests/" & addonName & ".nim --cmake --yes")
+      let status = execCmdEx("denim build ./tests/" & addonName & ".nim --cmake -y")
       echo "[OK] " & addonName & ".nim"
       if status.exitCode != 0:
         echo status.output
