@@ -12,10 +12,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../../nimdoc.out.css">
+<link rel="stylesheet" type="text/css" href="../../nimdoc.out.css?v=2.0.2">
 
 <!-- JS -->
-<script type="text/javascript" src="../../dochack.js"></script>
+<script type="text/javascript" src="../../dochack.js?v=2.0.2"></script>
 </head>
 <body>
   <div class="document" id="documentId">
@@ -315,8 +315,21 @@
   <li><a class="reference" href="#%25%2A.m%2Ctyped" title="`%*`(x: typed): untyped">`%*`(x: typed): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">.
+  <li><a class="reference" href="#..m%2Cnapi_value%2Cuntyped" title="`.`(val: napi_value; field: untyped): untyped">`.`(val: napi_value; field: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">.()
+  <li><a class="reference" href="#.%28%29.m%2Cnapi_value%2Cuntyped%2Cvarargs%5Btyped%5D" title="`.()`(val: napi_value; field: untyped; args: varargs[typed]): untyped">`.()`(val: napi_value; field: untyped; args: varargs[typed]): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">.=
+  <li><a class="reference" href="#.%3D.m%2Cnapi_value%2Cuntyped%2Cnapi_value" title="`.=`(val: napi_value; field: untyped; value: napi_value): untyped">`.=`(val: napi_value; field: untyped; value: napi_value): untyped</a></li>
+<li><a class="reference" href="#.%3D.m%2Cnapi_value%2Cuntyped%2Ctyped" title="`.=`(val: napi_value; field: untyped; value: typed): untyped">`.=`(val: napi_value; field: untyped; value: typed): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">export_napi
-  <li><a class="reference" href="#export_napi.m%2Cuntyped" title="export_napi(fn: untyped)">export_napi(fn: untyped)</a></li>
+  <li><a class="reference" href="#export_napi.m%2Cuntyped%2Cuntyped" title="export_napi(fn: untyped; withModule: untyped = nil)">export_napi(fn: untyped; withModule: untyped = nil)</a></li>
 <li><a class="reference" href="#export_napi.m%2Cuntyped%2Cuntyped%2Ctyped" title="export_napi(vName, vType: untyped; vVal: typed)">export_napi(vName, vType: untyped; vVal: typed)</a></li>
 
 </ul>
@@ -351,7 +364,7 @@
 
 </ul>
 <ul class="simple nested-toc-section">fn
-  <li><a class="reference" href="#fn.t%2Cint%2Cuntyped%2Cuntyped" title="fn(paramCt: int; name, cushy: untyped): untyped">fn(paramCt: int; name, cushy: untyped): untyped</a></li>
+  <li><a class="reference" href="#fn.t%2Cint%2Cuntyped%2Cuntyped%2Cuntyped" title="fn(paramCt: int; fnName, fnNameStrinfigy, cushy: untyped): untyped">fn(paramCt: int; fnName, fnNameStrinfigy, cushy: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">getIdentStr
@@ -400,8 +413,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L691" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L691" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L715" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L715" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -439,8 +452,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L695" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L695" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L719" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L719" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -468,13 +481,13 @@
   <dl class="item">
     <div id="$-procs-all">
   <div id="$,napi_value">
-  <dt><pre><span class="Keyword">proc</span> <a href="#%24%2Cnapi_value"><span class="Identifier">`$`</span></a><span class="Other">(</span><span class="Identifier">o</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span>
-                                  <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#%24%2Cnapi_value"><span class="Identifier">`$`</span></a><span class="Other">(</span><span class="Identifier">o</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span>
+    <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">NapiStatusError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L770" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L770" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    Convenient procedure to convert <tt class="docutils literal"><span class="pre"><span class="Identifier">napi_value</span></span></tt> to string representation
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L795" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L795" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -487,8 +500,8 @@
   <dd>
     
     Alias for <tt class="docutils literal"><span class="pre">getElement</span></tt>; raises exception
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L400" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L400" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L397" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L397" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -498,8 +511,8 @@
   <dd>
     
     Alias for <tt class="docutils literal"><span class="pre">getProperty</span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L335" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L335" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L332" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L332" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -512,8 +525,8 @@
   <dd>
     
     Alias for <tt class="docutils literal"><span class="pre">setElement</span></tt>; raises exception
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L404" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L404" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L401" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L401" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -523,8 +536,8 @@
   <dd>
     
     Alias for <tt class="docutils literal"><span class="pre">setProperty</span></tt>, raises exception
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L368" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L368" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L365" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L365" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -538,8 +551,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L519" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L519" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L516" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L516" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -567,8 +580,8 @@
   <dd>
     
     Call a function by <tt class="docutils literal"><span class="pre"><span class="Identifier">napi_value</span></span></tt> with given <tt class="docutils literal"><span class="pre"><span class="Identifier">args</span></span></tt> and <tt class="docutils literal"><span class="pre"><span class="Identifier">this</span></span></tt> context.
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L449" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L449" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L446" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L446" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -582,8 +595,8 @@
   <dd>
     
     Call a method from <tt class="docutils literal"><span class="pre"><span class="Identifier">instance</span></span></tt> by name with given <tt class="docutils literal"><span class="pre"><span class="Identifier">args</span></span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L455" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L455" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L452" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L452" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -623,8 +636,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L764" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L764" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L788" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L788" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -663,8 +676,8 @@
   <dd>
     
     Alias of <tt class="docutils literal"><span class="pre"><span class="Identifier">getProperty</span></span></tt> for accessing global properties. This proc supports dot annotations: <tt class="docutils literal"><span class="pre"><span class="Identifier">get</span><span class="Punctuation">(</span><span class="StringLit">&quot;JSON.parse&quot;</span><span class="Punctuation">)</span></span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L343" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L343" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L340" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L340" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -674,8 +687,8 @@
   <dd>
     
     Alias for <tt class="docutils literal"><span class="pre"><span class="Identifier">getProperty</span></span></tt> with default support
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L358" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L358" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L355" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L355" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -685,8 +698,8 @@
   <dd>
     
     Alias of <tt class="docutils literal"><span class="pre"><span class="Identifier">getProperty</span></span></tt> for accessing a property from a specific object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L339" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L339" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L336" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L336" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -699,8 +712,8 @@
   <dd>
     
     Return a <tt class="docutils literal"><span class="pre"><span class="Identifier">bool</span></span></tt> value from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L280" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L280" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L279" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L279" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -710,8 +723,8 @@
   <dd>
     
     Return a <tt class="docutils literal"><span class="pre"><span class="Identifier">bool</span></span></tt> from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>. Returns <tt class="docutils literal"><span class="pre"><span class="Identifier">default</span></span></tt> on failure
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L284" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L284" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L283" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L283" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -724,8 +737,8 @@
   <dd>
     
     Retrieves value from <tt class="docutils literal"><span class="pre">index</span></tt> in  <tt class="docutils literal"><span class="pre">obj</span></tt>; raises exception if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an array or <tt class="docutils literal"><span class="pre">index</span></tt> is out of bounds
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L381" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L381" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L378" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L378" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -735,8 +748,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L387" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L387" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L384" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L384" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -748,8 +761,8 @@
   <dd>
     
     Returns NodeJS global variable
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L253" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L253" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L252" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L252" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -762,8 +775,8 @@
   <dd>
     
     Retrieves value from node; raises exception on failure
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L257" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L257" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L256" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L256" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -773,8 +786,8 @@
   <dd>
     
     Retrieves value from node; returns default on failure
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L261" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L261" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L260" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L260" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -787,8 +800,8 @@
   <dd>
     
     Retrieves value from node; raises exception on failure
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L232" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L232" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L231" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L231" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -798,8 +811,8 @@
   <dd>
     
     Retrieves value from node; returns default on failure
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L236" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L236" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L235" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L235" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -811,8 +824,8 @@
   <dd>
     
     Returns JavaScript <tt class="docutils literal"><span class="pre">null</span></tt> value
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L241" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L241" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L240" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L240" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -825,8 +838,8 @@
   <dd>
     
     Retrieves property <tt class="docutils literal"><span class="pre">key</span></tt> from <tt class="docutils literal"><span class="pre">obj</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L322" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L322" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L319" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L319" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -836,8 +849,8 @@
   <dd>
     
     Retrieves property <tt class="docutils literal"><span class="pre">key</span></tt> from <tt class="docutils literal"><span class="pre">obj</span></tt>; returns default if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object or does not contain <tt class="docutils literal"><span class="pre">key</span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L329" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L329" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L326" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L326" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -850,8 +863,8 @@
   <dd>
     
     Checks whether or not <tt class="docutils literal"><span class="pre">obj</span></tt> has a property <tt class="docutils literal"><span class="pre">key</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L735" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L735" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L759" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L759" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -864,8 +877,8 @@
   <dd>
     
     Checks whether or not <tt class="docutils literal"><span class="pre">obj</span></tt> has a property <tt class="docutils literal"><span class="pre">key</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L741" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L741" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L765" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L765" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -878,8 +891,8 @@
   <dd>
     
     Checks whether or not <tt class="docutils literal"><span class="pre">obj</span></tt> has a property <tt class="docutils literal"><span class="pre">key</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L750" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L750" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L774" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L774" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -892,8 +905,8 @@
   <dd>
     
     Return a <tt class="docutils literal"><span class="pre"><span class="Identifier">string</span></span></tt> from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L289" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L289" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L288" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L288" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -903,8 +916,8 @@
   <dd>
     
     Retrieves utf8 encoded value from node; returns default on failure Maximum return string length is equal to <tt class="docutils literal"><span class="pre">bufsize</span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L299" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L299" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L298" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L298" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -917,8 +930,8 @@
   <dd>
     
     Returns JavaScript <tt class="docutils literal"><span class="pre">undefined</span></tt> value
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L245" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L245" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L244" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L244" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -931,8 +944,8 @@
   <dd>
     
     Checks whether element is contained in <tt class="docutils literal"><span class="pre">obj</span></tt>; raises exception if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an array
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L375" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L375" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L372" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L372" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -945,8 +958,8 @@
   <dd>
     
     Checks whether or not <tt class="docutils literal"><span class="pre">obj</span></tt> has a property <tt class="docutils literal"><span class="pre">key</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L316" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L316" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L314" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L314" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -959,8 +972,8 @@
   <dd>
     
     Checks whether or not <tt class="docutils literal"><span class="pre">obj</span></tt> has a property <tt class="docutils literal"><span class="pre">key</span></tt>; Panics if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L311" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L311" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L310" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L310" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -987,8 +1000,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L229" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L229" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L228" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L228" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1001,8 +1014,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L396" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L396" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L393" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L393" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1016,8 +1029,8 @@
   <dd>
     
     A short-hand procedure for calling global <tt class="docutils literal"><span class="pre"><span class="Identifier">Napi</span></span></tt> functions by string. You can use dot annotation for accessing and calling from object properties. For example <tt class="docutils literal"><span class="pre"><span class="Identifier">napiCall</span><span class="Punctuation">(</span><span class="StringLit">&quot;JSON.parse&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;{}&quot;</span><span class="Punctuation">)</span></span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L460" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L460" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L457" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L457" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1056,8 +1069,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L701" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L701" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L725" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L725" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1071,8 +1084,8 @@
   <dd>
     
     Register a new property field to <tt class="docutils literal"><span class="pre"><span class="Identifier">obj</span></span></tt> Module.
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L441" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L441" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L438" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L438" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1082,8 +1095,8 @@
   <dd>
     
     Adds field to exports object <tt class="docutils literal"><span class="pre">obj</span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L419" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L419" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L416" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L416" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1093,8 +1106,8 @@
   <dd>
     
     Register a new property field to <tt class="docutils literal"><span class="pre"><span class="Identifier">obj</span></span></tt> Module.
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L432" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L432" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L429" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L429" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1104,8 +1117,8 @@
   <dd>
     
     Adds field to exports object <tt class="docutils literal"><span class="pre">obj</span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L424" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L424" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L421" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L421" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1118,8 +1131,8 @@
   <dd>
     
     Sets value at <tt class="docutils literal"><span class="pre">index</span></tt>; raises exception if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an array
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L391" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L391" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L388" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L388" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1132,8 +1145,8 @@
   <dd>
     
     Sets property <tt class="docutils literal"><span class="pre">key</span></tt> in <tt class="docutils literal"><span class="pre">obj</span></tt> to <tt class="docutils literal"><span class="pre">value</span></tt>; raises exception if <tt class="docutils literal"><span class="pre">obj</span></tt> is not an object
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L363" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L363" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L360" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L360" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1162,8 +1175,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L726" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L726" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L750" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L750" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1176,8 +1189,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L730" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L730" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L754" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L754" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1190,8 +1203,8 @@
   <dd>
     
     Return unpacked Array <tt class="docutils literal"><span class="pre"><span class="Keyword">object</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">napi_value</span><span class="Punctuation">]</span></span></tt>   
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L713" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L713" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L737" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L737" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1204,8 +1217,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L722" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L722" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L746" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L746" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1219,8 +1232,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L477" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L477" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L474" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L474" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1232,8 +1245,8 @@
   <dd>
     
     Returns an <tt class="docutils literal"><span class="pre"><span class="Identifier">undefined</span></span></tt> napi_value
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L249" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L249" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L248" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L248" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1252,8 +1265,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L708" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L708" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L732" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L732" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1266,8 +1279,8 @@
   <dd>
     
     Yields every key and value
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L758" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L758" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L782" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L782" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1292,18 +1305,71 @@
 </div>
 
 </div>
+<div id=".-macros-all">
+  <div id="..m,napi_value,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#..m%2Cnapi_value%2Cuntyped"><span class="Identifier">`.`</span></a><span class="Other">(</span><span class="Identifier">val</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">field</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L824" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L824" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+
+</div>
+<div id=".()-macros-all">
+  <div id=".().m,napi_value,untyped,varargs[typed]">
+  <dt><pre><span class="Keyword">macro</span> <a href="#.%28%29.m%2Cnapi_value%2Cuntyped%2Cvarargs%5Btyped%5D"><span class="Identifier">`.()`</span></a><span class="Other">(</span><span class="Identifier">val</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">field</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">typed</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L847" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L847" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+
+</div>
+<div id=".=-macros-all">
+  <div id=".=.m,napi_value,untyped,napi_value">
+  <dt><pre><span class="Keyword">macro</span> <a href="#.%3D.m%2Cnapi_value%2Cuntyped%2Cnapi_value"><span class="Identifier">`.=`</span></a><span class="Other">(</span><span class="Identifier">val</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">field</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L831" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L831" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+<div id=".=.m,napi_value,untyped,typed">
+  <dt><pre><span class="Keyword">macro</span> <a href="#.%3D.m%2Cnapi_value%2Cuntyped%2Ctyped"><span class="Identifier">`.=`</span></a><span class="Other">(</span><span class="Identifier">val</span><span class="Other">:</span> <a href="jsNativeApiTypes.html#napi_value"><span class="Identifier">napi_value</span></a><span class="Other">;</span> <span class="Identifier">field</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">typed</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L839" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L839" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+
+</div>
 <div id="export_napi-macros-all">
-  <div id="export_napi.m,untyped">
-  <dt><pre><span class="Keyword">macro</span> <a href="#export_napi.m%2Cuntyped"><span class="Identifier">export_napi</span></a><span class="Other">(</span><span class="Identifier">fn</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span></pre></dt>
+  <div id="export_napi.m,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#export_napi.m%2Cuntyped%2Cuntyped"><span class="Identifier">export_napi</span></a><span class="Other">(</span><span class="Identifier">fn</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">withModule</span><span class="Other">:</span> <span class="Identifier">untyped</span> <span class="Other">=</span> <span class="Keyword">nil</span><span class="Other">)</span></pre></dt>
   <dd>
     
     <p>A fancy compile-time macro to export NAPI functions</p>
 <p><pre class="listing">
 <span class="Keyword">proc</span> <span class="Identifier">hello</span><span class="Punctuation">(</span><span class="Identifier">name</span><span class="Punctuation">:</span> <span class="Identifier">string</span><span class="Punctuation">)</span><span class="Punctuation">:</span> <span class="Identifier">string</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">export_napi</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
   <span class="Keyword">return</span> <span class="Operator">%*</span> <span class="Identifier">args</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="StringLit">&quot;name&quot;</span><span class="Punctuation">)</span></pre></p>
+<p>If you want use it within module than use <tt class="docutils literal"><span class="pre"><span class="Identifier">withModule</span></span></tt> arg:</p>
+<p><pre class="listing">
+<span class="Keyword">proc</span> <span class="Identifier">hello</span><span class="Punctuation">(</span><span class="Identifier">name</span><span class="Punctuation">:</span> <span class="Identifier">string</span><span class="Punctuation">)</span><span class="Punctuation">:</span> <span class="Identifier">string</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">export_napi</span><span class="Punctuation">:</span> <span class="Identifier">false</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
+  <span class="Keyword">return</span> <span class="Operator">%*</span> <span class="Identifier">args</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="StringLit">&quot;name&quot;</span><span class="Punctuation">)</span></pre></p>
 
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L575" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L575" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L573" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L573" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1315,8 +1381,8 @@
 <p><pre class="listing">
 <span class="Keyword">var</span> <span class="Identifier">name</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">export_napi</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span> <span class="StringLit">&quot;Denim is Awesome!&quot;</span></pre></p>
 
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L559" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L559" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L557" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L557" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1332,8 +1398,8 @@
  <span class="Identifier">init</span> <span class="Keyword">proc</span><span class="Punctuation">(</span><span class="Identifier">module</span><span class="Punctuation">:</span> <span class="Identifier">Module</span><span class="Punctuation">)</span> <span class="Operator">=</span>
    <span class="Identifier">module</span><span class="Operator">.</span><span class="Identifier">register</span><span class="Punctuation">(</span><span class="StringLit">&quot;hello&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;hello world&quot;</span><span class="Punctuation">)</span></pre></p>
 
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L787" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L787" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L862" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L862" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1345,8 +1411,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L705" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L705" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L729" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L729" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1399,13 +1465,14 @@
 
 </div>
 <div id="fn-templates-all">
-  <div id="fn.t,int,untyped,untyped">
-  <dt><pre><span class="Keyword">template</span> <a href="#fn.t%2Cint%2Cuntyped%2Cuntyped"><span class="Identifier">fn</span></a><span class="Other">(</span><span class="Identifier">paramCt</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">cushy</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span> {.<span class="Identifier">dirty</span>.}</pre></dt>
+  <div id="fn.t,int,untyped,untyped,untyped">
+  <dt><pre><span class="Keyword">template</span> <a href="#fn.t%2Cint%2Cuntyped%2Cuntyped%2Cuntyped"><span class="Identifier">fn</span></a><span class="Other">(</span><span class="Identifier">paramCt</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">;</span> <span class="Identifier">fnName</span><span class="Other">,</span> <span class="Identifier">fnNameStrinfigy</span><span class="Other">,</span> <span class="Identifier">cushy</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span> {.
+    <span class="Identifier">dirty</span>.}</pre></dt>
   <dd>
     
     Register a function
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L483" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L483" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L480" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L480" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1417,8 +1484,8 @@
   <dd>
     
     
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L481" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L481" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L478" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L478" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1430,8 +1497,8 @@
   <dd>
     
     Return <tt class="docutils literal"><span class="pre"><span class="Identifier">int</span></span></tt> value from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L266" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L266" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L265" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L265" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1440,8 +1507,8 @@
   <dd>
     
     Return <tt class="docutils literal"><span class="pre"><span class="Identifier">int</span></span></tt> value from <tt class="docutils literal"><span class="pre"><span class="Identifier">n</span></span></tt>. Returns <tt class="docutils literal"><span class="pre"><span class="Identifier">default</span></span></tt> on failure
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L273" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L273" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L272" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L272" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1454,8 +1521,8 @@
   <dd>
     
     Register and export a function
-    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L501" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L501" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/openpeeps/denim/tree/main/src/denimpkg/napi/bindings.nim#L498" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/openpeeps/denim/edit/devel/src/denimpkg/napi/bindings.nim#L498" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -1477,7 +1544,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-10-04 11:28:14 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2024-04-08 09:45:29 UTC</small>
       </div>
     </div>
   </div>

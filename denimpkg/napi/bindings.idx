@@ -15,80 +15,85 @@ nim	napiCreate	denimpkg/napi/bindings.html#napiCreate,T	proc napiCreate[T](t: T)
 nim	`%*`	denimpkg/napi/bindings.html#%*.m,typed	macro `%*`(x: typed): untyped		212
 nim	toJsObject	denimpkg/napi/bindings.html#toJsObject.m,typed	macro toJsObject(x: typed): untyped		216
 nim	toObject	denimpkg/napi/bindings.html#toObject.m,untyped	macro toObject(x: untyped): untyped		220
-nim	kind	denimpkg/napi/bindings.html#kind,napi_value	proc kind(val: napi_value): NapiValueType		229
-nim	getInt64	denimpkg/napi/bindings.html#getInt64,napi_value	proc getInt64(n: napi_value): int64		232
-nim	getInt64	denimpkg/napi/bindings.html#getInt64,napi_value,int64	proc getInt64(n: napi_value; default: int64): int64		236
-nim	getNull	denimpkg/napi/bindings.html#getNull	proc getNull(): napi_value		241
-nim	getUndefined	denimpkg/napi/bindings.html#getUndefined	proc getUndefined(): napi_value		245
-nim	undefined	denimpkg/napi/bindings.html#undefined	proc undefined(): napi_value		249
-nim	getGlobal	denimpkg/napi/bindings.html#getGlobal	proc getGlobal(): napi_value		253
-nim	getInt32	denimpkg/napi/bindings.html#getInt32,napi_value	proc getInt32(n: napi_value): int32		257
-nim	getInt32	denimpkg/napi/bindings.html#getInt32,napi_value,int32	proc getInt32(n: napi_value; default: int32): int32		261
-nim	getInt	denimpkg/napi/bindings.html#getInt.t,napi_value	template getInt(n: napi_value): int		266
-nim	getInt	denimpkg/napi/bindings.html#getInt.t,napi_value,int	template getInt(n: napi_value; default: int): int		273
-nim	getBool	denimpkg/napi/bindings.html#getBool,napi_value	proc getBool(n: napi_value): bool		280
-nim	getBool	denimpkg/napi/bindings.html#getBool,napi_value,bool	proc getBool(n: napi_value; default: bool): bool		284
-nim	getStr	denimpkg/napi/bindings.html#getStr,napi_value	proc getStr(n: napi_value): string		289
-nim	getStr	denimpkg/napi/bindings.html#getStr,napi_value,string,int	proc getStr(n: napi_value; default: string; bufsize: int = 40): string		299
-nim	hasProperty	denimpkg/napi/bindings.html#hasProperty,napi_value,string	proc hasProperty(obj: napi_value; key: string): bool		311
-nim	hasOwnProperty	denimpkg/napi/bindings.html#hasOwnProperty,napi_value,string	proc hasOwnProperty(obj: napi_value; key: string): bool		316
-nim	getProperty	denimpkg/napi/bindings.html#getProperty,napi_value,string	proc getProperty(obj: napi_value; key: string): napi_value		322
-nim	getProperty	denimpkg/napi/bindings.html#getProperty,napi_value,string,napi_value	proc getProperty(obj: napi_value; key: string; default: napi_value): napi_value		329
-nim	`[]`	denimpkg/napi/bindings.html#[],napi_value,string	proc `[]`(obj: napi_value; key: string): napi_value		335
-nim	get	denimpkg/napi/bindings.html#get,napi_value,string	proc get(obj: napi_value; key: string): napi_value		339
-nim	get	denimpkg/napi/bindings.html#get,string	proc get(key: string): napi_value		343
-nim	get	denimpkg/napi/bindings.html#get,string,napi_value	proc get(key: string; default: napi_value): napi_value		358
-nim	setProperty	denimpkg/napi/bindings.html#setProperty,napi_value,string,napi_value	proc setProperty(obj: napi_value; key: string; value: napi_value)		363
-nim	`[]=`	denimpkg/napi/bindings.html#[]=,napi_value,string,napi_value	proc `[]=`(obj: napi_value; key: string; value: napi_value)		368
-nim	hasElement	denimpkg/napi/bindings.html#hasElement,napi_value,int	proc hasElement(obj: napi_value; index: int): bool		375
-nim	getElement	denimpkg/napi/bindings.html#getElement,napi_value,int	proc getElement(obj: napi_value; index: int): napi_value		381
-nim	getElement	denimpkg/napi/bindings.html#getElement,napi_value,int,napi_value	proc getElement(obj: napi_value; index: int; default: napi_value): napi_value		387
-nim	setElement	denimpkg/napi/bindings.html#setElement,napi_value,int,napi_value	proc setElement(obj: napi_value; index: int; value: napi_value)		391
-nim	len	denimpkg/napi/bindings.html#len,napi_value	proc len(arr: napi_value): int		396
-nim	`[]`	denimpkg/napi/bindings.html#[],napi_value,int	proc `[]`(obj: napi_value; index: int): napi_value		400
-nim	`[]=`	denimpkg/napi/bindings.html#[]=,napi_value,int,napi_value	proc `[]=`(obj: napi_value; index: int; value: napi_value)		404
-nim	register	denimpkg/napi/bindings.html#register,Module,string,T,NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    value: T; attr: NapiPropertyAttributes = napi_default)		419
-nim	register	denimpkg/napi/bindings.html#register,Module,string,openArray[T],NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)		424
-nim	register	denimpkg/napi/bindings.html#register,Module,string,openArray[],NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)		432
-nim	register	denimpkg/napi/bindings.html#register,Module,string,napi_callback,NapiPropertyAttributes	proc register(obj: Module; name: string; cb: napi_callback;\n         attr: NapiPropertyAttributes = napi_default)		441
-nim	callFunction	denimpkg/napi/bindings.html#callFunction,napi_value,openArray[napi_value],napi_value	proc callFunction(fn: napi_value; args: openArray[napi_value] = [];\n             this: napi_value = %*emptyArr): napi_value		449
-nim	callMethod	denimpkg/napi/bindings.html#callMethod,napi_value,string,openArray[napi_value]	proc callMethod(instance: napi_value; methd: string; args: openArray[napi_value] = []): napi_value		455
-nim	napiCall	denimpkg/napi/bindings.html#napiCall,string,openArray[napi_value]	proc napiCall(fname: string; args: openArray[napi_value] = []): napi_value		460
-nim	tryGetJson	denimpkg/napi/bindings.html#tryGetJson,napi_value	proc tryGetJson(n: napi_value): JsonNode		477
-nim	getIdentStr	denimpkg/napi/bindings.html#getIdentStr.t,untyped	template getIdentStr(n: untyped): string		481
-nim	fn	denimpkg/napi/bindings.html#fn.t,int,untyped,untyped	template fn(paramCt: int; name, cushy: untyped): untyped		483
-nim	registerFn	denimpkg/napi/bindings.html#registerFn.t,Module,int,string,untyped	template registerFn(exports: Module; paramCt: int; name: string; cushy: untyped): untyped		501
-nim	addDocBlock	denimpkg/napi/bindings.html#addDocBlock,string,openArray[]	proc addDocBlock(fnName: string;\n            args: openArray[(string, string, NapiValueType, bool)])		519
-nim	export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped,untyped,typed	macro export_napi(vName, vType: untyped; vVal: typed)		559
-nim	export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped	macro export_napi(fn: untyped)		575
-nim	asyncActionSuccess	denimpkg/napi/bindings.html#asyncActionSuccess	AsyncActionStatus.asyncActionSuccess		691
-nim	asyncActionFail	denimpkg/napi/bindings.html#asyncActionFail	AsyncActionStatus.asyncActionFail		691
-nim	AsyncActionStatus	denimpkg/napi/bindings.html#AsyncActionStatus	enum AsyncActionStatus		691
-nim	PromiseData	denimpkg/napi/bindings.html#PromiseData	object PromiseData		695
-nim	newPromiseData	denimpkg/napi/bindings.html#newPromiseData,T	proc newPromiseData[T](jsData: T): ref PromiseData[T]		701
-nim	promise	denimpkg/napi/bindings.html#promise.m,untyped	macro promise(fn: untyped)		705
-nim	items	denimpkg/napi/bindings.html#items.i,napi_value	iterator items(n: napi_value): napi_value		708
-nim	toSeq	denimpkg/napi/bindings.html#toSeq,napi_value	proc toSeq(n: napi_value): seq[napi_value]		713
-nim	toString	denimpkg/napi/bindings.html#toString,napi_value	proc toString(n: napi_value): napi_value		722
-nim	toBool	denimpkg/napi/bindings.html#toBool,napi_value	proc toBool(n: napi_value): napi_value		726
-nim	toNumber	denimpkg/napi/bindings.html#toNumber,napi_value	proc toNumber(n: napi_value): napi_value		730
-nim	getPropertyNames	denimpkg/napi/bindings.html#getPropertyNames,napi_value	proc getPropertyNames(obj: napi_value): napi_value		735
-nim	getPropertyNamesArr	denimpkg/napi/bindings.html#getPropertyNamesArr,napi_value	proc getPropertyNamesArr(obj: napi_value): seq[napi_value]		741
-nim	getPropertyNamesArrStr	denimpkg/napi/bindings.html#getPropertyNamesArrStr,napi_value	proc getPropertyNamesArrStr(obj: napi_value): seq[string]		750
-nim	pairs	denimpkg/napi/bindings.html#pairs.i,napi_value	iterator pairs(n: napi_value): (string, napi_value)		758
-nim	defineProperties	denimpkg/napi/bindings.html#defineProperties,Module	proc defineProperties(obj: Module)		764
-nim	`$`	denimpkg/napi/bindings.html#$,napi_value	proc `$`(o: napi_value): string		770
-nim	init	denimpkg/napi/bindings.html#init.m,proc(Module)	macro init(initHook: proc (exports: Module)): void		787
-nimgrp	register	denimpkg/napi/bindings.html#register-procs-all	proc		419
+nim	kind	denimpkg/napi/bindings.html#kind,napi_value	proc kind(val: napi_value): NapiValueType		228
+nim	getInt64	denimpkg/napi/bindings.html#getInt64,napi_value	proc getInt64(n: napi_value): int64		231
+nim	getInt64	denimpkg/napi/bindings.html#getInt64,napi_value,int64	proc getInt64(n: napi_value; default: int64): int64		235
+nim	getNull	denimpkg/napi/bindings.html#getNull	proc getNull(): napi_value		240
+nim	getUndefined	denimpkg/napi/bindings.html#getUndefined	proc getUndefined(): napi_value		244
+nim	undefined	denimpkg/napi/bindings.html#undefined	proc undefined(): napi_value		248
+nim	getGlobal	denimpkg/napi/bindings.html#getGlobal	proc getGlobal(): napi_value		252
+nim	getInt32	denimpkg/napi/bindings.html#getInt32,napi_value	proc getInt32(n: napi_value): int32		256
+nim	getInt32	denimpkg/napi/bindings.html#getInt32,napi_value,int32	proc getInt32(n: napi_value; default: int32): int32		260
+nim	getInt	denimpkg/napi/bindings.html#getInt.t,napi_value	template getInt(n: napi_value): int		265
+nim	getInt	denimpkg/napi/bindings.html#getInt.t,napi_value,int	template getInt(n: napi_value; default: int): int		272
+nim	getBool	denimpkg/napi/bindings.html#getBool,napi_value	proc getBool(n: napi_value): bool		279
+nim	getBool	denimpkg/napi/bindings.html#getBool,napi_value,bool	proc getBool(n: napi_value; default: bool): bool		283
+nim	getStr	denimpkg/napi/bindings.html#getStr,napi_value	proc getStr(n: napi_value): string		288
+nim	getStr	denimpkg/napi/bindings.html#getStr,napi_value,string,int	proc getStr(n: napi_value; default: string; bufsize: int = 40): string		298
+nim	hasProperty	denimpkg/napi/bindings.html#hasProperty,napi_value,string	proc hasProperty(obj: napi_value; key: string): bool		310
+nim	hasOwnProperty	denimpkg/napi/bindings.html#hasOwnProperty,napi_value,string	proc hasOwnProperty(obj: napi_value; key: string): bool		314
+nim	getProperty	denimpkg/napi/bindings.html#getProperty,napi_value,string	proc getProperty(obj: napi_value; key: string): napi_value		319
+nim	getProperty	denimpkg/napi/bindings.html#getProperty,napi_value,string,napi_value	proc getProperty(obj: napi_value; key: string; default: napi_value): napi_value		326
+nim	`[]`	denimpkg/napi/bindings.html#[],napi_value,string	proc `[]`(obj: napi_value; key: string): napi_value		332
+nim	get	denimpkg/napi/bindings.html#get,napi_value,string	proc get(obj: napi_value; key: string): napi_value		336
+nim	get	denimpkg/napi/bindings.html#get,string	proc get(key: string): napi_value		340
+nim	get	denimpkg/napi/bindings.html#get,string,napi_value	proc get(key: string; default: napi_value): napi_value		355
+nim	setProperty	denimpkg/napi/bindings.html#setProperty,napi_value,string,napi_value	proc setProperty(obj: napi_value; key: string; value: napi_value)		360
+nim	`[]=`	denimpkg/napi/bindings.html#[]=,napi_value,string,napi_value	proc `[]=`(obj: napi_value; key: string; value: napi_value)		365
+nim	hasElement	denimpkg/napi/bindings.html#hasElement,napi_value,int	proc hasElement(obj: napi_value; index: int): bool		372
+nim	getElement	denimpkg/napi/bindings.html#getElement,napi_value,int	proc getElement(obj: napi_value; index: int): napi_value		378
+nim	getElement	denimpkg/napi/bindings.html#getElement,napi_value,int,napi_value	proc getElement(obj: napi_value; index: int; default: napi_value): napi_value		384
+nim	setElement	denimpkg/napi/bindings.html#setElement,napi_value,int,napi_value	proc setElement(obj: napi_value; index: int; value: napi_value)		388
+nim	len	denimpkg/napi/bindings.html#len,napi_value	proc len(arr: napi_value): int		393
+nim	`[]`	denimpkg/napi/bindings.html#[],napi_value,int	proc `[]`(obj: napi_value; index: int): napi_value		397
+nim	`[]=`	denimpkg/napi/bindings.html#[]=,napi_value,int,napi_value	proc `[]=`(obj: napi_value; index: int; value: napi_value)		401
+nim	register	denimpkg/napi/bindings.html#register,Module,string,T,NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    value: T; attr: NapiPropertyAttributes = napi_default)		416
+nim	register	denimpkg/napi/bindings.html#register,Module,string,openArray[T],NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)		421
+nim	register	denimpkg/napi/bindings.html#register,Module,string,openArray[],NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)		429
+nim	register	denimpkg/napi/bindings.html#register,Module,string,napi_callback,NapiPropertyAttributes	proc register(obj: Module; name: string; cb: napi_callback;\n         attr: NapiPropertyAttributes = napi_default)		438
+nim	callFunction	denimpkg/napi/bindings.html#callFunction,napi_value,openArray[napi_value],napi_value	proc callFunction(fn: napi_value; args: openArray[napi_value] = [];\n             this: napi_value = %*emptyArr): napi_value		446
+nim	callMethod	denimpkg/napi/bindings.html#callMethod,napi_value,string,openArray[napi_value]	proc callMethod(instance: napi_value; methd: string; args: openArray[napi_value] = []): napi_value		452
+nim	napiCall	denimpkg/napi/bindings.html#napiCall,string,openArray[napi_value]	proc napiCall(fname: string; args: openArray[napi_value] = []): napi_value		457
+nim	tryGetJson	denimpkg/napi/bindings.html#tryGetJson,napi_value	proc tryGetJson(n: napi_value): JsonNode		474
+nim	getIdentStr	denimpkg/napi/bindings.html#getIdentStr.t,untyped	template getIdentStr(n: untyped): string		478
+nim	fn	denimpkg/napi/bindings.html#fn.t,int,untyped,untyped,untyped	template fn(paramCt: int; fnName, fnNameStrinfigy, cushy: untyped): untyped		480
+nim	registerFn	denimpkg/napi/bindings.html#registerFn.t,Module,int,string,untyped	template registerFn(exports: Module; paramCt: int; name: string; cushy: untyped): untyped		498
+nim	addDocBlock	denimpkg/napi/bindings.html#addDocBlock,string,openArray[]	proc addDocBlock(fnName: string;\n            args: openArray[(string, string, NapiValueType, bool)])		516
+nim	export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped,untyped,typed	macro export_napi(vName, vType: untyped; vVal: typed)		557
+nim	export_napi	denimpkg/napi/bindings.html#export_napi.m,untyped,untyped	macro export_napi(fn: untyped; withModule: untyped = nil)		573
+nim	asyncActionSuccess	denimpkg/napi/bindings.html#asyncActionSuccess	AsyncActionStatus.asyncActionSuccess		715
+nim	asyncActionFail	denimpkg/napi/bindings.html#asyncActionFail	AsyncActionStatus.asyncActionFail		715
+nim	AsyncActionStatus	denimpkg/napi/bindings.html#AsyncActionStatus	enum AsyncActionStatus		715
+nim	PromiseData	denimpkg/napi/bindings.html#PromiseData	object PromiseData		719
+nim	newPromiseData	denimpkg/napi/bindings.html#newPromiseData,T	proc newPromiseData[T](jsData: T): ref PromiseData[T]		725
+nim	promise	denimpkg/napi/bindings.html#promise.m,untyped	macro promise(fn: untyped)		729
+nim	items	denimpkg/napi/bindings.html#items.i,napi_value	iterator items(n: napi_value): napi_value		732
+nim	toSeq	denimpkg/napi/bindings.html#toSeq,napi_value	proc toSeq(n: napi_value): seq[napi_value]		737
+nim	toString	denimpkg/napi/bindings.html#toString,napi_value	proc toString(n: napi_value): napi_value		746
+nim	toBool	denimpkg/napi/bindings.html#toBool,napi_value	proc toBool(n: napi_value): napi_value		750
+nim	toNumber	denimpkg/napi/bindings.html#toNumber,napi_value	proc toNumber(n: napi_value): napi_value		754
+nim	getPropertyNames	denimpkg/napi/bindings.html#getPropertyNames,napi_value	proc getPropertyNames(obj: napi_value): napi_value		759
+nim	getPropertyNamesArr	denimpkg/napi/bindings.html#getPropertyNamesArr,napi_value	proc getPropertyNamesArr(obj: napi_value): seq[napi_value]		765
+nim	getPropertyNamesArrStr	denimpkg/napi/bindings.html#getPropertyNamesArrStr,napi_value	proc getPropertyNamesArrStr(obj: napi_value): seq[string]		774
+nim	pairs	denimpkg/napi/bindings.html#pairs.i,napi_value	iterator pairs(n: napi_value): (string, napi_value)		782
+nim	defineProperties	denimpkg/napi/bindings.html#defineProperties,Module	proc defineProperties(obj: Module)		788
+nim	`$`	denimpkg/napi/bindings.html#$,napi_value	proc `$`(o: napi_value): string		795
+nim	`.`	denimpkg/napi/bindings.html#..m,napi_value,untyped	macro `.`(val: napi_value; field: untyped): untyped		824
+nim	`.=`	denimpkg/napi/bindings.html#.=.m,napi_value,untyped,napi_value	macro `.=`(val: napi_value; field: untyped; value: napi_value): untyped		831
+nim	`.=`	denimpkg/napi/bindings.html#.=.m,napi_value,untyped,typed	macro `.=`(val: napi_value; field: untyped; value: typed): untyped		839
+nim	`.()`	denimpkg/napi/bindings.html#.().m,napi_value,untyped,varargs[typed]	macro `.()`(val: napi_value; field: untyped; args: varargs[typed]): untyped		847
+nim	init	denimpkg/napi/bindings.html#init.m,proc(Module)	macro init(initHook: proc (exports: Module)): void		862
+nimgrp	register	denimpkg/napi/bindings.html#register-procs-all	proc		416
 nimgrp	expect	denimpkg/napi/bindings.html#expect-procs-all	proc		62
-nimgrp	get	denimpkg/napi/bindings.html#get-procs-all	proc		339
-nimgrp	getelement	denimpkg/napi/bindings.html#getElement-procs-all	proc		381
-nimgrp	getbool	denimpkg/napi/bindings.html#getBool-procs-all	proc		280
-nimgrp	getproperty	denimpkg/napi/bindings.html#getProperty-procs-all	proc		322
-nimgrp	getint32	denimpkg/napi/bindings.html#getInt32-procs-all	proc		257
-nimgrp	[]=	denimpkg/napi/bindings.html#[]=-procs-all	proc		368
-nimgrp	getstr	denimpkg/napi/bindings.html#getStr-procs-all	proc		289
-nimgrp	getint64	denimpkg/napi/bindings.html#getInt64-procs-all	proc		232
-nimgrp	[]	denimpkg/napi/bindings.html#[]-procs-all	proc		335
-nimgrp	exportnapi	denimpkg/napi/bindings.html#export_napi-macros-all	macro		559
-nimgrp	getint	denimpkg/napi/bindings.html#getInt-templates-all	template		266
+nimgrp	get	denimpkg/napi/bindings.html#get-procs-all	proc		336
+nimgrp	getelement	denimpkg/napi/bindings.html#getElement-procs-all	proc		378
+nimgrp	getbool	denimpkg/napi/bindings.html#getBool-procs-all	proc		279
+nimgrp	getproperty	denimpkg/napi/bindings.html#getProperty-procs-all	proc		319
+nimgrp	getint32	denimpkg/napi/bindings.html#getInt32-procs-all	proc		256
+nimgrp	[]=	denimpkg/napi/bindings.html#[]=-procs-all	proc		365
+nimgrp	getstr	denimpkg/napi/bindings.html#getStr-procs-all	proc		288
+nimgrp	getint64	denimpkg/napi/bindings.html#getInt64-procs-all	proc		231
+nimgrp	[]	denimpkg/napi/bindings.html#[]-procs-all	proc		332
+nimgrp	.=	denimpkg/napi/bindings.html#.=-macros-all	macro		831
+nimgrp	exportnapi	denimpkg/napi/bindings.html#export_napi-macros-all	macro		557
+nimgrp	getint	denimpkg/napi/bindings.html#getInt-templates-all	template		265
