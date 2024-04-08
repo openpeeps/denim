@@ -35,12 +35,10 @@ if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
 endif()
 """
 
-proc runCommand*(v: Values) =
+proc buildCommand*(v: Values) =
   ## Compile project to source code by using Nim compiler
   # https://nim-lang.org/docs/nimc.html
-  let inputFile = v.get("entry")
-  # let links = v.get("links")
-  # echo links
+  let inputFile = v.get("nim").getPath().path
   var
     currDir = getCurrentDir()
     addonPathDirectory = utils.getPath(currDir, "" / "denim_build")
@@ -52,7 +50,8 @@ proc runCommand*(v: Values) =
     QuitFailure.quit
 
   if not isEmptyDir(addonPathDirectory):
-    if not v.flag("yes"):
+    echo addonPathDirectory
+    if not v.has("y"):
       display("Directory is not empty: " & os.splitPath(addonPathDirectory).tail, indent=2, br="after")
       if promptConfirm("👉 Are you sure you want to remove contents?"):
         os.removeDir(addonPathDirectory)
@@ -65,12 +64,12 @@ proc runCommand*(v: Values) =
     
   var args = @[
     "--nimcache:$1",
-    "-d:napibuild",
+    "--define:napibuild",
     "--compileOnly",
     "--noMain",
   ]
 
-  if v.flag("release"):
+  if v.has("release"):
     add args, "-d:release"
     add args, "--opt:speed"
   else:
@@ -84,7 +83,7 @@ proc runCommand*(v: Values) =
   if nimCmd.exitCode != 0:
     display(nimCmd.output)
     QuitFailure.quit
-  elif v.flag("verbose"):
+  elif v.has("verbose"):
     display(nimCmd.output)
   var getNimPath = execCmdEx("choosenim show path")
   if getNimPath.exitCode != 0:
@@ -96,19 +95,19 @@ proc runCommand*(v: Values) =
     cachePathDirectory
   ], options={poStdErrToStdOut, poUsePath})
   
-  if v.flag("cmake"):
+  if v.has("cmake"):
     display("✨ Building with CMake.js", indent=2, br="after")
     writeFile(currDir / "CMakeLists.txt", cMakeListsContent.replace("DENIM_PKG_NAME", entryFile.splitFile.name))
     let cmakeCmd = execCmdEx("cmake-js compile --runtime node --out " & "denim_build" / "build")
     if cmakeCmd.exitCode != 0:
       display(cmakeCmd.output)
       QuitFailure.quit
-    elif v.flag("verbose"):
+    elif v.has("verbose"):
       display(cmakeCmd.output)
   else:
     display("✨ Building with node-gyp", indent=2, br="after")
     var
-      gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.flag("release"))]}
+      gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("release"))]}
       jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
     var
       jarr = newJArray()
@@ -121,11 +120,11 @@ proc runCommand*(v: Values) =
     if gypCmd.exitCode != 0:
       display(gypCmd.output)
       QuitFailure.quit
-    elif v.flag("verbose"):
+    elif v.has("verbose"):
       display(gypCmd.output)
   let
     defaultBinName =
-      if v.flag("cmake"):
+      if v.has("cmake"):
         entryFile.splitFile.name
       else: "main"
     binaryNodePath = utils.getPath(currDir, "" / "denim_build" / "build" / "Release" / defaultBinName & ".node")

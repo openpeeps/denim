@@ -8,14 +8,13 @@ elif isMainModule:
   # This requires latest version of `node-gyp`
   # todo add support for CMake.js 
   import kapsis
-  import denimpkg/commands/[newCommand, buildCommand, publishCommand]
+  import denimpkg/commands/[new, build, publish]
 
-  App:
-    about:
-      "DENIM 🔥 Native Node/BunJS addons powered by Nim"
-
-    commands:
-      $ "build" `entry` `links` ["release", "cmake", "yes", "verbose"]:
-        ? "Build Nim project to a native NodeJS addon"
-      $ "publish":
-        ? "Publish addon to NPM (requires npm cli)"
+  # App:
+    # about:
+    #   "DENIM 🔥 Native Node/BunJS addons powered by Nim"
+  commands:
+    build file(`nim`), bool(-y), bool(--cmake), bool(-r), bool(--verbose):
+      ## Build a native `node` addon from Nim
+    publish file(`addon`):
+      ## Publish your addon (requires npm cli)

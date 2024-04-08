@@ -17,7 +17,8 @@ import ospaths
 let path = getHomeDir() & ".nimble/bin"
 
 task dev, "Compile denim":
-  exec "nim c --gc:arc -d:denimcli -o:" & path & "/denim src/denim.nim"
+  # exec "nim c --gc:arc -d:denimcli -o:" & path & "/denim src/denim.nim"
+  exec "nimble build -d:denimcli"
 
 task docgenx, "Build documentation website":
   exec "nim doc --index:on -d:napibuild --project --git.url:https://github.com/openpeeps/denim --git.commit:main src/denim.nim"
