@@ -5,17 +5,19 @@ when not defined skipbuild:
   test "can build addons with node-gyp":
     for addonName in addons:
       let status = execCmdEx("denim build ./tests/" & addonName & ".nim -y")
-      echo "[OK] " & addonName & ".nim"
       if status.exitCode != 0:
         echo status.output
+      else:
+        echo "[OK] " & addonName & ".nim"
       assert status.exitCode == 0
 
   test "can build addons with CMake":
     for addonName in addons:
-      let status = execCmdEx("denim build ./tests/" & addonName & ".nim --cmake -y")
-      echo "[OK] " & addonName & ".nim"
+      let status = execCmdEx("./bin/denim build ./tests/" & addonName & ".nim --cmake -y")
       if status.exitCode != 0:
         echo status.output
+      else:
+        echo "[OK] " & addonName & ".nim"
       assert status.exitCode == 0
 
 test "can run myaddon (NodeJS)":
@@ -37,5 +39,4 @@ test "can run myobject (NodeJS)":
 
 test "can run myexceptions (NodeJS)":
   let status = execCmdEx("node tests/js/myexceptions.js")
-  echo status.output.strip()
   assert status.exitCode == 1
