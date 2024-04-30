@@ -69,7 +69,7 @@ proc buildCommand*(v: Values) =
     "--noMain",
   ]
 
-  if v.has("release"):
+  if v.has("r"):
     add args, "-d:release"
     add args, "--opt:speed"
   else:
@@ -107,7 +107,7 @@ proc buildCommand*(v: Values) =
   else:
     display("✨ Building with node-gyp", indent=2, br="after")
     var
-      gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("release"))]}
+      gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("r"))]}
       jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
     var
       jarr = newJArray()
