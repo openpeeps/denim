@@ -51,7 +51,7 @@ proc buildCommand*(v: Values) =
 
   if not isEmptyDir(addonPathDirectory):
     echo addonPathDirectory
-    if not v.has("y"):
+    if not v.has("-y"):
       display("Directory is not empty: " & os.splitPath(addonPathDirectory).tail, indent=2, br="after")
       if promptConfirm("👉 Are you sure you want to remove contents?"):
         os.removeDir(addonPathDirectory)
@@ -69,7 +69,7 @@ proc buildCommand*(v: Values) =
     "--noMain",
   ]
 
-  if v.has("r"):
+  if v.has("-r"):
     add args, "-d:release"
     add args, "--opt:speed"
   else:
@@ -83,7 +83,7 @@ proc buildCommand*(v: Values) =
   if nimCmd.exitCode != 0:
     display(nimCmd.output)
     QuitFailure.quit
-  elif v.has("verbose"):
+  elif v.has("--verbose"):
     display(nimCmd.output)
   var getNimPath = execCmdEx("choosenim show path")
   if getNimPath.exitCode != 0:
@@ -95,19 +95,19 @@ proc buildCommand*(v: Values) =
     cachePathDirectory
   ], options={poStdErrToStdOut, poUsePath})
   
-  if v.has("cmake"):
+  if v.has("--cmake"):
     display("✨ Building with CMake.js", indent=2, br="after")
     writeFile(currDir / "CMakeLists.txt", cMakeListsContent.replace("DENIM_PKG_NAME", entryFile.splitFile.name))
     let cmakeCmd = execCmdEx("cmake-js compile --runtime node --out " & "denim_build" / "build")
     if cmakeCmd.exitCode != 0:
       display(cmakeCmd.output)
       QuitFailure.quit
-    elif v.has("verbose"):
+    elif v.has("--verbose"):
       display(cmakeCmd.output)
   else:
     display("✨ Building with node-gyp", indent=2, br="after")
     var
-      gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("r"))]}
+      gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("-r"))]}
       jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
     var
       jarr = newJArray()
@@ -120,11 +120,11 @@ proc buildCommand*(v: Values) =
     if gypCmd.exitCode != 0:
       display(gypCmd.output)
       QuitFailure.quit
-    elif v.has("verbose"):
+    elif v.has("--verbose"):
       display(gypCmd.output)
   let
     defaultBinName =
-      if v.has("cmake"):
+      if v.has("--cmake"):
         entryFile.splitFile.name
       else: "main"
     binaryNodePath = utils.getPath(currDir, "" / "denim_build" / "build" / "Release" / defaultBinName & ".node")
