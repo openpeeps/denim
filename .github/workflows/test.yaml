@@ -25,6 +25,8 @@ jobs:
         with:
           nim-version: ${{ matrix.nim-version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+        sudo apt install libpcre3-dev libpcre3
       - run: "npm install node-gyp -g"
       - run: "npm install cmake-js -g"
       - run: "choosenim show path -y"
