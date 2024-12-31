@@ -32,8 +32,8 @@ jobs:
       - run: "choosenim show path -y"
       - run: nimble install denim@#head -Y
       - run: nimble test
-      - name: "test denim on windows"
-        # if: matrix.os == 'windows-latest'
-        # run: "denim.exe build tests\\myaddon.nim -r -y --cmake"
+      # - name: "test denim on windows"
+      # if: matrix.os == 'windows-latest'
+      # run: "denim.exe build tests\\myaddon.nim -r -y --cmake"
       - name: 'test denim on unix'
         run: "denim build tests/myaddon.nim -r -y --cmake"
