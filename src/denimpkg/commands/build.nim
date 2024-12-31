@@ -12,6 +12,7 @@ proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode =
     "linkflags": ["-ldl"]
   }
 
+# https://stackoverflow.com/questions/52605527/cmake-or-g-include-dll-libraries
 const cMakeListsContent = """
 cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW)
@@ -25,9 +26,10 @@ include_directories(${CMAKE_JS_INC})
 
 file(GLOB SOURCE_FILES "./denim_build/nimcache/*.c" "./denim_build/nimcache/*.h")
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
-set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX PREFIX "" SUFFIX ".node")
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
+add_library(DENIM_PKG_NAME SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
+set_target_properties(DENIM_PKG_NAME PROPERTIES LINKER_LANGUAGE CXX PREFIX "" SUFFIX ".node")
+
+DENIM_PKG_LINK_LIBS
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib
@@ -50,25 +52,23 @@ proc buildCommand*(v: Values) =
     QuitFailure.quit
 
   if not isEmptyDir(addonPathDirectory):
-    echo addonPathDirectory
     if not v.has("-y"):
-      display("Directory is not empty: " & os.splitPath(addonPathDirectory).tail, indent=2, br="after")
-      if promptConfirm("👉 Are you sure you want to remove contents?"):
+      displayInfo("Directory is not empty: " & os.splitPath(addonPathDirectory).tail)
+      if promptConfirm("👉 Do you want to remove current contents? (y/N)"):
         os.removeDir(addonPathDirectory)
       else:
         display("Canceled", indent=2, br="after")
         QuitFailure.quit
     else:
       os.removeDir(addonPathDirectory)
-  display("🔥 Running Nim Compiler", indent=2, br="both")
+  displayInfo("🔥 Running Nim Compiler")
     
   var args = @[
     "--nimcache:$1",
     "--define:napibuild",
     "--compileOnly",
-    "--noMain",
+    "--noMain"
   ]
-
   if v.has("-r"):
     add args, "-d:release"
     add args, "--opt:speed"
@@ -87,7 +87,7 @@ proc buildCommand*(v: Values) =
     display(nimCmd.output)
   var getNimPath = execCmdEx("choosenim show path")
   if getNimPath.exitCode != 0:
-    display("Can't find Nim path")
+    displayError("Can't find Nim path")
     QuitFailure.quit
   discard execProcess("ln", args = [
     "-s",
@@ -96,8 +96,25 @@ proc buildCommand*(v: Values) =
   ], options={poStdErrToStdOut, poUsePath})
   
   if v.has("--cmake"):
-    display("✨ Building with CMake.js", indent=2, br="after")
-    writeFile(currDir / "CMakeLists.txt", cMakeListsContent.replace("DENIM_PKG_NAME", entryFile.splitFile.name))
+    displayInfo("✨ Building with CMake.js")
+
+    # cmake - add target libs, if any
+    var denimLinkLibs: seq[string]
+    if v.has("--libs"):
+      for x in v.get("--libs").getStr.split(","):
+        denimLinkLibs.add(x)
+
+    let pkgName = entryFile.splitFile.name
+    writeFile(currDir / "CMakeLists.txt",
+      cMakeListsContent.multiReplace(
+        ("DENIM_PKG_NAME", pkgName),
+        ("DENIM_PKG_LINK_LIBS",
+          if denimLinkLibs.len > 0:
+            "target_link_libraries(" & pkgName & " " & denimLinkLibs.join(" ") & ")"
+          else: ""
+        )
+      )
+    )
     let cmakeCmd = execCmdEx("cmake-js compile --runtime node --out " & "denim_build" / "build")
     if cmakeCmd.exitCode != 0:
       display(cmakeCmd.output)
@@ -105,7 +122,7 @@ proc buildCommand*(v: Values) =
     elif v.has("--verbose"):
       display(cmakeCmd.output)
   else:
-    display("✨ Building with node-gyp", indent=2, br="after")
+    displayInfo("✨ Building with node-gyp")
     var
       gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("-r"))]}
       jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
@@ -133,10 +150,10 @@ proc buildCommand*(v: Values) =
     binaryTargetPath = binDirectory / binName
 
   if fileExists(binaryNodePath) == false:
-    display("👉 Oups! $1 not found. Try build again" % [binName], indent=2)
+    displayError("👉 Oups! $1 not found. Try build again" % [binName])
     QuitFailure.quit
   else:
     discard existsOrCreateDir(binDirectory)              # ensure bin directory exists
     moveFile(binaryNodePath, binaryTargetPath)           # move .node addon
-    display("👌 Done! Check your /bin directory", indent=2, br="after")
-    QuitSuccess.quit
+    displaySuccess("👌 Done! Check your `bin` directory")
+    displayInfo(binDirectory)
