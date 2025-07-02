@@ -1,5 +1,4 @@
 <p align="center">
-  <img src="https://github.com/openpeeps/denim/blob/main/.github/denim.png" alt="Denim" width="210px" height="210px"><br>
   Denim - Native NodeJS/BunJS addons powered by Nim<br>👑 Written in Nim language
 </p>
 
@@ -132,7 +131,6 @@ Type mismatch parameter: `name`. Got `undefined`, expected `string`
 - 🐛 Found a bug? [Create a new Issue](https://github.com/openpeeps/denim/issues)
 - 👋 Wanna help? [Fork it!](https://github.com/openpeeps/denim/fork)
 - 😎 [Get €20 in cloud credits from Hetzner](https://hetzner.cloud/?ref=Hm0mYGM9NxZ4)
-- 🥰 [Donate via PayPal address](https://www.paypal.com/donate/?hosted_button_id=RJK3ZTDWPL55C)
 
 ### 🎩 License
 Denim | MIT license. [Made by Humans from OpenPeeps](https://github.com/openpeeps)<br>
