@@ -10,11 +10,10 @@ elif isMainModule:
   import kapsis
   import denimpkg/commands/[new, build, publish]
 
-  # App:
-    # about:
-    #   "DENIM 🔥 Native Node/BunJS addons powered by Nim"
-  commands:
-    build file(`nim`), bool(-y), bool(--cmake), bool(-r), bool(--verbose):
-      ## Build a native `node` addon from Nim
-    publish file(`addon`):
-      ## Publish your addon (requires npm cli)
+  initKapsis do:
+    commands:
+      build file(nim), ?bool("-y"), ?bool("--cmake"),
+        ?string("--libs"), ?bool("-r"), ?bool("--verbose"):
+        ## Build a native `node` addon from Nim
+      publish file(addon):
+        ## Publish your addon (requires npm cli)

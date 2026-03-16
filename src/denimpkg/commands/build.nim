@@ -1,5 +1,6 @@
 import std/[os, osproc, json, strutils]
-import kapsis/[cli, runtime]
+import kapsis/runtime
+import kapsis/interactive/prompts
 import ../utils
 
 proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode = 
