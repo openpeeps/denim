@@ -35,6 +35,15 @@ jobs:
 
       - run: "nimble install -Y" # Install dependencies for tests
       
+      - name: Ensure CMake exists (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          if (-not (Get-Command cmake -ErrorAction SilentlyContinue)) {
+            choco install cmake --no-progress -y
+          }
+          cmake --version
+      
       - name: Copy denim binary to bin/ (Windows)
         if: matrix.os == 'windows-latest'
         run: |
