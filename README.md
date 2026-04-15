@@ -25,10 +25,17 @@ Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.n
 
 Simply run `denim -h`
 ```
-DENIM 🔥 Native Node/BunJS addons powered by Nim
+DENIM - Nim code to Bun.js/Node.js in seconds via NAPI
+  (c) George Lemon | MIT License  
+  Build Version: 0.2.0
 
-  build <entry> <links> --cmake --yes --verbose          Build Nim project to a native NodeJS addon
-  publish                                                Publish addon to NPM (requires npm cli)
+  build <nim:file>               Build a native `node` addon from Nim
+               -y:bool
+          --cmake:bool           Whether to use CMake.js instead of node-gyp (faster)
+         --libs:string           Optionally, link external libraries
+               -r:bool           Compile in release mode (default: false)
+        --verbose:bool           Verbose output
+  publish <addon:file>           Publish your addon (requires npm cli)
 ```
 
 Use Denim as a Nimble task:
@@ -43,7 +50,8 @@ when defined napibuild:
   # add some flags
 ```
 
-> __Note__ Check fully-working examples in [/tests](https://github.com/openpeeps/denim/tree/main/tests)
+>[!NOTE]
+> Combining native code with JavaScript is a powerful way to optimize performance-critical parts. Note that converting data between Nim and N-API types adds overhead, so it's best to minimize the number of calls across the boundary and batch data when possible.
 
 ### Defining a module
 
@@ -136,4 +144,4 @@ Type mismatch parameter: `name`. Got `undefined`, expected `string`
 Denim | MIT license. [Made by Humans from OpenPeeps](https://github.com/openpeeps)<br>
 Thanks to [Andrew Breidenbach](https://github.com/AjBreidenbach) and [Andrei Rosca](https://github.com/andi23rosca) for their work.<br>
 
-Copyright &copy; 2023 OpenPeeps & Contributors &mdash; All rights reserved.
+Copyright &copy; 2026 OpenPeeps & Contributors &mdash; All rights reserved.
