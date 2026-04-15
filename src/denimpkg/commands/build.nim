@@ -8,7 +8,7 @@
 #
 # (c) 2026 George Lemon | MIT License
 #          Made by Humans from OpenPeeps
-#          https://github.com/openpeeps/tim
+#          https://github.com/openpeeps/denim
 
 import std/[os, osproc, json, strutils]
 import kapsis/runtime
@@ -67,14 +67,14 @@ proc buildCommand*(v: Values) =
   if not isEmptyDir(addonPathDirectory):
     if not v.has("-y"):
       displayInfo("Directory is not empty: " & os.splitPath(addonPathDirectory).tail)
-      if promptConfirm("👉 Do you want to remove current contents? (y/N)"):
+      if promptConfirm("Do you want to remove current contents? (y/N)"):
         os.removeDir(addonPathDirectory)
       else:
         display("Canceled", indent=2, br="after")
         QuitFailure.quit
     else:
       os.removeDir(addonPathDirectory)
-  displayInfo("🔥 Running Nim Compiler")
+  displayInfo("Running Nim Compiler")
     
   var args = @[
     "--nimcache:$1",
@@ -109,7 +109,7 @@ proc buildCommand*(v: Values) =
   ], options={poStdErrToStdOut, poUsePath})
   
   if v.has("--cmake"):
-    displayInfo("✨ Building with CMake.js")
+    displayInfo("Building with CMake.js")
 
     # cmake - add target libs, if any
     var denimLinkLibs: seq[string]
@@ -128,6 +128,7 @@ proc buildCommand*(v: Values) =
         )
       )
     )
+    # Build the native addon using CMake.js
     let cmakeCmd = execCmdEx("cmake-js compile --runtime node --out " & "denim_build" / "build")
     if cmakeCmd.exitCode != 0:
       display(cmakeCmd.output)
@@ -135,18 +136,28 @@ proc buildCommand*(v: Values) =
     elif v.has("--verbose"):
       display(cmakeCmd.output)
   else:
-    displayInfo("✨ Building with node-gyp")
-    var
-      gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("-r"))]}
-      jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
-    var
-      jarr = newJArray()
-      jsonConfigContents = parseJson(readFile(jsonConfigPath))
+    # When using `node-gyp`, we need to generate a `binding.gyp` file with
+    # the correct configuration
+    displayInfo("Building with node-gyp")
+    var gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("-r"))]}
+    let jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
+    
+    var jarr = newJArray()
+    let jsonConfigContents = parseJson(readFile(jsonConfigPath))
+    
     for elem in items(jsonConfigContents["compile"].elems):
       jarr.add(newJString(elem[0].getStr().replace(addonPathDirectory / "", "")))
+    
+    # Set the source files in the `binding.gyp` configuration
     gyp["targets"][0]["sources"] = %* jarr
+    
+    # Write `binding.gyp` file for node-gyp
     writeFile(addonPathDirectory / "binding.gyp", pretty(gyp, 2))
+    
+    # Build the native addon using node-gyp
     let gypCmd = execCmdEx("node-gyp rebuild --directory=" & addonPathDirectory)
+    
+    # Check if the build was successful
     if gypCmd.exitCode != 0:
       display(gypCmd.output)
       QuitFailure.quit
@@ -163,10 +174,10 @@ proc buildCommand*(v: Values) =
     binaryTargetPath = binDirectory / binName
 
   if fileExists(binaryNodePath) == false:
-    displayError("👉 Oups! $1 not found. Try build again" % [binName])
+    displayError("Oups! $1 not found. Try build again" % [binName])
     QuitFailure.quit
   else:
     discard existsOrCreateDir(binDirectory)              # ensure bin directory exists
     moveFile(binaryNodePath, binaryTargetPath)           # move .node addon
-    displaySuccess("👌 Done! Check your `bin` directory")
+    displaySuccess("Done! Check your `bin` directory")
     displayInfo(binDirectory)

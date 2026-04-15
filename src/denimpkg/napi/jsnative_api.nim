@@ -8,7 +8,7 @@
 #
 # (c) 2026 George Lemon | MIT License
 #          Made by Humans from OpenPeeps
-#          https://github.com/openpeeps/tim
+#          https://github.com/openpeeps/denim
 
 type
   napi_env* {.header:"<node_api.h>".} = pointer

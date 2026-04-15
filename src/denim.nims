@@ -1,4 +1,6 @@
---passC:"-I/usr/include/node -I/usr/local/include/node"
+when not defined(windows):
+  --passC:"-I/usr/include/node -I/usr/local/include/node"
+
 --gc:arc
 --define:danger
 --opt:size
