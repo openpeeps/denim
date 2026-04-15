@@ -12,20 +12,20 @@ when not defined skipbuild:
   #     check status.exitCode == 0
 
   test "can build addons with CMake":
-    let denimBin =
+    var denimBin =
       when defined(windows):
         "denim.exe"
       else:
         "denim"
 
     let localDenim = "bin" / denimBin
-    let denimCmd =
+    let denimBin =
       if fileExists(localDenim): localDenim
-      else: denimBin
-
+      else: getHomeDir() / ".nimble" / "bin" / denimBin
+    
     for addonName in addons:
       let addonFile = "tests" / ("example_" & addonName & ".nim")
-      let cmd = quoteShell(denimCmd) & " build " & quoteShell(addonFile) & " --cmake -y"
+      let cmd = quoteShell(denimBin) & " build " & quoteShell(addonFile) & " --cmake -y"
       let status = execCmdEx(
         cmd,
         options = {poStdErrToStdOut, poUsePath, poEvalCommand}
