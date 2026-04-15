@@ -32,6 +32,7 @@ jobs:
 
       # - run: "npm install node-gyp -g" not needed now
       - run: "npm install cmake-js -g"
+      - run: "nimble install -Y" # Install dependencies for tests
       
       - name: Copy denim binary to bin/ (Windows)
         if: matrix.os == 'windows-latest'
