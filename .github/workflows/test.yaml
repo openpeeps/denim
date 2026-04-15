@@ -21,6 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Use Git OpenSSL 1.1 on Windows
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          "C:\Program Files\Git\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
       - uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: ${{ matrix.nim-version }}
@@ -29,12 +35,6 @@ jobs:
       - name: Install Linux deps
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y libpcre3-dev libpcre3
-
-      - name: Use Git OpenSSL 1.1 on Windows
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          "C:\Program Files\Git\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - run: "npm install node-gyp -g"
       - run: "npm install cmake-js -g"
