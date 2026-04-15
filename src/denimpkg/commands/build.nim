@@ -37,7 +37,7 @@ add_definitions(-DNAPI_VERSION=4)
 
 include_directories(${CMAKE_JS_INC})
 
-file(GLOB SOURCE_FILES "./denim_build/nimcache/*.c" "./denim_build/nimcache/*.h")
+file(GLOB SOURCE_FILES DENIM_GLOB_SOURCES)
 
 add_library(DENIM_PKG_NAME SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 set_target_properties(DENIM_PKG_NAME PROPERTIES LINKER_LANGUAGE CXX PREFIX "" SUFFIX ".node")
@@ -118,8 +118,12 @@ proc buildCommand*(v: Values) =
         denimLinkLibs.add(x)
 
     let pkgName = entryFile.splitFile.name
+    var globSources: seq[string]
+    for pattern in ["*.c", "*.h"]:
+      globSources.add(os.joinPath(currDir, "denim_build" / "nimcache", pattern))
     writeFile(currDir / "CMakeLists.txt",
       cMakeListsContent.multiReplace(
+        ("DENIM_GLOB_SOURCES", globSources.join(" ")),
         ("DENIM_PKG_NAME", pkgName),
         ("DENIM_PKG_LINK_LIBS",
           if denimLinkLibs.len > 0:
