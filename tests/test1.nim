@@ -1,7 +1,7 @@
 import std/[unittest, strutils, osproc, os]
 
 when not defined skipbuild:
-  var addons = ["myaddon", "myobject", "mypromise", "myexceptions"]
+  var addons = ["addon", "object", "promise", "exception", "class"]
   # test "can build addons with node-gyp":
   #   for addonName in addons:
   #     let status = execCmdEx("denim build tests" / addonName & ".nim -y")
@@ -12,38 +12,42 @@ when not defined skipbuild:
   #     check status.exitCode == 0
 
   test "can build addons with CMake":
+    let denimBin =
+      when defined(windows):
+        "denim.exe"
+      else:
+        "denim"
     for addonName in addons:
-      echo addonName
-      let status = execCmdEx("denim build tests" / addonName & ".nim --cmake -y")
-      echo status.exitCode
+      let status = execCmdEx(denimBin & " build tests" / "example_" & addonName & ".nim --cmake -y")
       if status.exitCode != 0:
         echo status.output
+        fail()
       else:
-        echo "[OK] " & addonName & ".nim"
+        echo("[OK] Built " & addonName & ".nim with CMake")
       check status.exitCode == 0
 
-test "can run myaddon (NodeJS)":
-  let status = execCmdEx("node " & "tests" / "js" / "myaddon.js")
+test "can run example_addon (NodeJS)":
+  let status = execCmdEx("node " & "tests" / "js" / "example_addon.js")
   let hello = status.output.strip()
   echo hello
   check hello == "Hello, World! from Nim. This is awesome!"
   check status.exitCode == 0
 
-test "can run mypromise (NodeJS)":
-  let status = execCmdEx("node " & "tests" / "js" / "mypromise.js")
+test "can run example_promise (NodeJS)":
+  let status = execCmdEx("node " & "tests" / "js" / "example_promise.js")
   echo status.output.strip()
   check status.exitCode == 0
 
-test "can run myobject (NodeJS)":
-  let status = execCmdEx("node " & "tests" / "js" / "myobject.js")
+test "can run example_object (NodeJS)":
+  let status = execCmdEx("node " & "tests" / "js" / "example_object.js")
   echo status.output.strip()
   check status.exitCode == 0
 
-test "can run myexceptions (NodeJS)":
-  let status = execCmdEx("node " & "tests" / "js" / "myexceptions.js")
+test "can run example_exception (NodeJS)":
+  let status = execCmdEx("node " & "tests" / "js" / "example_exception.js")
   check status.exitCode == 1
 
-test "can run OOP class example (NodeJS)":
+test "can run example_class (NodeJS)":
   let status = execCmdEx("node " & "tests" / "js" / "example_class.js")
   check status.output.strip() == "Hello from User.hello()"
   check status.exitCode == 0

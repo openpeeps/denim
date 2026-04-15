@@ -9,3 +9,4 @@ tests/*
 !tests/*.nims
 !tests/*.nim
 !tests/js
+CMakeLists.txt

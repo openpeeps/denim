@@ -1,4 +1,4 @@
-const nim = require('../../bin/myexceptions.node')
+const nim = require('../../bin/example_exception.node')
 
 try {
   nim.parseJSON("some bad json")

@@ -1,4 +1,4 @@
-const nim = require('../../bin/mypromise.node')
+const nim = require('../../bin/example_promise.node')
 
 async function x(num) {
   try {
