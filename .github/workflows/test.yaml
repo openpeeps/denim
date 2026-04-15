@@ -30,8 +30,20 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y libpcre3-dev libpcre3
 
-      - run: "npm install node-gyp -g"
+      # - run: "npm install node-gyp -g" not needed now
       - run: "npm install cmake-js -g"
       
-      - run: nimble install denim@#head -Y
+      - name: Copy denim binary to bin/ (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir bin
+          nim c -d:release -o:bin/denim.exe src/denim.nim
+          copy src\denim.exe bin\denim.exe
+
+      - name: Copy denim binary to bin/ (Unix)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          nim c -d:release -o:src/denim src/denim.nim
+          mkdir -p bin
+          cp src/denim bin/denim
       - run: nimble test
