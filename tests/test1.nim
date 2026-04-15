@@ -19,10 +19,10 @@ when not defined skipbuild:
         "denim"
 
     let localDenim = "bin" / denimBin
-    let denimBin =
+    denimBin =
       if fileExists(localDenim): localDenim
       else: getHomeDir() / ".nimble" / "bin" / denimBin
-    
+
     for addonName in addons:
       let addonFile = "tests" / ("example_" & addonName & ".nim")
       let cmd = quoteShell(denimBin) & " build " & quoteShell(addonFile) & " --cmake -y"
