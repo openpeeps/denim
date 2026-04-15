@@ -38,6 +38,10 @@ jobs:
 
       - run: "npm install node-gyp -g"
       - run: "npm install cmake-js -g"
+      
+      - name: "choosenim path"
+        if: matrix.os == 'ubuntu-latest'
+        run: "choosenim show path -y"
 
       - run: nimble install denim@#head -Y
       - run: nimble test
