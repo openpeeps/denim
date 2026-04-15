@@ -32,6 +32,10 @@ jobs:
 
       # - run: "npm install node-gyp -g" not needed now
       - run: "npm install cmake-js -g"
+      - name: Add npm global bin to PATH
+        run: |
+          echo "$(npm bin -g)" >> $GITHUB_PATH
+          
       - run: "nimble install -Y" # Install dependencies for tests
       
       - name: Copy denim binary to bin/ (Windows)
