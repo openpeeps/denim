@@ -15,6 +15,37 @@ import kapsis/runtime
 import kapsis/interactive/prompts
 import ../utils
 
+
+proc detectNimToolchainPath(): string =
+  # Detect the Nim toolchain path by parsing the output of `nim dump`
+  let d = execCmdEx("nim dump")
+  if d.exitCode != 0: return
+
+  # parse from bottom; nim prints final lib paths near the end
+  let lines = d.output.splitLines()
+  for i in countdown(lines.high, 0):
+    var p = lines[i].strip()
+    if p.len == 0:
+      continue
+
+    # normalize quoted lines
+    p = p.strip(chars = {'"', '\''})
+
+    # candidate A: line is ".../lib"
+    if dirExists(p) and p.endsWith("/lib") or p.endsWith("\\lib"):
+      let root = p.parentDir
+      if fileExists(root / "lib" / "nimbase.h"):
+        return root
+
+    if dirExists(p):
+      let idx1 = p.rfind("/lib/")
+      let idx2 = p.rfind("\\lib\\")
+      let idx = max(idx1, idx2)
+      if idx >= 0:
+        let root = p[0 ..< idx].strip()
+        if root.len > 0 and fileExists(root / "lib" / "nimbase.h"):
+          return root
+
 proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode = 
   return %* {
     "target_name": "main",
@@ -98,13 +129,14 @@ proc buildCommand*(v: Values) =
     QuitFailure.quit
   elif v.has("--verbose"):
     display(nimCmd.output)
-  var getNimPath = execCmdEx("choosenim show path")
-  if getNimPath.exitCode != 0:
-    displayError("Can't find Nim path")
+  let getNimPath = detectNimToolchainPath()
+  if getNimPath.len == 0:
+    displayError("Can't find Nim toolchain path (from `nim`/`nim dump`)")
+    QuitFailure.quit
     QuitFailure.quit
   discard execProcess("ln", args = [
     "-s",
-    strip(getNimPath.output) / "lib" / "nimbase.h",
+    getNimPath / "lib" / "nimbase.h",
     cachePathDirectory
   ], options={poStdErrToStdOut, poUsePath})
   
@@ -143,7 +175,7 @@ proc buildCommand*(v: Values) =
     # When using `node-gyp`, we need to generate a `binding.gyp` file with
     # the correct configuration
     displayInfo("Building with node-gyp")
-    var gyp = %* {"targets": [getNodeGypConfig(getNimPath.output.strip, v.has("-r"))]}
+    var gyp = %* {"targets": [getNodeGypConfig(getNimPath, v.has("-r"))]}
     let jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
     
     var jarr = newJArray()
