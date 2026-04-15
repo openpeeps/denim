@@ -37,7 +37,7 @@ jobs:
       - name: Copy denim binary to bin/ (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          mkdir bin
+          mkdir bin -Force
           nim c -d:release -o:bin/denim.exe src/denim.nim
 
       - name: Copy denim binary to bin/ (Unix)
