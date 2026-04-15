@@ -1,14 +1,13 @@
 const nim = require('../../bin/mypromise.node')
 
-async function x() {
+async function x(num) {
   try {
-    let xx = await nim.testPromise((1 + 1) * 4)
+    let xx = await nim.testPromise((1 + 1) * num)
     console.log('Resolved promise: ' + xx)
   } catch(e) {
     console.log('Oups! ' + e)
   }
 }
 
-x()
-
-// x() // todo: calling more than once will SIGSEGV: Illegal storage access.
+x(4)
+x(8)

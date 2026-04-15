@@ -19,22 +19,35 @@ export node_bindings, jsnative_api, utils
 type
   NapiStatusError = object of CatchableError
   NapiErrorType* {.pure.} = enum
+    ## NAPI error types for `throwError` and `error` procs
     napiError
     napiTypeError
     napiRangeError
     napiCustomError
 
   Module* = ref object
+    ## Module object used for registering and exporting functions
+    ## and properties to NodeJS. This is the main interface for users of this library.
     val*: napi_value
+      ## The `exports` object that will be returned from the module.
+      ## This is where you will register your functions and properties.
     env*: napi_env
+      ## The NAPI environment variable, used for making NAPI calls.
+      ## This is maintained by various hooks and should not be modified directly.
     descriptors: seq[NapiPropertyDescriptor]
+      # A sequence of `NapiPropertyDescriptor` that will be used to define properties on the `exports` object.
 
-  TypedArg = tuple[str, argName, argType: string, argNapiValue: NapiValueType, isOptional: bool]
+  TypedArg* = tuple[str, argName, argType: string, argNapiValue: NapiValueType, isOptional: bool]
+    ## A tuple type used for documenting function parameters in `addDocBlock`.
+    ## Contains the parameter name, type, corresponding NAPI value type, and whether the parameter is optional.
 
 var
   Env*: napi_env = nil
     ## Global environment variable; state maintained by various hooks; used internally
+  
   IndexModule = OrderedTableRef[string, seq[TypedArg]]()
+    # A global table used for storing function parameter documentation
+    # for error messages. Maps function names to sequences of `TypedArg`.
 
 proc assert*(status: NapiStatus) {.raises: [NapiStatusError].} =
   ## Asserts that a call returns correctly;
@@ -101,84 +114,90 @@ proc expect*(env: napi_env, v: seq[napi_value], errorName, fnIdent: string): boo
   #   assert env.throwError(fnDesc.docblock & "\n" & "This function requires $1 $2, $3 given" % [$expectKind.len, arglabel, $v.len], errorName)
 
 proc create(env: napi_env, n: bool): napi_value =
-  ## Create a new `Boolean` `napi_value`
+  # Create a new `Boolean` `napi_value`
   assert (napi_get_boolean(env, n, addr result))
 
 proc create(env: napi_env, n: int32): napi_value =
-  ## Create a new `int32` `napi_value`
+  # Create a new `int32` `napi_value`
   assert ( napi_create_int32(env, n, addr result) )
 
 proc create(env: napi_env, n: int64): napi_value =
-  ## Create a new `int64` `napi_value`
+  # Create a new `int64` `napi_value`
   assert ( napi_create_int64(env, n, addr result) )
 
 proc create(env: napi_env, n: uint32): napi_value =
-  ## Create a new `uint32` `napi_value`
+  # Create a new `uint32` `napi_value`
   assert ( napi_create_uint32(env, n, addr result) )
 
 proc create(env: napi_env, n: uint64): napi_value =
-  ## Create a new `uint64` `napi_value`
+  # Create a new `uint64` `napi_value`
   assert ( napi_create_uint64(env, n, addr result) )
 
 proc create(env: napi_env, n: float64): napi_value =
-  ## Create a new `float64` `napi_value`
+  # Create a new `float64` `napi_value`
   assert ( napi_create_double(env, n, addr result) )
 
 proc create(env: napi_env, s: string): napi_value =
-  ## Create a new `string` `napi_value`
+  # Create a new `string` `napi_value`
   assert ( napi_create_string_utf8(env, s, s.len.csize_t, addr result) )
 
 proc create(env: napi_env, p: openarray[(string, napi_value)]): napi_value =
-  ## Create a new k/v `object` containing `napi_value`
+  # Create a new k/v `object` containing `napi_value`
   assert napi_create_object(env, addr result)
   for name, val in items(p):
     assert napi_set_named_property(env, result, name.cstring, val)
 
 proc create(env: napi_env, p: seq[(string, napi_value)]): napi_value =
-  ## Create a new k/v `object` containing `napi_value`
+  # Create a new k/v `object` containing `napi_value`
   assert napi_create_object(env, addr result)
   for name, val in items(p):
     assert napi_set_named_property(env, result, name.cstring, val)
 
 proc create(env: napi_env, a: openarray[napi_value]): napi_value =
-  ## Create a new `array` `napi_value`
+  # Create a new `array` `napi_value`
   assert( napi_create_array_with_length(env, a.len.csize_t, addr result) )
   for i, elem in a.enumerate:
     assert napi_set_element(env, result, i.uint32, a[i])
 
 proc create(env: napi_env, a: seq[napi_value]): napi_value =
-  ## Create a new `array` `napi_value`
+  # Create a new `array` `napi_value`
   assert( napi_create_array(env, addr result) )
   for i, elem in a.enumerate:
     assert napi_set_element(env, result, i.uint32, a[i])
 
 proc create[T: int | uint | string](env: napi_env, a: openarray[T]): napi_value =
-  ## Create a new `array`. Produce an array of `int`, `uint` `string` from `a
+  # Create a new `array`. Produce an array of `int`, `uint` `string` from `a
   var elements = newSeq[napi_value]()
   for elem in a:
     elements.add(env.create(elem))
   env.create(elements)
 
 proc create[T](env: napi_env, a: seq[T]): napi_value =
-  ## Create a new seq[seq[T]]
+  # Create a new seq[seq[T]]
   var elements = newSeq[napi_value]()
   for elem in a:
     elements.add(env.create(elem))
   env.create(elements)
 
 proc create[T: int | uint | string](env: napi_env, a: openarray[(string, T)]): napi_value =
+  # Create a new `object` `napi_value` from an openarray of k/v pairs. The value can be `int`, `uint`, or `string`.
   var properties = newSeq[(string, napi_value)]()
   for prop in a:
     properties.add((prop[0], env.create(prop[1])))
   env.create(a)
 
 proc createFn*(env: napi_env, fname: string, cb: napi_callback): napi_value =
-  ## Create a new function
+  ## Create a new function `napi_value` from a `napi_callback`. This is used for procs
+  ## like `register` where we need to create a `napi_value` from a callback function.
   assert ( napi_create_function(env, fname, fname.len.csize_t, cb, nil, addr result) )
 
-proc create(env: napi_env, v: napi_value): napi_value = v
+proc create(env: napi_env, v: napi_value): napi_value =
+  # Create a new `napi_value` from an existing `napi_value`. This is used for
+  # procs like `register` where we need to create a new `napi_value` from a callback function.
+  v
 
 proc create*[T](n: Module, t: T): napi_value =
+  ## Create a new `napi_value` of `T` using the `Module`'s environment variable
   n.env.create(t)
 
 proc napiCreate*[T](t: T): napi_value =
@@ -732,10 +751,6 @@ type
     deferred*: napi_deferred
     work*: napi_async_work
     jsData*: T
-
-proc newPromiseData*[T](jsData: T): ptr PromiseData[T] =
-  result = new(ptr PromiseData[T])
-  result[].jsData = jsData
 
 macro promise*(fn: untyped) =
   fn # todo
