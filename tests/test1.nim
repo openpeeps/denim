@@ -13,7 +13,9 @@ when not defined skipbuild:
 
   test "can build addons with CMake":
     for addonName in addons:
+      echo addonName
       let status = execCmdEx("denim build tests" / addonName & ".nim --cmake -y")
+      echo status.exitCode
       if status.exitCode != 0:
         echo status.output
       else:

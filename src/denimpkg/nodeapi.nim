@@ -1,13 +1,20 @@
+# Node-API (N-API) bindings for Nim.
+#
+# Originally written by Andrew Breidenbach, later modified by Andrei Rosca
+# and now fully implemented in Nim and maintained by OpenPeeps.
+# 
+#     https://github.com/AjBreidenbach
+#     https://github.com/andi23rosca
+#
+# (c) 2026 George Lemon | MIT License
+#          Made by Humans from OpenPeeps
+#          https://github.com/openpeeps/tim
+
 import std/[macros, strutils, sequtils, tables]
 import std/json except `%*`
 
-import
-  jsNativeApiTypes,
-  jsNativeApi,
-  nodeApi,
-  utils
-
-export jsNativeApiTypes, jsNativeApi, nodeApi
+import ./napi/[node_bindings, jsnative_api, utils]
+export node_bindings, jsnative_api, utils
 
 type
   NapiStatusError = object of CatchableError
@@ -30,6 +37,11 @@ var
   IndexModule = OrderedTableRef[string, seq[TypedArg]]()
 
 proc assert*(status: NapiStatus) {.raises: [NapiStatusError].} =
+  ## Asserts that a call returns correctly;
+  if status != napi_ok:
+    raise newException(NapiStatusError, "NAPI call returned non-zero status (" & $status & ": " & $NapiStatus(status) & ")")
+
+proc `!`*(status: NapiStatus) {.raises: [NapiStatusError].} =
   ## Asserts that a call returns correctly;
   if status != napi_ok:
     raise newException(NapiStatusError, "NAPI call returned non-zero status (" & $status & ": " & $NapiStatus(status) & ")")
@@ -432,7 +444,6 @@ proc register*[T: int | uint | string | napi_value](obj: Module,
   ## Register a new property field to `obj` Module.
   var properties = newSeq[(string, napi_value)]()
   for v in values: properties.add((v[0], obj.create(v[1])))
-
   obj.registerBase(name, create(obj.env, properties), attr)
 
 proc register*(obj: Module, name: string, cb: napi_callback,
@@ -477,7 +488,7 @@ proc tryGetJson*(n: napi_value): JsonNode =
 
 template getIdentStr*(n: untyped): string = $n
 
-template fn*(paramCt: int, fnName, fnNameStrinfigy, cushy: untyped): untyped {.dirty.} =
+template registerFn*(paramCt: int, fnName, fnNameJS, handle: untyped): untyped {.dirty.} =
   ## Register a function
   var `fnName` = block:
     proc `wrapper$`(environment: napi_env, info: napi_callback_info): napi_value {.cdecl.} =
@@ -492,10 +503,10 @@ template fn*(paramCt: int, fnName, fnNameStrinfigy, cushy: untyped): untyped {.d
       for i in 0..<min(argc, paramCt):
         args.add(`argv$`[][i])
       dealloc(`argv$`)
-      cushy
-    Env.createFn(fnNameStrinfigy, `wrapper$`.napi_callback)
+      handle
+    Env.createFn(fnNameJS, `wrapper$`.napi_callback)
 
-template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.} =
+template exportFn*(exports: Module, paramCt: int, name: string, handle: untyped): untyped {.dirty.} =
   ## Register and export a function
   block:
     proc `wrapper$`(environment: napi_env, info: napi_callback_info): napi_value {.cdecl.} =
@@ -510,7 +521,7 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
       for i in 0..<min(argc, paramCt):
         args.add(`argv$`[][i])
       dealloc(`argv$`)
-      cushy
+      handle
     exports.register(name, `wrapper$`)
 
 proc addDocBlock*(fnName: string, args: openarray[(string, string, NapiValueType, bool)]) =
@@ -585,19 +596,19 @@ macro export_napi*(fn: untyped, withModule: untyped = nil) =
   ## ```
   var
     fn: NimNode = fn
+    useModule: bool = true
     withModule: NimNode = withModule
   if withModule.kind != nnkNilLit:
     let x = withModule.copy()
     withModule = fn.copy()
     fn = x.copy()
+    useModule = withModule == newLit(true)
+  echo useModule
   if fn.kind == nnkProcDef:
     expectKind(fn[6], nnkStmtList) # body
     expectKind(fn[3], nnkFormalParams) # params
     result = newStmtList()
     let fnName = fn[0].strVal
-    var useModule = true
-    if withModule.kind != nnkNilLit and withModule == newLit(false):
-      useModule = false
     var
       fnBody = newStmtList()
       params = fn[3][1..^1]
@@ -674,24 +685,24 @@ macro export_napi*(fn: untyped, withModule: untyped = nil) =
         assert env.napi_create_error(%* "NimRuntime", %*(getCurrentExceptionMsg() & "\n" & getCurrentException().getStackTrace), runtimeError.addr)
         assert env.napi_throw(runtimeError)
 
-    result.add(
-      if useModule:
+    if useModule:
+      add result, 
         newCall(
-          ident("registerFn"),
+          ident("exportFn"),
           ident("module"),
           newLit(paramsLen),
           newLit(fnName),
           getAst(runtimeErrorWrapper(fnBody))
         )
-      else:
+    else:
+      add result, 
         newCall(
-          ident("fn"),
+          ident("registerFn"),
           newLit(paramsLen),
           ident(fnName),
           newLit(fnName),
           getAst(runtimeErrorWrapper(fnBody))
         )
-    )
   elif fn.kind in {nnkVarSection, nnkLetSection}:  # This will works only since Nim 2.0.0
     for identDef in fn.children:
       var
@@ -722,9 +733,9 @@ type
     work*: napi_async_work
     jsData*: T
 
-proc newPromiseData*[T](jsData: T): ref PromiseData[T] =
-  new(result)
-  result.jsData = jsData
+proc newPromiseData*[T](jsData: T): ptr PromiseData[T] =
+  result = new(ptr PromiseData[T])
+  result[].jsData = jsData
 
 macro promise*(fn: untyped) =
   fn # todo
@@ -858,9 +869,9 @@ macro `.()`*(val: napi_value, field: untyped, args: varargs[typed]): untyped =
     arguments
   )
 
-
 macro init*(initHook: proc(exports: Module)): void =
-  ## Bootstraps module; use by calling `register` to add properties to `exports`
+  ## Bootstraps module; use by calling `register` to add
+  ## properties to `exports`
   ##
   ## ```nim
   ##  init proc(module: Module) =
@@ -870,15 +881,33 @@ macro init*(initHook: proc(exports: Module)): void =
   nimmain.addPragma(ident("importc"))
   var cinit = newProc(
     name = ident("cinit"),
-    params = [ident("napi_value") , newIdentDefs(ident("environment"), ident("napi_env")), newIdentDefs(ident("exportsPtr"), ident("napi_value"))],
+    params = [
+      ident("napi_value"),
+      newIdentDefs(
+        ident("environment"),
+        ident("napi_env")),
+      newIdentDefs(
+        ident("exportsPtr"),
+        ident("napi_value")
+      )
+    ],
     body = newStmtList(
       nimmain,
       newCall("NimMain"),
-      newVarStmt(ident("exports"), newCall("newNodeValue", [ident("exportsPtr"), ident("environment")])),
+      newVarStmt(
+        ident("exports"),
+        newCall("newNodeValue", [
+            ident("exportsPtr"),
+            ident("environment")
+          ]
+        )
+      ),
       newAssignment(ident("Env"), ident("environment")),
       newCall(initHook, ident("exports")),
       newCall("defineProperties", ident("exports")),
-      newNimNode(nnkReturnStmt).add(ident("exportsPtr"))
+      nnkReturnStmt.newTree(
+        ident("exportsPtr")
+      )
     )
   )
   cinit.addPragma(ident("exportc"))

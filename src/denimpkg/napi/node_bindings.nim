@@ -1,7 +1,35 @@
-import macros
-import nodeApiTypes, jsNativeApiTypes
+# Node-API (N-API) bindings for Nim.
+#
+# Originally written by Andrew Breidenbach, later modified by Andrei Rosca
+# and now fully implemented in Nim and maintained by OpenPeeps.
+# 
+#     https://github.com/AjBreidenbach
+#     https://github.com/andi23rosca
+#
+# (c) 2026 George Lemon | MIT License
+#          Made by Humans from OpenPeeps
+#          https://github.com/openpeeps/tim
 
-export nodeApiTypes
+import std/macros
+
+import ./jsnative_api
+export jsnative_api
+
+type
+  napi_callback_scope* {.header:"<node_api.h>".} = pointer
+  napi_async_context* {.header:"<node_api.h>".} = pointer
+  napi_async_work* {.header:"<node_api.h>".} = pointer
+  napi_threadsafe_function* {.header:"<node_api.h>".} = pointer
+
+proc napi_async_execute_callback*(env: napi_env, data: pointer) {.cdecl, header:"<node_api.h>".}
+proc napi_async_complete_callback*(env: napi_env, status: NapiStatus, data: pointer) {.cdecl, header:"<node_api.h>".}
+
+type NapiNodeVersion* {.importc:"napi_node_version", header: "<node_api.h>".} = object 
+  major: uint32
+  minor: uint32
+  patch: uint32
+  release: cstring
+
 
 proc napi_addon_register_func*(env: napi_env, exports: napi_value): napi_value {.header: "<node_api.h>".}
 
