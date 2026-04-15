@@ -17,14 +17,27 @@ when not defined skipbuild:
         "denim.exe"
       else:
         "denim"
+
+    let localDenim = "bin" / denimBin
+    let denimCmd =
+      if fileExists(localDenim): localDenim
+      else: denimBin
+
     for addonName in addons:
-      let status = execCmdEx(denimBin & " build tests" / "example_" & addonName & ".nim --cmake -y")
+      let addonFile = "tests" / ("example_" & addonName & ".nim")
+      let cmd = quoteShell(denimCmd) & " build " & quoteShell(addonFile) & " --cmake -y"
+      let status = execCmdEx(
+        cmd,
+        options = {poStdErrToStdOut, poUsePath, poEvalCommand}
+      )
+
       if status.exitCode != 0:
         echo status.output
-        fail()
+        fail() # keep current behavior
       else:
         echo("[OK] Built " & addonName & ".nim with CMake")
       check status.exitCode == 0
+
 
 test "can run example_addon (NodeJS)":
   let status = execCmdEx("node " & "tests" / "js" / "example_addon.js")
