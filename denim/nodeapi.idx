@@ -1,0 +1,100 @@
+nimTitle	nodeapi	denim/nodeapi.html	module src/denim/nodeapi		0
+nim	NapiErrorType	denim/nodeapi.html#NapiErrorType	enum NapiErrorType		21
+nim	Module	denim/nodeapi.html#Module	type Module		28
+nim	TypedArg	denim/nodeapi.html#TypedArg	tuple TypedArg		40
+nim	Env	denim/nodeapi.html#Env	var Env		45
+nim	assert	denim/nodeapi.html#assert,NapiStatus	proc assert(status: NapiStatus)		52
+nim	`!`	denim/nodeapi.html#!,NapiStatus	proc `!`(status: NapiStatus)		57
+nim	error	denim/nodeapi.html#error.t,string,string,NapiErrorType,napi_value	template error(msg: string; code = ""; errorType: NapiErrorType = napiError;\n      customError: napi_value = nil): untyped		62
+nim	throwError	denim/nodeapi.html#throwError,napi_env,string,string,NapiErrorType,napi_value	proc throwError(env: napi_env; msg: string; code = "";\n           errorType: NapiErrorType = napiError; customError: napi_value = nil): NapiStatus		70
+nim	isArray	denim/nodeapi.html#isArray,napi_value	proc isArray(obj: napi_value): bool		78
+nim	newNodeValue	denim/nodeapi.html#newNodeValue,napi_value,napi_env	proc newNodeValue(val: napi_value; env: napi_env): Module		80
+nim	expect	denim/nodeapi.html#expect,napi_env,napi_value,NapiValueType	proc expect(env: napi_env; n: napi_value; expectKind: NapiValueType): bool		87
+nim	expect	denim/nodeapi.html#expect,napi_env,seq[napi_value],string,string	proc expect(env: napi_env; v: seq[napi_value]; errorName, fnIdent: string): bool		90
+nim	createFn	denim/nodeapi.html#createFn,napi_env,string,napi_callback	proc createFn(env: napi_env; fname: string; cb: napi_callback): napi_value		189
+nim	create	denim/nodeapi.html#create,Module,T	proc create[T](n: Module; t: T): napi_value		199
+nim	napiCreate	denim/nodeapi.html#napiCreate,T	proc napiCreate[T](t: T): napi_value		203
+nim	`%*`	denim/nodeapi.html#%*.m,typed	macro `%*`(x: typed): untyped		243
+nim	toJsObject	denim/nodeapi.html#toJsObject.m,typed	macro toJsObject(x: typed): untyped		247
+nim	toObject	denim/nodeapi.html#toObject.m,untyped	macro toObject(x: untyped): untyped		251
+nim	kind	denim/nodeapi.html#kind,napi_value	proc kind(val: napi_value): NapiValueType		259
+nim	getInt64	denim/nodeapi.html#getInt64,napi_value	proc getInt64(n: napi_value): int64		262
+nim	getInt64	denim/nodeapi.html#getInt64,napi_value,int64	proc getInt64(n: napi_value; default: int64): int64		266
+nim	getNull	denim/nodeapi.html#getNull	proc getNull(): napi_value		271
+nim	getUndefined	denim/nodeapi.html#getUndefined	proc getUndefined(): napi_value		275
+nim	undefined	denim/nodeapi.html#undefined	proc undefined(): napi_value		279
+nim	getGlobal	denim/nodeapi.html#getGlobal	proc getGlobal(): napi_value		283
+nim	getInt32	denim/nodeapi.html#getInt32,napi_value	proc getInt32(n: napi_value): int32		287
+nim	getInt32	denim/nodeapi.html#getInt32,napi_value,int32	proc getInt32(n: napi_value; default: int32): int32		291
+nim	getInt	denim/nodeapi.html#getInt.t,napi_value	template getInt(n: napi_value): int		296
+nim	getInt	denim/nodeapi.html#getInt.t,napi_value,int	template getInt(n: napi_value; default: int): int		303
+nim	getBool	denim/nodeapi.html#getBool,napi_value	proc getBool(n: napi_value): bool		310
+nim	getBool	denim/nodeapi.html#getBool,napi_value,bool	proc getBool(n: napi_value; default: bool): bool		314
+nim	getStr	denim/nodeapi.html#getStr,napi_value	proc getStr(n: napi_value): string		319
+nim	getStr	denim/nodeapi.html#getStr,napi_value,string,int	proc getStr(n: napi_value; default: string; bufsize: int = 40): string		329
+nim	hasProperty	denim/nodeapi.html#hasProperty,napi_value,string	proc hasProperty(obj: napi_value; key: string): bool		341
+nim	hasOwnProperty	denim/nodeapi.html#hasOwnProperty,napi_value,string	proc hasOwnProperty(obj: napi_value; key: string): bool		345
+nim	getProperty	denim/nodeapi.html#getProperty,napi_value,string	proc getProperty(obj: napi_value; key: string): napi_value		350
+nim	getProperty	denim/nodeapi.html#getProperty,napi_value,string,napi_value	proc getProperty(obj: napi_value; key: string; default: napi_value): napi_value		357
+nim	`[]`	denim/nodeapi.html#[],napi_value,string	proc `[]`(obj: napi_value; key: string): napi_value		363
+nim	get	denim/nodeapi.html#get,napi_value,string	proc get(obj: napi_value; key: string): napi_value		367
+nim	get	denim/nodeapi.html#get,string	proc get(key: string): napi_value		371
+nim	get	denim/nodeapi.html#get,string,napi_value	proc get(key: string; default: napi_value): napi_value		386
+nim	setProperty	denim/nodeapi.html#setProperty,napi_value,string,napi_value	proc setProperty(obj: napi_value; key: string; value: napi_value)		391
+nim	`[]=`	denim/nodeapi.html#[]=,napi_value,string,napi_value	proc `[]=`(obj: napi_value; key: string; value: napi_value)		396
+nim	hasElement	denim/nodeapi.html#hasElement,napi_value,int	proc hasElement(obj: napi_value; index: int): bool		403
+nim	getElement	denim/nodeapi.html#getElement,napi_value,int	proc getElement(obj: napi_value; index: int): napi_value		409
+nim	getElement	denim/nodeapi.html#getElement,napi_value,int,napi_value	proc getElement(obj: napi_value; index: int; default: napi_value): napi_value		415
+nim	setElement	denim/nodeapi.html#setElement,napi_value,int,napi_value	proc setElement(obj: napi_value; index: int; value: napi_value)		419
+nim	len	denim/nodeapi.html#len,napi_value	proc len(arr: napi_value): int		424
+nim	`[]`	denim/nodeapi.html#[],napi_value,int	proc `[]`(obj: napi_value; index: int): napi_value		428
+nim	`[]=`	denim/nodeapi.html#[]=,napi_value,int,napi_value	proc `[]=`(obj: napi_value; index: int; value: napi_value)		432
+nim	register	denim/nodeapi.html#register,Module,string,T,NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    value: T; attr: NapiPropertyAttributes = napi_default)		447
+nim	register	denim/nodeapi.html#register,Module,string,openArray[T],NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[T]; attr: NapiPropertyAttributes = napi_default)		452
+nim	register	denim/nodeapi.html#register,Module,string,openArray[],NapiPropertyAttributes	proc register[T: int | uint | string | napi_value](obj: Module; name: string;\n    values: openArray[(string, T)]; attr: NapiPropertyAttributes = napi_default)		460
+nim	register	denim/nodeapi.html#register,Module,string,napi_callback,NapiPropertyAttributes	proc register(obj: Module; name: string; cb: napi_callback;\n         attr: NapiPropertyAttributes = napi_default)		468
+nim	callFunction	denim/nodeapi.html#callFunction,napi_value,openArray[napi_value],napi_value	proc callFunction(fn: napi_value; args: openArray[napi_value] = [];\n             this: napi_value = %*emptyArr): napi_value		476
+nim	callMethod	denim/nodeapi.html#callMethod,napi_value,string,openArray[napi_value]	proc callMethod(instance: napi_value; methd: string; args: openArray[napi_value] = []): napi_value		482
+nim	napiCall	denim/nodeapi.html#napiCall,string,openArray[napi_value]	proc napiCall(fname: string; args: openArray[napi_value] = []): napi_value		487
+nim	tryGetJson	denim/nodeapi.html#tryGetJson,napi_value	proc tryGetJson(n: napi_value): JsonNode		504
+nim	getIdentStr	denim/nodeapi.html#getIdentStr.t,untyped	template getIdentStr(n: untyped): string		508
+nim	registerFn	denim/nodeapi.html#registerFn.t,int,untyped,untyped,untyped	template registerFn(paramCt: int; fnName, fnNameJS, handle: untyped): untyped		510
+nim	exportFn	denim/nodeapi.html#exportFn.t,Module,int,string,untyped	template exportFn(exports: Module; paramCt: int; name: string; handle: untyped): untyped		528
+nim	addDocBlock	denim/nodeapi.html#addDocBlock,string,openArray[]	proc addDocBlock(fnName: string;\n            args: openArray[(string, string, NapiValueType, bool)])		546
+nim	export_napi	denim/nodeapi.html#export_napi.m,untyped,untyped,typed	macro export_napi(vName, vType: untyped; vVal: typed)		587
+nim	export_napi	denim/nodeapi.html#export_napi.m,untyped,untyped	macro export_napi(fn: untyped; withModule: untyped = nil)		603
+nim	asyncActionSuccess	denim/nodeapi.html#asyncActionSuccess	AsyncActionStatus.asyncActionSuccess		745
+nim	asyncActionFail	denim/nodeapi.html#asyncActionFail	AsyncActionStatus.asyncActionFail		745
+nim	AsyncActionStatus	denim/nodeapi.html#AsyncActionStatus	enum AsyncActionStatus		745
+nim	PromiseData	denim/nodeapi.html#PromiseData	object PromiseData		749
+nim	promise	denim/nodeapi.html#promise.m,untyped	macro promise(fn: untyped)		755
+nim	items	denim/nodeapi.html#items.i,napi_value	iterator items(n: napi_value): napi_value		758
+nim	toSeq	denim/nodeapi.html#toSeq,napi_value	proc toSeq(n: napi_value): seq[napi_value]		763
+nim	toString	denim/nodeapi.html#toString,napi_value	proc toString(n: napi_value): napi_value		772
+nim	toBool	denim/nodeapi.html#toBool,napi_value	proc toBool(n: napi_value): napi_value		776
+nim	toNumber	denim/nodeapi.html#toNumber,napi_value	proc toNumber(n: napi_value): napi_value		780
+nim	getPropertyNames	denim/nodeapi.html#getPropertyNames,napi_value	proc getPropertyNames(obj: napi_value): napi_value		785
+nim	getPropertyNamesArr	denim/nodeapi.html#getPropertyNamesArr,napi_value	proc getPropertyNamesArr(obj: napi_value): seq[napi_value]		791
+nim	getPropertyNamesArrStr	denim/nodeapi.html#getPropertyNamesArrStr,napi_value	proc getPropertyNamesArrStr(obj: napi_value): seq[string]		800
+nim	pairs	denim/nodeapi.html#pairs.i,napi_value	iterator pairs(n: napi_value): (string, napi_value)		808
+nim	defineProperties	denim/nodeapi.html#defineProperties,Module	proc defineProperties(obj: Module)		814
+nim	`$`	denim/nodeapi.html#$,napi_value	proc `$`(o: napi_value): string		821
+nim	`.`	denim/nodeapi.html#..m,napi_value,untyped	macro `.`(val: napi_value; field: untyped): untyped		850
+nim	`.=`	denim/nodeapi.html#.=.m,napi_value,untyped,napi_value	macro `.=`(val: napi_value; field: untyped; value: napi_value): untyped		857
+nim	`.=`	denim/nodeapi.html#.=.m,napi_value,untyped,typed	macro `.=`(val: napi_value; field: untyped; value: typed): untyped		865
+nim	`.()`	denim/nodeapi.html#.().m,napi_value,untyped,varargs[typed]	macro `.()`(val: napi_value; field: untyped; args: varargs[typed]): untyped		873
+nim	init	denim/nodeapi.html#init.m,proc(Module)	macro init(initHook: proc (exports: Module)): void		887
+nimgrp	expect	denim/nodeapi.html#expect-procs-all	proc		87
+nimgrp	getproperty	denim/nodeapi.html#getProperty-procs-all	proc		350
+nimgrp	getstr	denim/nodeapi.html#getStr-procs-all	proc		319
+nimgrp	getbool	denim/nodeapi.html#getBool-procs-all	proc		310
+nimgrp	[]=	denim/nodeapi.html#[]=-procs-all	proc		396
+nimgrp	[]	denim/nodeapi.html#[]-procs-all	proc		363
+nimgrp	get	denim/nodeapi.html#get-procs-all	proc		367
+nimgrp	register	denim/nodeapi.html#register-procs-all	proc		447
+nimgrp	getint64	denim/nodeapi.html#getInt64-procs-all	proc		262
+nimgrp	getint32	denim/nodeapi.html#getInt32-procs-all	proc		287
+nimgrp	getelement	denim/nodeapi.html#getElement-procs-all	proc		409
+nimgrp	exportnapi	denim/nodeapi.html#export_napi-macros-all	macro		587
+nimgrp	.=	denim/nodeapi.html#.=-macros-all	macro		857
+nimgrp	getint	denim/nodeapi.html#getInt-templates-all	template		296

@@ -1,0 +1,26 @@
+nimTitle	node_bindings	denim/napi/node_bindings.html	module src/denim/napi/node_bindings		0
+nim	napi_callback_scope	denim/napi/node_bindings.html#napi_callback_scope	type napi_callback_scope		19
+nim	napi_async_context	denim/napi/node_bindings.html#napi_async_context	type napi_async_context		20
+nim	napi_async_work	denim/napi/node_bindings.html#napi_async_work	type napi_async_work		21
+nim	napi_threadsafe_function	denim/napi/node_bindings.html#napi_threadsafe_function	type napi_threadsafe_function		22
+nim	napi_async_execute_callback	denim/napi/node_bindings.html#napi_async_execute_callback,napi_env,pointer	proc napi_async_execute_callback(env: napi_env; data: pointer)		24
+nim	napi_async_complete_callback	denim/napi/node_bindings.html#napi_async_complete_callback,napi_env,NapiStatus,pointer	proc napi_async_complete_callback(env: napi_env; status: NapiStatus; data: pointer)		25
+nim	NapiNodeVersion	denim/napi/node_bindings.html#NapiNodeVersion	object NapiNodeVersion		27
+nim	napi_addon_register_func	denim/napi/node_bindings.html#napi_addon_register_func,napi_env,napi_value	proc napi_addon_register_func(env: napi_env; exports: napi_value): napi_value		34
+nim	NapiModule	denim/napi/node_bindings.html#NapiModule	object NapiModule		36
+nim	napiModule	denim/napi/node_bindings.html#napiModule.m,proc(napi_env,napi_value)	macro napiModule(initHook: proc (env: napi_env; exports: napi_value)): void		45
+nim	napi_module_register	denim/napi/node_bindings.html#napi_module_register,NapiModule	proc napi_module_register(module: NapiModule)		71
+nim	napi_fatal_error	denim/napi/node_bindings.html#napi_fatal_error,cstring,csize_t,cstring,csize_t	proc napi_fatal_error(location: cstring; location_len: csize_t; message: cstring;\n                 message_len: csize_t)		72
+nim	napi_async_init	denim/napi/node_bindings.html#napi_async_init,napi_env,napi_value,napi_value,ptr.napi_async_context	proc napi_async_init(env: napi_env; async_resource: napi_value;\n                async_resource_name: napi_value; result: ptr napi_async_context): NapiStatus		75
+nim	napi_async_destroy	denim/napi/node_bindings.html#napi_async_destroy,napi_env,napi_async_context	proc napi_async_destroy(env: napi_env; async_context: napi_async_context): NapiStatus		77
+nim	napi_make_callback	denim/napi/node_bindings.html#napi_make_callback,napi_env,napi_async_context,napi_value,napi_value,csize_t,ptr.napi_value,ptr.napi_value	proc napi_make_callback(env: napi_env; async_context: napi_async_context;\n                   recv: napi_value; fn: napi_value; argc: csize_t;\n                   argv: ptr napi_value; result: ptr napi_value): NapiStatus		78
+nim	napi_create_buffer	denim/napi/node_bindings.html#napi_create_buffer,napi_env,csize_t,ptr.pointer,ptr.napi_value	proc napi_create_buffer(env: napi_env; length: csize_t; data: ptr pointer;\n                   result: ptr napi_value): NapiStatus		82
+nim	napi_create_external_buffer	denim/napi/node_bindings.html#napi_create_external_buffer,napi_env,csize_t,pointer,napi_finalize,pointer,ptr.napi_value	proc napi_create_external_buffer(env: napi_env; length: csize_t; data: pointer;\n                            finalize_cb: napi_finalize; finalize_hint: pointer;\n                            result: ptr napi_value): NapiStatus		83
+nim	napi_create_buffer_copy	denim/napi/node_bindings.html#napi_create_buffer_copy,napi_env,csize_t,pointer,ptr.pointer,ptr.napi_value	proc napi_create_buffer_copy(env: napi_env; length: csize_t; data: pointer;\n                        result_data: ptr pointer; result: ptr napi_value): NapiStatus		85
+nim	napi_is_buffer	denim/napi/node_bindings.html#napi_is_buffer,napi_env,napi_value,ptr.bool	proc napi_is_buffer(env: napi_env; value: napi_value; results: ptr bool): NapiStatus		86
+nim	napi_get_buffer_info	denim/napi/node_bindings.html#napi_get_buffer_info,napi_env,napi_value,ptr.pointer,ptr.csize_t	proc napi_get_buffer_info(env: napi_env; value: napi_value; data: ptr pointer;\n                     length: ptr csize_t): NapiStatus		87
+nim	napi_create_async_work	denim/napi/node_bindings.html#napi_create_async_work,napi_env,napi_value,napi_value,,,pointer,ptr.napi_async_work	proc napi_create_async_work(env: napi_env; async_resource: napi_value;\n                       async_resource_name: napi_value;\n                       execute: napi_async_execute_callback.typeof;\n                       complete: napi_async_complete_callback.typeof;\n                       data: pointer; result: ptr napi_async_work): NapiStatus		90
+nim	napi_delete_async_work	denim/napi/node_bindings.html#napi_delete_async_work,napi_env,napi_async_work	proc napi_delete_async_work(env: napi_env; work: napi_async_work): NapiStatus		93
+nim	napi_queue_async_work	denim/napi/node_bindings.html#napi_queue_async_work,napi_env,napi_async_work	proc napi_queue_async_work(env: napi_env; work: napi_async_work): NapiStatus		94
+nim	napi_cancel_async_work	denim/napi/node_bindings.html#napi_cancel_async_work,napi_env,napi_async_work	proc napi_cancel_async_work(env: napi_env; work: napi_async_work): NapiStatus		95
+nim	napi_get_node_version	denim/napi/node_bindings.html#napi_get_node_version,napi_env,ptr.NapiNodeVersion	proc napi_get_node_version(env: napi_env; version: ptr NapiNodeVersion): NapiStatus		98

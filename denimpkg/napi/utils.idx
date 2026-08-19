@@ -1,3 +1,0 @@
-nimTitle	utils	denimpkg/napi/utils.html	module src/denimpkg/napi/utils		0
-nim	enumerate	denimpkg/napi/utils.html#enumerate.i,openArray[T]	iterator enumerate[T](open: openArray[T]): (int, T)		1
-nim	toUnchecked	denimpkg/napi/utils.html#toUnchecked,openArray[T]	proc toUnchecked[T](open: openArray[T]): ptr UncheckedArray[T]		7
