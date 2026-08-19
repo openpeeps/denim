@@ -187,7 +187,7 @@ proc napi_get_cb_info*(
   cbinfo: napi_callback_info,
   argc: ptr csize_t,
   argv: ptr UncheckedArray[napi_value],
-  this_arg: napi_value,
+  this_arg: ptr napi_value,
   data: ptr pointer): NapiStatus 
 
 proc napi_get_new_target*(env: napi_env, cbinfo: napi_callback_info, result: ptr napi_value): NapiStatus 

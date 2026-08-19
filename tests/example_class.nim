@@ -12,7 +12,7 @@ proc userCtor(environment: napi_env, info: napi_callback_info): napi_value {.cde
     thisObj: napi_value
 
   # get `this` created by `new User()`
-  assert environment.napi_get_cb_info(info, addr argc, nil, cast[napi_value](addr thisObj), nil)
+  assert environment.napi_get_cb_info(info, addr argc, nil, addr thisObj, nil)
   result = thisObj
 
 init proc(module: Module) =

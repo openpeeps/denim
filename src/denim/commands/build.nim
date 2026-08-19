@@ -74,6 +74,9 @@ add_library(DENIM_PKG_NAME SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 set_target_properties(DENIM_PKG_NAME PROPERTIES LINKER_LANGUAGE CXX PREFIX "" SUFFIX ".node")
 
 DENIM_PKG_LINK_LIBS
+if(APPLE)
+  target_link_libraries(DENIM_PKG_NAME "-framework Security")
+endif()
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib

@@ -12,7 +12,7 @@
 
 when defined napibuild:
   # Denim as a library exporting NAPI bindings
-  import denimpkg/nodeapi
+  import denim/nodeapi
   export nodeapi
 
 elif isMainModule:
@@ -20,7 +20,7 @@ elif isMainModule:
   # This requires latest version of `node-gyp`
   # todo add support for CMake.js 
   import kapsis
-  import ./denimpkg/commands/[new, build, publish]
+  import ./denim/commands/[new, build, publish]
 
   initKapsis do:
     commands:
