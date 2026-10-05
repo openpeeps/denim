@@ -383,7 +383,7 @@ proc buildCommand*(v: Values) =
   if v.has("--cmake"):
     displayInfo("Building with CMake.js")
 
-    let jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
+    let jsonConfigPath = cachePathDirectory / entryFile.changeFileExt("nim", "json")
     let autoInfo = readNimBuildInfo(jsonConfigPath)
 
     # Manual overrides (all accept "a,b" or '["a","b"]').
