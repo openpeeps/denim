@@ -25,7 +25,10 @@ elif isMainModule:
   initKapsis do:
     commands:
       build file(nim), ?bool("-y"), ?bool("--cmake"),
-        ?string("--libs"), ?bool("-r"), ?bool("--verbose"):
+        ?string("--includeDirs"),
+        ?string("--includeFiles"), ?string("--defines"),
+        ?string("--cflags"), ?string("--linkFlags"),
+        ?bool("-r"), ?bool("--verbose"):
         ## Build a native `node` addon from Nim
       publish file(addon):
         ## Publish your addon (requires npm cli)
