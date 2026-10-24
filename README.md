@@ -16,7 +16,7 @@
 
 ## Requirements
 - Nim (latest / via `choosenim`)
-- Node (latest) and `node-gyp` or CMake.js
+- Node (latest) and `node-gyp`, or just `cmake` for `--cmake` builds (no npm packages needed)
 
 ### CLI
 Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon via `Nim` + `NodeGYP` and as a library for importing NAPI bindings.
@@ -29,7 +29,9 @@ DENIM - Nim code to Bun.js/Node.js in seconds via NAPI
 
   build <nim:file>               Build a native `node` addon from Nim
                        -y:bool
-                  --cmake:bool    Whether to use CMake.js instead of node-gyp (faster)
+                  --cmake:bool    Whether to use CMake instead of node-gyp (faster, no npm deps)
+              --generator:string    CMake generator (auto: Ninja if available, else Unix Makefiles)
+                --nodedir:string    Node headers directory (auto-detected, or NODE_HEADERS env)
           --includeDirs:string    Extra `-I` header search dirs
          --includeFiles:string    Extra `.c` files to compile
               --defines:string    Extra `-D` defines
@@ -52,7 +54,9 @@ Every flag accepts either a comma-separated string or a stringified JSON array:
 --defines 'FOO=1,BAR="baz"'
 ```
 
-- `--cmake` — build with CMake.js instead of node-gyp (faster, recommended).
+- `--cmake` — build with the internal CMake driver instead of node-gyp (faster, recommended). Only needs a `cmake` binary and local Node headers (`node_api.h`); no `cmake-js` npm package required.
+- `--generator` — CMake generator override, e.g. `--generator "Unix Makefiles"`. Default: `Ninja` when available, else `Unix Makefiles`.
+- `--nodedir` — Node headers override (also accepts `NODE_HEADERS` env). Default: auto-detected from the running `node` binary and well-known include paths.
 - `-y` — remove an existing `denim_build` directory without asking.
 - `-r` — release build (`-d:release --opt:speed`).
 - `--verbose` — print the Nim and CMake/node-gyp output.

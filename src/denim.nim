@@ -17,14 +17,14 @@ when defined napibuild:
 
 elif isMainModule:
   # Denim as a CLI tool for building your Nim program to native Node addon
-  # This requires latest version of `node-gyp`
-  # todo add support for CMake.js 
+  # via node-gyp (default) or the internal CMake driver (--cmake).
   import kapsis
   import ./denim/commands/[new, build, publish]
 
   initKapsis do:
     commands:
       build file(nim), ?bool("-y"), ?bool("--cmake"),
+        ?string("--generator"), ?string("--nodedir"),
         ?string("--includeDirs"),
         ?string("--includeFiles"), ?string("--defines"),
         ?string("--cflags"), ?string("--linkFlags"),

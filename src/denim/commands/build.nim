@@ -14,6 +14,7 @@ import std/[os, osproc, json, strutils, sequtils]
 import kapsis/runtime
 import kapsis/interactive/prompts
 import ../utils
+import ../cmake
 
 # ---------------------------------------------------------------------------
 # Helpers for vendored C support ({.compile.} + passC/passL)
@@ -309,7 +310,10 @@ proc getNodeGypConfig(getNimPath: string, release: bool = false): JsonNode =
     "linkflags": ["-ldl"]
   }
 
-# https://stackoverflow.com/questions/52605527/cmake-or-g-include-dll-libraries
+# Internal CMake backend: the template is fully expanded by Denim
+# (sources, include dirs, defines are baked in). No CMAKE_JS_* variables,
+# no cmake-js npm dependency. Node headers are resolved by denim/cmake
+# and prepended to DENIM_INCLUDE_DIRS by the build command below.
 const cMakeListsContent = """
 cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW)
@@ -319,22 +323,17 @@ project (DENIM_PKG_NAME)
 
 add_definitions(-DNAPI_VERSION=4 DENIM_DEFINES)
 
-include_directories(${CMAKE_JS_INC} DENIM_INCLUDE_DIRS)
+include_directories(DENIM_INCLUDE_DIRS)
 
 set(SOURCE_FILES DENIM_EXPLICIT_SOURCES)
 
-add_library(DENIM_PKG_NAME SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
+add_library(DENIM_PKG_NAME SHARED ${SOURCE_FILES})
 set_target_properties(DENIM_PKG_NAME PROPERTIES LINKER_LANGUAGE CXX PREFIX "" SUFFIX ".node")
 DENIM_COMPILE_OPTS_LINE
 DENIM_PKG_LINK_LIBS
 DENIM_PKG_LINK_OPTS_LINE
 if(APPLE)
   target_link_libraries(DENIM_PKG_NAME "-framework Security")
-endif()
-
-if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
-  # Generate node.lib
-  execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
 endif()
 """
 
@@ -398,7 +397,7 @@ proc buildCommand*(v: Values) =
   ], options={poStdErrToStdOut, poUsePath})
   
   if v.has("--cmake"):
-    displayInfo("Building with CMake.js")
+    displayInfo("Building with CMake (internal, no cmake-js needed)")
 
     let jsonConfigPath = cachePathDirectory / entryFile.changeFileExt("json")
     let autoInfo = readNimBuildInfo(jsonConfigPath)
@@ -440,9 +439,24 @@ proc buildCommand*(v: Values) =
       else:
         quotedSources.add(cmakeQuote(s))
 
-    # Include dirs: nimcache (nimbase.h symlink lives here) + auto -I + manual.
+    # Node headers: resolved locally (no downloads, no npm deps).
+    # Override via --nodedir, NODE_HEADERS, or NODEDIR.
+    let nodedirFlag =
+      if v.has("--nodedir"):
+        try: v.get("--nodedir").getStr
+        except CatchableError: ""
+      else: ""
+    let nodeHeaders = cmake.findNodeHeaders(nodedirFlag)
+    if nodeHeaders.len == 0:
+      displayError("Cannot find Node headers (node_api.h). " &
+        "Install Node headers for your Node version or set --nodedir " &
+        "(or NODE_HEADERS) to a directory containing node_api.h")
+      QuitFailure.quit
+
+    # Include dirs: Node headers first, then nimcache
+    # (nimbase.h symlink lives here) + auto -I + manual.
     var allIncludeDirs = dedupPreserveOrder(
-      @[cachePathDirectory] & autoInfo.includeDirs & manualIncludeDirs)
+      @[nodeHeaders, cachePathDirectory] & autoInfo.includeDirs & manualIncludeDirs)
     var quotedIncludes: seq[string] = @[]
     for d in allIncludeDirs:
       quotedIncludes.add(cmakeQuote(d))
@@ -492,13 +506,33 @@ proc buildCommand*(v: Values) =
         ("DENIM_PKG_LINK_OPTS_LINE", "")
       )
     )
-    # Build the native addon using CMake.js
-    let cmakeCmd = execCmdEx("cmake-js compile --runtime node --out " & "denim_build" / "build")
-    if cmakeCmd.exitCode != 0:
-      display(cmakeCmd.output)
+    # Build the native addon with the internal CMake driver
+    # (no cmake-js npm dependency required, only a `cmake` binary).
+    let generatorFlag =
+      if v.has("--generator"):
+        try: v.get("--generator").getStr
+        except CatchableError: ""
+      else: ""
+    let cmakeOpts = cmake.CmakeOptions(
+      projectDir: currDir,
+      workDir: addonPathDirectory / "build",
+      config: "Release",
+      generator: generatorFlag,
+      nodedir: nodedirFlag,
+      verbose: v.has("--verbose")
+    )
+    if v.has("--verbose"):
+      displayInfo("CMake configure: " &
+        cmake.getConfigureArgs(cmakeOpts).join(" "))
+      displayInfo("CMake build: " &
+        cmake.getBuildArgs(cmakeOpts).join(" "))
+      displayInfo("Node headers: " & nodeHeaders)
+    let cmakeRes = cmake.compile(cmakeOpts)
+    if not cmakeRes.ok:
+      display(cmakeRes.output)
       QuitFailure.quit
     elif v.has("--verbose"):
-      display(cmakeCmd.output)
+      display(cmakeRes.output)
   else:
     # When using `node-gyp`, we need to generate a `binding.gyp` file with
     # the correct configuration
