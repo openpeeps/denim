@@ -125,6 +125,14 @@ type NimBuildInfo* = object
   compileOpts*: seq[string]  # other passC-ish options
   linkOpts*: seq[string]     # raw linker tokens from linkcmd
 
+const pairFlags* = ["-arch", "-framework", "-isysroot", "-sysroot",
+  "-F", "-L", "-Xlinker"]
+  ## Compiler/linker flags that take a separate argument (e.g. `-arch arm64`).
+  ## The argument is a bare token, so it must be kept together with its flag
+  ## as two separate list items. Otherwise the flag dangles (e.g. `-arch`
+  ## pairing with the next flag) or gets glued into one quoted CMake string
+  ## (a single wrong argument instead of two).
+
 proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
   ## Pull sources + flags out of the nimcache/<entry>.json written by
   ## `nim c --compileOnly`. Compile entries are [src, cmd] pairs; link
@@ -165,6 +173,16 @@ proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
           pendingDefine = false
           inc i
           continue
+        if tok in pairFlags and i + 1 < tokens.len and
+           not tokens[i + 1].startsWith("-"):
+          # Flags taking a separate argument: keep both tokens as two
+          # separate items so CMake forwards two arguments.
+          if tok notin result.compileOpts:
+            result.compileOpts.add(tok)
+          if tokens[i + 1] notin result.compileOpts:
+            result.compileOpts.add(tokens[i + 1])
+          i += 2
+          continue
         if tok == "-c" or tok == "-o":
           # skip "-o <output>" entirely
           if tok == "-o":
@@ -202,15 +220,18 @@ proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
     var i = 0
     while i < toks.len:
       let tok = toks[i]
-      if tok == "-framework" and i + 1 < toks.len and
+      if tok in pairFlags and i + 1 < toks.len and
          not toks[i + 1].startsWith("-"):
-        # Keep `-framework <Name>` together: the name is a bare token,
-        # so the old take-every-`-flag` loop dropped it and left a
-        # dangling `-framework` that the linker pairs with the next
-        # flag (e.g. `-framework -ldl` -> framework "-ldl" not found).
-        let pair = tok & " " & toks[i + 1]
-        if pair notin result.linkOpts:
-          result.linkOpts.add(pair)
+        # Flags taking a separate argument (e.g. `-arch arm64`,
+        # `-framework Security`): keep both tokens as two separate
+        # items so CMake forwards two arguments. The argument is a bare
+        # token, so the old take-every-`-flag` loop dropped it and left a
+        # dangling flag that the linker paired with the next flag
+        # (e.g. `-framework -ldl` -> framework "-ldl" not found).
+        if tok notin result.linkOpts:
+          result.linkOpts.add(tok)
+        if toks[i + 1] notin result.linkOpts:
+          result.linkOpts.add(toks[i + 1])
         i += 2
         continue
       if tok.startsWith("-"):
@@ -224,6 +245,28 @@ proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
           result.linkOpts.add(tok)
       # object files / output binary are skipped
       i += 1
+
+proc splitLinkFlags*(items: seq[string]): tuple[libs, flags: seq[string]] =
+  ## Partition flat link tokens: pair-flag couples (`-arch <name>`,
+  ## `-framework <Name>`, ...) become raw linker flags, everything else
+  ## stays as libraries. `target_link_libraries` would rewrite a bare
+  ## `Name` item to `-lName`, so couples must travel via
+  ## `target_link_options` instead.
+  result = (libs: @[], flags: @[])
+  var i = 0
+  while i < items.len:
+    let tok = items[i]
+    if tok in pairFlags and i + 1 < items.len and
+       not items[i + 1].startsWith("-"):
+      if tok notin result.flags:
+        result.flags.add(tok)
+      if items[i + 1] notin result.flags:
+        result.flags.add(items[i + 1])
+      i += 2
+    else:
+      if tok notin result.libs:
+        result.libs.add(tok)
+      inc i
 
 proc readNimBuildInfo*(jsonPath: string): NimBuildInfo =
   ## Read nimcache JSON, returning empty info (not a crash) when missing.
@@ -484,15 +527,23 @@ proc buildCommand*(opts: BuildOptions) =
       else: ""
 
     # Link: auto link opts ({.passL.}) + manual --linkFlags.
-    # Items are cmake-quoted so `-framework <Name>` pairs survive as
-    # one argument instead of a dangling `-framework`.
+    # Pair-flag couples (-arch <name>, -framework <Name>) go through
+    # target_link_options as raw flags; the rest stays libraries.
     var linkLibs = dedupPreserveOrder(autoInfo.linkOpts & manualLinkFlags)
+    let (linkLibItems, linkFlagItems) = splitLinkFlags(linkLibs)
     var quotedLinkLibs: seq[string] = @[]
-    for l in linkLibs:
+    for l in linkLibItems:
       quotedLinkLibs.add(cmakeQuote(l))
     let linkLibsLine =
       if quotedLinkLibs.len > 0:
         "target_link_libraries(" & pkgName & " " & quotedLinkLibs.join(" ") & ")"
+      else: ""
+    var quotedLinkFlags: seq[string] = @[]
+    for f in linkFlagItems:
+      quotedLinkFlags.add(cmakeQuote(f))
+    let linkFlagsLine =
+      if quotedLinkFlags.len > 0:
+        "target_link_options(" & pkgName & " PRIVATE " & quotedLinkFlags.join(" ") & ")"
       else: ""
     writeFile(currDir / "CMakeLists.txt",
       cMakeListsContent.multiReplace(
@@ -502,7 +553,7 @@ proc buildCommand*(opts: BuildOptions) =
         ("DENIM_COMPILE_OPTS_LINE", compileOptsLine),
         ("DENIM_PKG_NAME", pkgName),
         ("DENIM_PKG_LINK_LIBS", linkLibsLine),
-        ("DENIM_PKG_LINK_OPTS_LINE", "")
+        ("DENIM_PKG_LINK_OPTS_LINE", linkFlagsLine)
       )
     )
     # Build the native addon with the internal CMake driver

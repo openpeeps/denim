@@ -18,6 +18,9 @@ jobs:
       nim-version: '2.2.x'
       os: '[{"os":"ubuntu-latest"},{"os":"macos-latest"}]'
       pre-test-command: |
+        command -v node >/dev/null || { echo "node is required on PATH"; exit 1; } &&
+        command -v cmake >/dev/null || { echo "cmake is required on PATH"; exit 1; } &&
+        node --version && cmake --version &&
         clue install --depsOnly &&
         mkdir -p bin &&
         clue build src/denim.nim -o:bin/denim
