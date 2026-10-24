@@ -176,11 +176,11 @@ proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
         if tok in pairFlags and i + 1 < tokens.len and
            not tokens[i + 1].startsWith("-"):
           # Flags taking a separate argument: keep both tokens as two
-          # separate items so CMake forwards two arguments.
-          if tok notin result.compileOpts:
-            result.compileOpts.add(tok)
-          if tokens[i + 1] notin result.compileOpts:
-            result.compileOpts.add(tokens[i + 1])
+          # separate items so CMake forwards two arguments. Appended
+          # unconditionally: identical couples repeat across compile
+          # entries and are collapsed later by dedupFlagOpts.
+          result.compileOpts.add(tok)
+          result.compileOpts.add(tokens[i + 1])
           i += 2
           continue
         if tok == "-c" or tok == "-o":
@@ -228,10 +228,10 @@ proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
         # token, so the old take-every-`-flag` loop dropped it and left a
         # dangling flag that the linker paired with the next flag
         # (e.g. `-framework -ldl` -> framework "-ldl" not found).
-        if tok notin result.linkOpts:
-          result.linkOpts.add(tok)
-        if toks[i + 1] notin result.linkOpts:
-          result.linkOpts.add(toks[i + 1])
+        # Appended unconditionally: identical couples are collapsed
+        # later by dedupFlagOpts, which treats each couple as one unit.
+        result.linkOpts.add(tok)
+        result.linkOpts.add(toks[i + 1])
         i += 2
         continue
       if tok.startsWith("-"):
@@ -246,22 +246,56 @@ proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
       # object files / output binary are skipped
       i += 1
 
-proc splitLinkFlags*(items: seq[string]): tuple[libs, flags: seq[string]] =
-  ## Partition flat link tokens: pair-flag couples (`-arch <name>`,
-  ## `-framework <Name>`, ...) become raw linker flags, everything else
-  ## stays as libraries. `target_link_libraries` would rewrite a bare
-  ## `Name` item to `-lName`, so couples must travel via
-  ## `target_link_options` instead.
-  result = (libs: @[], flags: @[])
+proc dedupFlagOpts*(items: seq[string]): seq[string] =
+  ## Dedup a flat flag list, treating pair-flag couples (`-arch <name>`,
+  ## `-framework <Name>`, ...) as one unit. Plain item-wise dedup would eat
+  ## a repeated flag and orphan its argument (e.g. `-framework Security
+  ## -framework CoreServices` collapsing to `-framework Security
+  ## CoreServices`, where CMake rewrites the bare `CoreServices` to
+  ## `-lCoreServices` and the link fails).
+  result = @[]
+  var seenPairs: seq[string] = @[]
   var i = 0
   while i < items.len:
     let tok = items[i]
     if tok in pairFlags and i + 1 < items.len and
        not items[i + 1].startsWith("-"):
-      if tok notin result.flags:
-        result.flags.add(tok)
-      if items[i + 1] notin result.flags:
-        result.flags.add(items[i + 1])
+      let key = tok & "\x1F" & items[i + 1]
+      if key notin seenPairs:
+        seenPairs.add(key)
+        result.add(tok)
+        result.add(items[i + 1])
+      i += 2
+    else:
+      if tok notin result:
+        result.add(tok)
+      inc i
+
+proc splitLinkFlags*(items: seq[string]): tuple[libs, flags: seq[string]] =
+  ## Partition flat link tokens. `-framework <Name>` couples are glued
+  ## into one item for `target_link_libraries` (CMake expands them to
+  ## `-framework <Name>` on the link line, and distinct strings survive
+  ## dedup). All other pair-flag couples go to `target_link_options` as
+  ## separate raw items: CMake dedups repeated link-option items, so a
+  ## repeated bare flag there would be swallowed and its argument
+  ## misread (bare `Name` becomes `-lName`, bare `x86_64` an input file).
+  result = (libs: @[], flags: @[])
+  var i = 0
+  var seenPairs: seq[string] = @[]
+  while i < items.len:
+    let tok = items[i]
+    if tok in pairFlags and i + 1 < items.len and
+       not items[i + 1].startsWith("-"):
+      let key = tok & "\x1F" & items[i + 1]
+      if key notin seenPairs:
+        seenPairs.add(key)
+        if tok == "-framework":
+          let glued = tok & " " & items[i + 1]
+          if glued notin result.libs:
+            result.libs.add(glued)
+        else:
+          result.flags.add(tok)
+          result.flags.add(items[i + 1])
       i += 2
     else:
       if tok notin result.libs:
@@ -517,7 +551,7 @@ proc buildCommand*(opts: BuildOptions) =
       escapedDefines.add(cmakeEscapeDefine(d))
 
     # Other compile options.
-    let allCompileOpts = dedupPreserveOrder(autoInfo.compileOpts & manualCflags)
+    let allCompileOpts = dedupFlagOpts(autoInfo.compileOpts & manualCflags)
     var quotedCompileOpts: seq[string] = @[]
     for o in allCompileOpts:
       quotedCompileOpts.add(cmakeQuote(o))
@@ -529,7 +563,7 @@ proc buildCommand*(opts: BuildOptions) =
     # Link: auto link opts ({.passL.}) + manual --linkFlags.
     # Pair-flag couples (-arch <name>, -framework <Name>) go through
     # target_link_options as raw flags; the rest stays libraries.
-    var linkLibs = dedupPreserveOrder(autoInfo.linkOpts & manualLinkFlags)
+    var linkLibs = dedupFlagOpts(autoInfo.linkOpts & manualLinkFlags)
     let (linkLibItems, linkFlagItems) = splitLinkFlags(linkLibs)
     var quotedLinkLibs: seq[string] = @[]
     for l in linkLibItems:
@@ -658,7 +692,7 @@ proc buildCommand*(opts: BuildOptions) =
         gypCflags.add(e.getStr())
     except CatchableError:
       discard
-    for c in dedupPreserveOrder(autoInfo.compileOpts & manualCflags):
+    for c in dedupFlagOpts(autoInfo.compileOpts & manualCflags):
       if c notin gypCflags:
         gypCflags.add(c)
     var gypCflagsJson = newJArray()
@@ -676,7 +710,7 @@ proc buildCommand*(opts: BuildOptions) =
         gypLink.add(e.getStr())
     except CatchableError:
       discard
-    for l in dedupPreserveOrder(autoInfo.linkOpts & manualLinkFlags):
+    for l in dedupFlagOpts(autoInfo.linkOpts & manualLinkFlags):
       if l notin gypLink:
         gypLink.add(l)
     var gypLinkJson = newJArray()
