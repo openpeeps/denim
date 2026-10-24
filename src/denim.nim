@@ -22,7 +22,7 @@ elif isMainModule:
   import std/[os, strutils]
   import ./denim/cli
   import ./denim/commands/build
-  import ./denim/commands/publish
+  # import ./denim/commands/publish
 
   const buildStringOpts = ["--generator", "--nodedir", "--includeDirs",
     "--includeFiles", "--defines", "--cflags", "--linkFlags"]
@@ -39,7 +39,7 @@ elif isMainModule:
     echo ""
     echo label("commands:")
     echo "  build <nim:file>      " & grey("build a native .node addon from Nim")
-    echo "  publish <addon:file>  " & grey("publish your addon (requires npm cli)")
+    # echo "  publish <addon:file>  " & grey("publish your addon (requires npm cli)")
     echo ""
     echo label("options:")
     echo "  -h, --help            " & grey("show this help")
@@ -65,11 +65,11 @@ elif isMainModule:
     echo "  --verbose               " & grey("print the Nim and CMake/node-gyp output")
     echo "  -h, --help              " & grey("show this help")
 
-  proc printPublishHelp() =
-    echo "usage: denim publish <addon:file>"
-    echo ""
-    echo label("arguments:")
-    echo "  <addon:file>  " & grey("compiled .node addon to publish (requires npm cli)")
+  # proc printPublishHelp() =
+  #   echo "usage: denim publish <addon:file>"
+  #   echo ""
+  #   echo label("arguments:")
+  #   echo "  <addon:file>  " & grey("compiled .node addon to publish (requires npm cli)")
 
   proc isKnownBuildFlag(arg: string): bool =
     var key = arg
@@ -187,26 +187,26 @@ elif isMainModule:
         return 1
       buildCommand(opts)
       return 0
-    of "publish":
-      var addonFile = ""
-      for a in rest:
-        if a == "-h" or a == "--help":
-          printPublishHelp()
-          return 0
-        elif a.startsWith("-"):
-          echo errPrefix() & " unknown option " & a
-          return 1
-        elif addonFile == "":
-          addonFile = a
-        else:
-          echo errPrefix() & " only one addon file allowed"
-          return 1
-      if addonFile == "":
-        printPublishHelp()
-        echo "\n" & errPrefix() & " an addon file is required"
-        return 1
-      publishCommand(addonFile)
-      return 0
+      # of "publish":
+      #   var addonFile = ""
+      #   for a in rest:
+      #     if a == "-h" or a == "--help":
+      #       printPublishHelp()
+      #       return 0
+      #     elif a.startsWith("-"):
+      #       echo errPrefix() & " unknown option " & a
+      #       return 1
+      #     elif addonFile == "":
+      #       addonFile = a
+      #     else:
+      #       echo errPrefix() & " only one addon file allowed"
+      #       return 1
+      #   if addonFile == "":
+      #     printPublishHelp()
+      #     echo "\n" & errPrefix() & " an addon file is required"
+      #     return 1
+      #   publishCommand(addonFile)
+      #   return 0
     else:
       echo errPrefix() & " unknown command " & cmd
       printHelp()
