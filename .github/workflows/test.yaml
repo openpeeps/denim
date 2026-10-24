@@ -4,56 +4,41 @@ on:
     paths-ignore:
       - LICENSE
       - README.*
+      - examples
   pull_request:
     paths-ignore:
       - LICENSE
       - README.*
+      - examples
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        nim-version:
-          - 'stable'
-        os:
-          - ubuntu-latest
-          - windows-latest
-    steps:
-      - uses: actions/checkout@v4
+  nim:
+    name: nim tests
+    uses: nimbase/setup-nim-action/.github/workflows/test.yml@main
+    with:
+      nim-version: '2.2.x'
+      os: '[{"os":"ubuntu-latest"},{"os":"macos-latest"}]'
+      pre-test-command: |
+        clue install --depsOnly &&
+        mkdir -p bin &&
+        clue build src/denim.nim -o:bin/denim
 
-      - uses: jiro4989/setup-nim-action@v2
-        with:
-          nim-version: ${{ matrix.nim-version }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install Linux deps
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y libpcre3-dev libpcre3
-
-      # - run: "npm install node-gyp -g" not needed now
-      - run: "npm install -g cmake-js"
-
-      - run: "nimble install -Y" # Install dependencies for tests
+      # - name: Ensure CMake exists (Windows)
+      #   if: matrix.os == 'windows-latest'
+      #   shell: pwsh
+      #   run: |
+      #     if (-not (Get-Command cmake -ErrorAction SilentlyContinue)) {
+      #       choco install cmake --no-progress -y
+      #     }
+      #     cmake --version
       
-      - name: Ensure CMake exists (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          if (-not (Get-Command cmake -ErrorAction SilentlyContinue)) {
-            choco install cmake --no-progress -y
-          }
-          cmake --version
-      
-      - name: Copy denim binary to bin/ (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          mkdir bin -Force
-          nim c -d:release -o:bin/denim.exe src/denim.nim
+      # - name: Copy denim binary to bin/ (Windows)
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     mkdir bin -Force
+      #     nim c -d:release -o:bin/denim.exe src/denim.nim
 
-      - name: Copy denim binary to bin/ (Unix)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          mkdir -p bin
-          nim c -d:release -o:bin/denim src/denim.nim
-
-      - run: nimble test
+      # - name: Copy denim binary to bin/ (Unix)
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: |
+      #     mkdir -p bin
+      #     nim c -d:release -o:bin/denim src/denim.nim
