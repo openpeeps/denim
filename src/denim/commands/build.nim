@@ -11,9 +11,8 @@
 #          https://github.com/openpeeps/denim
 
 import std/[os, osproc, json, strutils, sequtils]
-import kapsis/runtime
-import kapsis/interactive/prompts
 import ../utils
+import ../cli
 import ../cmake
 
 # ---------------------------------------------------------------------------
@@ -55,15 +54,6 @@ proc parseStringList*(s: string): seq[string] =
     var p = stripSurroundingQuotes(part.strip())
     if p.len > 0:
       result.add(p)
-
-proc getStringList*(v: Values, name: string): seq[string] =
-  ## Read an optional ?string CLI flag as a string list.
-  if v.has(name):
-    try:
-      return parseStringList(v.get(name).getStr)
-    except CatchableError:
-      return @[]
-  return @[]
 
 proc splitShellCmd*(cmd: string): seq[string] =
   ## Split a compiler command line the way a POSIX shell would, respecting
@@ -337,10 +327,24 @@ if(APPLE)
 endif()
 """
 
-proc buildCommand*(v: Values) =
+type BuildOptions* = object
+  nimFile*: string
+  y*: bool
+  cmake*: bool
+  generator*: string
+  nodedir*: string
+  includeDirs*: string
+  includeFiles*: string
+  defines*: string
+  cflags*: string
+  linkFlags*: string
+  release*: bool
+  verbose*: bool
+
+proc buildCommand*(opts: BuildOptions) =
   ## Compile project to source code by using Nim compiler
   # https://nim-lang.org/docs/nimc.html
-  let inputFile = v.get("nim").getPath().path
+  let inputFile = opts.nimFile
   var
     currDir = getCurrentDir()
     addonPathDirectory = utils.getPath(currDir, "" / "denim_build")
@@ -348,17 +352,17 @@ proc buildCommand*(v: Values) =
     path = splitPath(inputFile)
     entryFile = path.tail
   if not entryFile.endsWith(".nim") or fileExists(inputFile) == false:
-    display("Missing '.nim' file", indent=2)
-    QuitFailure.quit
+    display("Missing '.nim' file")
+    quit(1)
 
   if not isEmptyDir(addonPathDirectory):
-    if not v.has("-y"):
+    if not opts.y:
       displayInfo("Directory is not empty: " & os.splitPath(addonPathDirectory).tail)
       if promptConfirm("Do you want to remove current contents? (y/N)"):
         os.removeDir(addonPathDirectory)
       else:
-        display("Canceled", indent=2, br="after")
-        QuitFailure.quit
+        display("Canceled")
+        quit(1)
     else:
       os.removeDir(addonPathDirectory)
   displayInfo("Running Nim Compiler")
@@ -369,7 +373,7 @@ proc buildCommand*(v: Values) =
     "--compileOnly",
     "--noMain"
   ]
-  if v.has("-r"):
+  if opts.release:
     add args, "-d:release"
     add args, "--opt:speed"
   else:
@@ -382,37 +386,36 @@ proc buildCommand*(v: Values) =
   ])
   if nimCmd.exitCode != 0:
     display(nimCmd.output)
-    QuitFailure.quit
-  elif v.has("--verbose"):
+    quit(1)
+  elif opts.verbose:
     display(nimCmd.output)
   let getNimPath = detectNimToolchainPath()
   if getNimPath.len == 0:
     displayError("Can't find Nim toolchain path (from `nim`/`nim dump`)")
-    QuitFailure.quit
-    QuitFailure.quit
+    quit(1)
   discard execProcess("ln", args = [
     "-s",
     getNimPath / "lib" / "nimbase.h",
     cachePathDirectory
   ], options={poStdErrToStdOut, poUsePath})
   
-  if v.has("--cmake"):
+  if opts.cmake:
     displayInfo("Building with CMake (internal, no cmake-js needed)")
 
     let jsonConfigPath = cachePathDirectory / entryFile.changeFileExt("json")
     let autoInfo = readNimBuildInfo(jsonConfigPath)
 
     # Manual overrides (all accept "a,b" or '["a","b"]').
-    let manualIncludeDirs = v.getStringList("--includeDirs")
-    let manualIncludeFilesRaw = v.getStringList("--includeFiles")
-    let manualDefinesRaw = v.getStringList("--defines")
+    let manualIncludeDirs = parseStringList(opts.includeDirs)
+    let manualIncludeFilesRaw = parseStringList(opts.includeFiles)
+    let manualDefinesRaw = parseStringList(opts.defines)
     var manualCflags: seq[string] = @[]
-    for entry in v.getStringList("--cflags"):
+    for entry in parseStringList(opts.cflags):
       for tok in splitShellCmd(entry):
         if tok.len > 0:
           manualCflags.add(tok)
     var manualLinkFlags: seq[string] = @[]
-    for entry in v.getStringList("--linkFlags"):
+    for entry in parseStringList(opts.linkFlags):
       for tok in splitShellCmd(entry):
         if tok.len > 0:
           manualLinkFlags.add(tok)
@@ -441,17 +444,13 @@ proc buildCommand*(v: Values) =
 
     # Node headers: resolved locally (no downloads, no npm deps).
     # Override via --nodedir, NODE_HEADERS, or NODEDIR.
-    let nodedirFlag =
-      if v.has("--nodedir"):
-        try: v.get("--nodedir").getStr
-        except CatchableError: ""
-      else: ""
+    let nodedirFlag = opts.nodedir
     let nodeHeaders = cmake.findNodeHeaders(nodedirFlag)
     if nodeHeaders.len == 0:
       displayError("Cannot find Node headers (node_api.h). " &
         "Install Node headers for your Node version or set --nodedir " &
         "(or NODE_HEADERS) to a directory containing node_api.h")
-      QuitFailure.quit
+      quit(1)
 
     # Include dirs: Node headers first, then nimcache
     # (nimbase.h symlink lives here) + auto -I + manual.
@@ -508,20 +507,16 @@ proc buildCommand*(v: Values) =
     )
     # Build the native addon with the internal CMake driver
     # (no cmake-js npm dependency required, only a `cmake` binary).
-    let generatorFlag =
-      if v.has("--generator"):
-        try: v.get("--generator").getStr
-        except CatchableError: ""
-      else: ""
+    let generatorFlag = opts.generator
     let cmakeOpts = cmake.CmakeOptions(
       projectDir: currDir,
       workDir: addonPathDirectory / "build",
       config: "Release",
       generator: generatorFlag,
       nodedir: nodedirFlag,
-      verbose: v.has("--verbose")
+      verbose: opts.verbose
     )
-    if v.has("--verbose"):
+    if opts.verbose:
       displayInfo("CMake configure: " &
         cmake.getConfigureArgs(cmakeOpts).join(" "))
       displayInfo("CMake build: " &
@@ -530,27 +525,27 @@ proc buildCommand*(v: Values) =
     let cmakeRes = cmake.compile(cmakeOpts)
     if not cmakeRes.ok:
       display(cmakeRes.output)
-      QuitFailure.quit
-    elif v.has("--verbose"):
+      quit(1)
+    if opts.verbose:
       display(cmakeRes.output)
   else:
     # When using `node-gyp`, we need to generate a `binding.gyp` file with
     # the correct configuration
     displayInfo("Building with node-gyp")
-    var gyp = %* {"targets": [getNodeGypConfig(getNimPath, v.has("-r"))]}
+    var gyp = %* {"targets": [getNodeGypConfig(getNimPath, opts.release)]}
     let jsonConfigPath = cachePathDirectory / entryFile.replace(".nim", ".json")
     let autoInfo = readNimBuildInfo(jsonConfigPath)
 
-    let manualIncludeDirs = v.getStringList("--includeDirs")
-    let manualIncludeFilesRaw = v.getStringList("--includeFiles")
-    let manualDefinesRaw = v.getStringList("--defines")
+    let manualIncludeDirs = parseStringList(opts.includeDirs)
+    let manualIncludeFilesRaw = parseStringList(opts.includeFiles)
+    let manualDefinesRaw = parseStringList(opts.defines)
     var manualCflags: seq[string] = @[]
-    for entry in v.getStringList("--cflags"):
+    for entry in parseStringList(opts.cflags):
       for tok in splitShellCmd(entry):
         if tok.len > 0:
           manualCflags.add(tok)
     var manualLinkFlags: seq[string] = @[]
-    for entry in v.getStringList("--linkFlags"):
+    for entry in parseStringList(opts.linkFlags):
       for tok in splitShellCmd(entry):
         if tok.len > 0:
           manualLinkFlags.add(tok)
@@ -649,12 +644,12 @@ proc buildCommand*(v: Values) =
     # Check if the build was successful
     if gypCmd.exitCode != 0:
       display(gypCmd.output)
-      QuitFailure.quit
-    elif v.has("--verbose"):
+      quit(1)
+    if opts.verbose:
       display(gypCmd.output)
   let
     defaultBinName =
-      if v.has("--cmake"):
+      if opts.cmake:
         entryFile.splitFile.name
       else: "main"
     binaryNodePath = utils.getPath(currDir, "" / "denim_build" / "build" / "Release" / defaultBinName & ".node")
@@ -664,7 +659,7 @@ proc buildCommand*(v: Values) =
 
   if fileExists(binaryNodePath) == false:
     displayError("Oups! $1 not found. Try build again" % [binName])
-    QuitFailure.quit
+    quit(1)
   else:
     discard existsOrCreateDir(binDirectory)              # ensure bin directory exists
     moveFile(binaryNodePath, binaryTargetPath)           # move .node addon

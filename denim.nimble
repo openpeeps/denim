@@ -12,7 +12,6 @@ installDirs   = @["denim"]
 
 # Dependencies
 requires "nim >= 1.6.8"
-requires "kapsis >= 0.4.3"
 
 import ospaths
 let path = getHomeDir() & ".nimble/bin"

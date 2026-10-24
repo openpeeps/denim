@@ -10,8 +10,5 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/denim
 
-import kapsis/runtime
-import kapsis/interactive/prompts
-
-proc runCommand*(v: Values) =
+proc runCommand*() =
   discard

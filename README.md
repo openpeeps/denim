@@ -9,37 +9,55 @@
 </p>
 
 ## 😍 Key Features
-- [x] CLI build via Nim + `node-gyp` or CMake.js (faster)
-- [ ] CLI publish to NPM
-- [x] Low-level & High-level API
-- [x] Open Source | `MIT` License
+- CLI build via Nim + internal CMake driver (faster, no npm deps) or `node-gyp`
+- Low-level & High-level API
 
 ## Requirements
 - Nim (latest / via `choosenim`)
 - Node (latest) and `node-gyp`, or just `cmake` for `--cmake` builds (no npm packages needed)
 
 ### CLI
-Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon via `Nim` + `NodeGYP` and as a library for importing NAPI bindings.
+Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon
+via `Nim` + internal CMake driver or `node-gyp`, and as a library for importing NAPI bindings.
 
 Simply run `denim -h`
 ```
-DENIM - Nim code to Bun.js/Node.js in seconds via NAPI
-  (c) George Lemon | MIT License  
-  Build Version: 0.2.0
+denim 0.2.1 - Nim code to Node.js/Bun.js in seconds via NAPI
 
-  build <nim:file>               Build a native `node` addon from Nim
-                       -y:bool
-                  --cmake:bool    Whether to use CMake instead of node-gyp (faster, no npm deps)
-              --generator:string    CMake generator (auto: Ninja if available, else Unix Makefiles)
-                --nodedir:string    Node headers directory (auto-detected, or NODE_HEADERS env)
-          --includeDirs:string    Extra `-I` header search dirs
-         --includeFiles:string    Extra `.c` files to compile
-              --defines:string    Extra `-D` defines
-               --cflags:string    Extra C compiler flags
-            --linkFlags:string    Extra linker flags
-                       -r:bool    Compile in release mode (default: false)
-                --verbose:bool    Verbose output
-  publish <addon:file>           Publish your addon (requires npm cli)
+MIT license | Made by Humans from OpenPeeps
+  https://github.com/openpeeps/denim
+
+usage: denim <command> [options]
+
+commands:
+  build <nim:file>      build a native .node addon from Nim
+  publish <addon:file>  publish your addon (requires npm cli)
+
+options:
+  -h, --help            show this help
+  --version             show version
+```
+
+`denim build -h` shows the build flags:
+```
+usage: denim build <nim:file> [options]
+
+arguments:
+  <nim:file>              Nim entry file exporting NAPI bindings
+
+options:
+  -y                      remove an existing denim_build directory without asking
+  --cmake                 use the internal CMake driver (faster, no npm deps)
+  --generator:<name>      CMake generator (default: Ninja if available, else Unix Makefiles)
+  --nodedir:<dir>         Node headers directory (or NODE_HEADERS env)
+  --includeDirs:<list>    extra -I header search dirs
+  --includeFiles:<list>   extra .c files to compile
+  --defines:<list>        extra -D defines
+  --cflags:<flags>        extra C compiler flags
+  --linkFlags:<flags>     extra linker flags
+  -r                      release build (-d:release --opt:speed)
+  --verbose               print the Nim and CMake/node-gyp output
+  -h, --help              show this help
 ```
 
 ### Build flags
@@ -65,6 +83,106 @@ Every flag accepts either a comma-separated string or a stringified JSON array:
 - `--defines` — extra `-D` defines, e.g. `--defines 'FOO=1,BAR="baz"'`. Prefer `{.passC: "-DFOO=1".}` in Nim.
 - `--cflags` — extra C compiler flags, e.g. `--cflags '-O2 -std=c99'`. Prefer `{.passC.}` in Nim.
 - `--linkFlags` — extra linker flags, e.g. `--linkFlags '-L/opt/lib -lssl'`. Prefer `{.passL.}` in Nim.
+
+### How `--cmake` works
+
+No `cmake-js` npm package is needed, only a `cmake` binary (`3.15+`) and a C++
+compiler. Denim drives CMake itself:
+
+1. Runs `nim c --compileOnly` and reads the nimcache JSON, forwarding
+   `{.compile.}` sources, `{.passC.}` include dirs/defines/flags, and
+   `{.passL.}` link flags into a generated `CMakeLists.txt`.
+2. Locates local Node headers (`node_api.h`) — override with `--nodedir`
+   (or `NODE_HEADERS` env). Otherwise it checks the running `node` install
+   prefix, `which node`, `/usr/local`, `/usr`, `/opt/homebrew`, `/opt/local`,
+   and the `~/.node-gyp` caches. Nothing is downloaded.
+3. Configures with `Ninja` when available, else `Unix Makefiles`
+   (override with `--generator`), then builds
+   `denim_build/build/Release/<name>.node` and moves it to `bin/`.
+
+Omit `--cmake` to build with `node-gyp` instead (unchanged behavior, requires
+`node-gyp` on `PATH`). On Windows the internal driver is not supported yet —
+omit `--cmake` there as well.
+
+```
+denim build myaddon.nim --cmake -y
+node -e "console.log(require('./bin/myaddon.node').add(2, 3))"
+# 5
+```
+
+### Defining a module
+
+Use `init` to define module initialization.
+```nim
+when defined napibuild:
+  # optionally, you can use `napibuild` flag to wrap your code
+  # this flag is set when compiling via `denim build src/myprogram.nim` 
+  import denim # import NAPI bindings 
+  init proc(module: Module) =
+    # registering properties and functions here
+    # this is similar with javascript `module.exports`
+elif isMainModule:
+  echo "just a normal nim program"
+```
+
+### Nim Type to NapiValueType
+Use low-level API to convert Nim values to `napi_value` (`NapiValueType`).
+Use `assert` to check if a low-level function returns a success or failure. [Currently, the following status codes are supported](https://nodejs.org/api/n-api.html#napi_status)
+
+```nim
+import denim
+init proc(module: Module) =
+  module.registerFn(0, "awesome"):
+    var str2napi: napi_value
+    var str = "Nim is awesome!"
+    assert Env.napi_create_string_utf8(str, str.len.csize_t, str2napi.addr) 
+    return str2napi
+```
+
+Alternatively, use `%*` to auto-convert Nim values to `NapiValueType`.
+```nim
+let
+  a: napi_value = %* "Hey"
+  b: napi_value = %* true
+assert a.kind == napi_string
+assert b.kind == napi_boolean
+```
+
+### Exports
+Since `v0.1.5`, you can use `{.export_napi.}` pragma to export functions and object properties.
+
+```nim
+import denim
+
+init proc(module: Module): # the name `module` is required
+  proc hello(name: string) {.export_napi} =
+    ## A simple function from Nim
+    return %*("Hello, " & args.get("name").getStr)
+
+  var awesome {.export_napi.} = "Nim is Awesome!"
+```
+
+Calling a function/property from Node/Bun
+```js
+const app = require('myaddon.node')
+console.log(app.hello("World!"))       // Hello, World!
+console.log(app.awesome)               // Nim is Awesome!
+```
+
+### Built-in type checker
+```js
+app.hello()
+```
+
+```
+/*
+ * A simple function from Nim
+ * @param {string} name
+ * @return {string}
+ */
+Type mismatch parameter: `name`. Got `undefined`, expected `string`
+```
+
 
 ### Vendoring C: Magic 8-Ball
 
@@ -217,108 +335,14 @@ init proc(module: Module) =
     return %* $(add(args.get("a").getInt, args.get("b").getInt))
 ```
 
-```
-denim build myaddon.nim --cmake -y
-node -e "console.log(require('./bin/myaddon.node').add(2, 3))"
-# 5
-```
-
 Copy this skeleton whenever you need a single C helper inside an addon,
 then grow toward the 8-ball pattern once you need headers and defines.
 
-Use Denim as a Nimble task:
-```nim
-task napi, "Build a .node addon":
-  exec "denim build src/myprogram.nim"
-```
-
-Want to pass custom flags to Nim Compiler? Create a `.nims` file:
-```nim
-when defined napibuild:
-  # add some flags
-```
-
->[!NOTE]
-> Combining native code with JavaScript is a powerful way to optimize performance-critical parts. Note that converting data between Nim and N-API types adds overhead, so it's best to minimize the number of calls across the boundary and batch data when possible.
-
-### Defining a module
-
-Use `init` to define module initialization.
-```nim
-when defined napibuild:
-  # optionally, you can use `napibuild` flag to wrap your code
-  # this flag is set when compiling via `denim build src/myprogram.nim` 
-  import denim # import NAPI bindings 
-  init proc(module: Module) =
-    # registering properties and functions here
-    # this is similar with javascript `module.exports`
-elif isMainModule:
-  echo "just a normal nim program"
-```
-
-### Nim Type to NapiValueType
-Use low-level API to convert Nim values to `napi_value` (`NapiValueType`).
-Use `assert` to check if a low-level function returns a success or failure. [Currently, the following status codes are supported](https://nodejs.org/api/n-api.html#napi_status)
-
-```nim
-import denim
-init proc(module: Module) =
-  module.registerFn(0, "awesome"):
-    var str2napi: napi_value
-    var str = "Nim is awesome!"
-    assert Env.napi_create_string_utf8(str, str.len.csize_t, str2napi.addr) 
-    return str2napi
-```
-
-Alternatively, use `%*` to auto-convert Nim values to `NapiValueType`.
-```nim
-let
-  a: napi_value = %* "Hey"
-  b: napi_value = %* true
-assert a.kind == napi_string
-assert b.kind == napi_boolean
-```
-
-### Exports
-Since `v0.1.5`, you can use `{.export_napi.}` pragma to export functions and object properties.
-
-```nim
-import denim
-
-init proc(module: Module): # the name `module` is required
-  proc hello(name: string) {.export_napi} =
-    ## A simple function from Nim
-    return %*("Hello, " & args.get("name").getStr)
-
-  var awesome {.export_napi.} = "Nim is Awesome!"
-```
-
-Calling a function/property from Node/Bun
-```js
-const app = require('myaddon.node')
-console.log(app.hello("World!"))       // Hello, World!
-console.log(app.awesome)               // Nim is Awesome!
-```
-
-### Built-in type checker
-```js
-app.hello()
-```
-
-```
-/*
- * A simple function from Nim
- * @param {string} name
- * @return {string}
- */
-Type mismatch parameter: `name`. Got `undefined`, expected `string`
-```
-
 ## Real-World Examples
 - **Tim Engine** &mdash; A template engine. [GitHub](https://github.com/openpeeps/tim)
-- **bowdy** &mdash; A fast stylesheet language, alternative to SassC, DartSass. [GitHub](https://github.com/openpeeps/bowdy)
+- **Bowdy** &mdash; A fast stylesheet language, alternative to SassC, DartSass. [GitHub](https://github.com/openpeeps/bowdy)
 - **HappyX** &mdash; Macro-oriented asynchronous web-framework written in Nim. [GitHub](https://github.com/HapticX/happyx)
-- **OpenParser** &mdash; A collection of tiny parsers and dumpers. CSV, TOML, YAML, RSS, BSON, FBE, DotEnv, Regex, SQL, Gettext (po/mo) and more!
+- **OpenParser** &mdash; A collection of tiny parsers and dumpers. CSV, TOML, YAML, RSS, BSON, FBE, DotEnv, Regex, SQL, Gettext (po/mo) and more! [GitHub](https://github.com/openpeeps/openparser)
 - **DROP YOUR PROJECT HERE!** 👉 [File an Issue](https://github.com/openpeeps/denim/issues)
 
 ### Todo

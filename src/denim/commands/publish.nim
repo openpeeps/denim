@@ -10,9 +10,6 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/denim
 
-import kapsis/runtime
-import kapsis/interactive/prompts
-
-proc publishCommand*(v: Values) =
+proc publishCommand*(addonFile: string) =
   ## Command to publish a precompiled Node addon to NPM via GitHub Actions
   echo "todo"
