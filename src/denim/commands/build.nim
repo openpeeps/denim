@@ -113,7 +113,7 @@ proc cmakeQuote*(s: string): string =
   ## Quote a single CMake argument if it contains spaces or special chars.
   if s.len == 0:
     return "\"\""
-  if not s.contains({' ', '\t', '"', ';', '('}):
+  if not s.contains({' ', '\t', '"', ';', '(', '#'}):
     return s
   var e = s.replace("\\", "\\\\").replace("\"", "\\\"")
   return "\"" & e & "\""
@@ -207,15 +207,32 @@ proc extractBuildInfo*(cfg: JsonNode): NimBuildInfo =
         # bare paths / compiler binary leftovers are ignored
         inc i
   if cfg.hasKey("linkcmd") and cfg["linkcmd"].kind == JString:
-    for tok in splitShellCmd(cfg["linkcmd"].getStr()):
+    let toks = splitShellCmd(cfg["linkcmd"].getStr())
+    var i = 0
+    while i < toks.len:
+      let tok = toks[i]
+      if tok == "-framework" and i + 1 < toks.len and
+         not toks[i + 1].startsWith("-"):
+        # Keep `-framework <Name>` together: the name is a bare token,
+        # so the old take-every-`-flag` loop dropped it and left a
+        # dangling `-framework` that the linker pairs with the next
+        # flag (e.g. `-framework -ldl` -> framework "-ldl" not found).
+        let pair = tok & " " & toks[i + 1]
+        if pair notin result.linkOpts:
+          result.linkOpts.add(pair)
+        i += 2
+        continue
       if tok.startsWith("-"):
         if tok in ["-o", "-c"]:
+          i += 1
           continue
         if tok.endsWith(".o") or tok.endsWith(".obj"):
+          i += 1
           continue
         if tok notin result.linkOpts:
           result.linkOpts.add(tok)
       # object files / output binary are skipped
+      i += 1
 
 proc readNimBuildInfo*(jsonPath: string): NimBuildInfo =
   ## Read nimcache JSON, returning empty info (not a crash) when missing.
@@ -454,10 +471,15 @@ proc buildCommand*(v: Values) =
       else: ""
 
     # Link: auto link opts ({.passL.}) + manual --linkFlags.
+    # Items are cmake-quoted so `-framework <Name>` pairs survive as
+    # one argument instead of a dangling `-framework`.
     var linkLibs = dedupPreserveOrder(autoInfo.linkOpts & manualLinkFlags)
+    var quotedLinkLibs: seq[string] = @[]
+    for l in linkLibs:
+      quotedLinkLibs.add(cmakeQuote(l))
     let linkLibsLine =
-      if linkLibs.len > 0:
-        "target_link_libraries(" & pkgName & " " & linkLibs.join(" ") & ")"
+      if quotedLinkLibs.len > 0:
+        "target_link_libraries(" & pkgName & " " & quotedLinkLibs.join(" ") & ")"
       else: ""
     writeFile(currDir / "CMakeLists.txt",
       cMakeListsContent.multiReplace(
