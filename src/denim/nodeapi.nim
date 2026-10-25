@@ -622,7 +622,6 @@ macro export_napi*(fn: untyped, withModule: untyped = nil) =
     withModule = fn.copy()
     fn = x.copy()
     useModule = withModule == newLit(true)
-  echo useModule
   if fn.kind == nnkProcDef:
     expectKind(fn[6], nnkStmtList) # body
     expectKind(fn[3], nnkFormalParams) # params
