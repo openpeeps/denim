@@ -43,7 +43,6 @@ elif isMainModule:
     echo "  --linkFlags:<flags>     " & grey("extra linker flags")
     echo "  -r                      " & grey("release build (-d:release --opt:speed)")
     echo "  --verbose               " & grey("print the Nim and CMake/node-gyp output")
-    echo "  -h, --help              " & grey("show this help")
 
   proc printHelp() =
     echo grey("denim " & versionStr & " - Nim code to Node.js/Bun.js in seconds via NAPI") & "\n"
