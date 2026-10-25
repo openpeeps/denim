@@ -337,6 +337,311 @@ proc gypRelPath*(src, baseDir: string): string =
     return src
 
 
+# ---------------------------------------------------------------------------
+# Dependency --path resolution (nimble/clue)
+# ---------------------------------------------------------------------------
+# Plain `nim c` only sees nimble's registry copies (~/.nimble/pkgs2) and
+# knows nothing about clue's develop checkouts (~/.clue/develop) or
+# clue-installed packages (~/.clue/packages). An entry file importing
+# `pkg/<dep>` from a develop checkout then fails with "cannot open file".
+# Resolve the project's dependency closure here and pass every package
+# dir as --path, so bare `denim build` behaves like `clue task` (which
+# injects the same paths via XDG_CONFIG_HOME).
+#
+# Per-package sources, in priority order:
+#   1. ~/.clue/develop/<name> — live checkout wins (filesystem check).
+#   2. clue's installed table (one `dbcheck` query for all packages);
+#      stale rows (dir gone from disk) are skipped.
+#   3. `nimble path <name>` — registry copies, first existing dir wins.
+# URL requires (e.g. `requires "https://github.com/dfkup/stdlib"`) carry
+# no package name; they are mapped through the local registry index
+# (~/.clue/registries/*.json). Version constraints are NOT evaluated —
+# the installed/develop copy is used as-is. A wrong pick surfaces as a
+# Nim compile error (loud), never silently.
+
+proc findProjectNimble*(startDir: string): string =
+  ## Nearest .nimble walking up from startDir, "" when none.
+  var dir = if startDir.len == 0: getCurrentDir() else: startDir
+  while true:
+    if dirExists(dir):
+      for kind, path in walkDir(dir):
+        if kind == pcFile and path.endsWith(".nimble"):
+          return path
+    let parent = parentDir(dir)
+    if parent.len == 0 or parent == dir:
+      return ""
+    dir = parent
+
+proc parseNimbleRequires*(nimbleFile: string): seq[string] =
+  ## Raw requires entries: bare names (`vancode`), or full URLs.
+  ## `nim` is skipped (toolchain, not a path). Indented lines are kept,
+  ## so `feature`-gated requires resolve too (unused --paths are harmless).
+  result = @[]
+  try:
+    for line in lines(nimbleFile):
+      let t = line.strip()
+      if not t.startsWith("requires "):
+        continue
+      var dep = t[len("requires ") .. ^1].strip().strip(chars = {'"', '\''})
+      if dep.len == 0:
+        continue
+      if "://" in dep:
+        result.add(dep) # URL — mapped to a name later
+        continue
+      var tok = dep.split(' ')[0].strip(chars = {'"', '\''})
+      for sep in ["@", "#"]: # nimble `pkg@ver` / `pkg#branch` pins
+        tok = tok.split(sep)[0]
+      if tok.len == 0 or tok == "nim":
+        continue
+      result.add(tok)
+  except IOError:
+    discard
+
+proc nimbleSrcDir*(nimbleFile: string): string =
+  ## `srcDir` of a .nimble file, "src" when absent/unreadable.
+  ## May be "" (flat layout) — the caller treats that as the root.
+  result = "src"
+  try:
+    for line in lines(nimbleFile):
+      let t = line.strip()
+      if t.startsWith("srcDir"):
+        let parts = t.split("=", 1)
+        if parts.len == 2:
+          return parts[1].strip().strip(chars = {'"', '\''})
+  except IOError:
+    discard
+
+proc packageImportDir*(pkgRoot, pkgName: string): string =
+  ## Import-ready dir for an installed package root: <root>/<srcDir>
+  ## when it exists, else <root> (flat-layout packages). "" when the
+  ## root is missing.
+  if pkgRoot.len == 0 or not dirExists(pkgRoot):
+    return ""
+  var nimbleFile = pkgRoot / (pkgName & ".nimble")
+  if not fileExists(nimbleFile):
+    # Checkout dir name may differ from the package name.
+    nimbleFile = ""
+    for kind, path in walkDir(pkgRoot):
+      if kind == pcFile and path.endsWith(".nimble"):
+        nimbleFile = path
+        break
+  let srcDir = if nimbleFile.len > 0: nimbleSrcDir(nimbleFile) else: "src"
+  if srcDir.len > 0:
+    let cand = pkgRoot / srcDir
+    if dirExists(cand):
+      return cand
+  return pkgRoot
+
+proc clueDevelopDir*(name: string): string =
+  ## Live checkout path (~/.clue/develop/<name>), "" when absent.
+  ## The symlink itself is returned — the OS resolves it for --path.
+  let dev = getHomeDir() / ".clue" / "develop" / name
+  if dirExists(dev):
+    return dev
+  return ""
+
+proc queryClueInstalled*(): seq[tuple[name, version, path: string]] =
+  ## Whole installed table in one `dbcheck` call. @[] when clue is
+  ## missing or the query fails (caller falls back to nimble).
+  ## Exit code is ignored: only stdout JSON is trusted.
+  result = @[]
+  if findExe("clue").len == 0:
+    return
+  let q = execCmdEx("clue dbcheck 'SELECT name,version,path FROM installed' --json")
+  try:
+    let j = parseJson(q.output)
+    for row in j["rows"].elems:
+      result.add((row["name"].getStr(""), row["version"].getStr(""),
+        row["path"].getStr("")))
+  except CatchableError:
+    discard
+
+proc registryUrlName*(url: string): string =
+  ## Map a URL require to a package name via the local registry index.
+  ## "" when no registry cache or no match.
+  let regDir = getHomeDir() / ".clue" / "registries"
+  if not dirExists(regDir):
+    return ""
+  try:
+    for kind, path in walkDir(regDir):
+      if kind != pcFile or not path.endsWith(".json"):
+        continue
+      let j = parseJson(readFile(path))
+      if j.kind != JArray:
+        continue
+      for e in j.elems:
+        if e.kind == JObject and e["url"].getStr("") == url:
+          let name = e["name"].getStr("")
+          if name.len > 0:
+            return name
+  except CatchableError:
+    discard
+  return ""
+
+proc nimblePackageDir*(name: string): string =
+  ## First existing dir from `nimble path <name>`. "" when nimble is
+  ## missing, the package unknown, or no listed dir exists.
+  if findExe("nimble").len == 0:
+    return ""
+  let r = execCmdEx("nimble path " & name)
+  for line in r.output.splitLines:
+    let t = line.strip()
+    if t.len > 0 and dirExists(t):
+      return t
+  return ""
+
+proc cmpPkgVersion*(a, b: string): int =
+  ## HEAD sorts above everything; else numeric per part.
+  if a == b:
+    return 0
+  let ah = a == "HEAD" or a == "head"
+  let bh = b == "HEAD" or b == "head"
+  if ah and bh:
+    return 0
+  if ah:
+    return 1
+  if bh:
+    return -1
+  let ap = a.split('.')
+  let bp = b.split('.')
+  for i in 0 ..< max(ap.len, bp.len):
+    var ai, bi = 0
+    if i < ap.len:
+      try:
+        ai = parseInt(ap[i])
+      except ValueError:
+        discard
+    if i < bp.len:
+      try:
+        bi = parseInt(bp[i])
+      except ValueError:
+        discard
+    if ai != bi:
+      return cmp(ai, bi)
+  return 0
+
+proc urlLastSegment*(url: string): string =
+  ## Repo name of a URL require (`.../stdkups` -> `stdkups`, `.git`
+  ## suffix stripped). Often equals the package name, which survives
+  ## repo renames that the registry index has not caught up with.
+  var u = url.strip()
+  while u.endsWith("/"):
+    u = u[0 .. ^2]
+  let idx = max(u.rfind("/"), u.rfind(":"))
+  result = if idx >= 0: u[idx + 1 .. ^1] else: u
+  if result.endsWith(".git"):
+    result = result[0 .. ^5]
+
+proc resolveOnePackage*(name: string, installed: seq[tuple[name, version,
+    path: string]], hasNimble: bool): tuple[root, dir: string] =
+  ## Locate one package by name: live checkout, clue installs, nimble.
+  ## ("", "") when unresolvable.
+  result = ("", "")
+  var root = clueDevelopDir(name)
+  if root.len == 0:
+    var bestPath = ""
+    var bestVer = ""
+    for row in installed:
+      if row.name != name or not dirExists(row.path):
+        continue
+      if row.path.contains("/develop/") or row.path.contains("\\develop\\"):
+        bestPath = row.path
+        break
+      if bestPath.len == 0 or cmpPkgVersion(row.version, bestVer) > 0:
+        bestPath = row.path
+        bestVer = row.version
+    root = bestPath
+  if root.len == 0 and hasNimble:
+    root = nimblePackageDir(name)
+  if root.len == 0:
+    return result
+  let dir = packageImportDir(root, name)
+  if dir.len == 0:
+    return result
+  return (root, dir)
+
+proc resolveDepPaths*(projectDir, entryFile: string): seq[string] =
+  ## Full dependency closure of the project as import-ready dirs.
+  ## Seeds are the project .nimble's requires (nearest .nimble above
+  ## the entry file, else above the working dir). Transitive requires
+  ## expand from each resolved package's own .nimble.
+  result = @[]
+  var start = projectDir
+  try:
+    start = parentDir(expandFilename(entryFile))
+  except CatchableError:
+    discard
+  var nimbleFile = findProjectNimble(start)
+  if nimbleFile.len == 0:
+    nimbleFile = findProjectNimble(projectDir)
+  if nimbleFile.len == 0:
+    return result
+  var queue = parseNimbleRequires(nimbleFile)
+  var seen: seq[string] = @[]
+  let installed = queryClueInstalled()
+  let hasNimble = findExe("nimble").len > 0
+  var resolved: seq[tuple[name, root, dir: string]] = @[]
+  while queue.len > 0:
+    let item = queue.pop()
+    # Candidate names: a URL maps through the registry index first,
+    # then falls back to its repo segment (survives repo renames the
+    # registry has not caught up with).
+    var candidates: seq[string] = @[]
+    if "://" in item:
+      if item in seen:
+        continue
+      seen.add(item)
+      let viaRegistry = registryUrlName(item)
+      if viaRegistry.len > 0:
+        candidates.add(viaRegistry)
+      let viaSegment = urlLastSegment(item)
+      if viaSegment.len > 0 and viaSegment notin candidates:
+        candidates.add(viaSegment)
+      if candidates.len == 0:
+        displayError("denim: cannot map URL requirement to a package name: " & item)
+        continue
+    else:
+      if item in seen:
+        continue
+      seen.add(item)
+      candidates.add(item)
+    # First candidate that resolves wins; already-resolved names reuse
+    # their cached dirs without re-expanding requires.
+    var hit = -1
+    for cand in candidates:
+      for i, r in resolved:
+        if r.name == cand:
+          hit = i
+          break
+      if hit >= 0:
+        break
+      if cand in seen and cand != item:
+        continue
+      seen.add(cand)
+      let r = resolveOnePackage(cand, installed, hasNimble)
+      if r.dir.len > 0:
+        resolved.add((cand, r.root, r.dir))
+        hit = resolved.high
+        var pkgNimble = r.root / (cand & ".nimble")
+        if not fileExists(pkgNimble):
+          pkgNimble = ""
+          for kind, path in walkDir(r.root):
+            if kind == pcFile and path.endsWith(".nimble"):
+              pkgNimble = path
+              break
+        if pkgNimble.len > 0:
+          for req in parseNimbleRequires(pkgNimble):
+            queue.add(req)
+        break
+    if hit < 0:
+      displayError("denim: cannot resolve package '" & item &
+        "' (not found via clue or nimble)")
+      continue
+    if resolved[hit].dir notin result:
+      result.add(resolved[hit].dir)
+  return result
+
+
 proc detectNimToolchainPath(): string =
   # Detect the Nim toolchain path by parsing the output of `nim dump`
   let d = execCmdEx("nim dump")
@@ -455,6 +760,15 @@ proc buildCommand*(opts: BuildOptions) =
     add args, "--opt:speed"
   else:
     add args, "--embedsrc"
+
+  # Dependency closure via nimble/clue (if found): every resolved package
+  # dir lands on the import path, so `pkg/<dep>` works from develop
+  # checkouts and clue installs without `clue task`.
+  let depPaths = resolveDepPaths(currDir, inputFile)
+  if depPaths.len > 0:
+    displayInfo("Resolved " & $depPaths.len & " dependency paths (nimble/clue)")
+  for depPath in depPaths:
+    args.add("--path:\"" & depPath & "\"")
 
   let nimc = "nim c " & args.join(" ") & " $2"
   let nimCmd = execCmdEx(nimc % [
