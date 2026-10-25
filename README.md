@@ -20,7 +20,7 @@
 Denim is a hybrid package, you can use it as a CLI for compiling Nim code to `.node` addon
 via `Nim` + internal CMake driver or `node-gyp`, and as a library for importing NAPI bindings.
 
-Simply run `denim -h`
+`denim build -h` shows the build flags:
 ```
 denim 0.2.1 - Nim code to Node.js/Bun.js in seconds via NAPI
 
@@ -49,28 +49,6 @@ build options:
 options:
   -h, --help            show this help
   --version             show version
-```
-
-`denim build -h` shows the build flags:
-```
-usage: denim build <nim:file> [options]
-
-arguments:
-  <nim:file>              Nim entry file exporting NAPI bindings
-
-options:
-  -y                      remove an existing denim_build directory without asking
-  --cmake                 use the internal CMake driver (faster, no npm deps)
-  --generator:<name>      CMake generator (default: Ninja if available, else Unix Makefiles)
-  --nodedir:<dir>         Node headers directory (or NODE_HEADERS env)
-  --includeDirs:<list>    extra -I header search dirs
-  --includeFiles:<list>   extra .c files to compile
-  --defines:<list>        extra -D defines
-  --cflags:<flags>        extra C compiler flags
-  --linkFlags:<flags>     extra linker flags
-  -r                      release build (-d:release --opt:speed)
-  --verbose               print the Nim and CMake/node-gyp output
-  -h, --help              show this help
 ```
 
 ### Build flags
