@@ -31,27 +31,7 @@ elif isMainModule:
     "--generator", "--nodedir", "--includeDirs",
     "--includeFiles", "--defines", "--cflags", "--linkFlags"]
 
-  proc printHelp() =
-    echo grey("denim " & versionStr & " - Nim code to Node.js/Bun.js in seconds via NAPI") & "\n"
-    echo grey("MIT license | Made by Humans from OpenPeeps\n  https://github.com/openpeeps/denim")
-    echo ""
-    echo "usage: denim <command> [options]"
-    echo ""
-    echo label("commands:")
-    echo "  build <nim:file>      " & grey("build a native .node addon from Nim")
-    # echo "  publish <addon:file>  " & grey("publish your addon (requires npm cli)")
-    echo ""
-    echo label("options:")
-    echo "  -h, --help            " & grey("show this help")
-    echo "  --version             " & grey("show version")
-
-  proc printBuildHelp() =
-    echo "usage: denim build <nim:file> [options]"
-    echo ""
-    echo label("arguments:")
-    echo "  <nim:file>              " & grey("Nim entry file exporting NAPI bindings")
-    echo ""
-    echo label("options:")
+  proc printBuildFlags() =
     echo "  -y                      " & grey("remove an existing denim_build directory without asking")
     echo "  --cmake                 " & grey("use the internal CMake driver (faster, no npm deps)")
     echo "  --generator:<name>      " & grey("CMake generator (default: Ninja if available, else Unix Makefiles)")
@@ -64,6 +44,31 @@ elif isMainModule:
     echo "  -r                      " & grey("release build (-d:release --opt:speed)")
     echo "  --verbose               " & grey("print the Nim and CMake/node-gyp output")
     echo "  -h, --help              " & grey("show this help")
+
+  proc printHelp() =
+    echo grey("denim " & versionStr & " - Nim code to Node.js/Bun.js in seconds via NAPI") & "\n"
+    echo grey("MIT license | Made by Humans from OpenPeeps\n  https://github.com/openpeeps/denim")
+    echo ""
+    echo "usage: denim <command> [options]"
+    echo ""
+    echo label("commands:")
+    echo "  build <nim:file>      " & grey("build a native .node addon from Nim")
+    echo ""
+    echo label("build options:")
+    printBuildFlags()
+    echo ""
+    echo label("options:")
+    echo "  -h, --help            " & grey("show this help")
+    echo "  --version             " & grey("show version")
+
+  proc printBuildHelp() =
+    echo "usage: denim build <nim:file> [options]"
+    echo ""
+    echo label("arguments:")
+    echo "  <nim:file>              " & grey("Nim entry file exporting NAPI bindings")
+    echo ""
+    echo label("options:")
+    printBuildFlags()
 
   # proc printPublishHelp() =
   #   echo "usage: denim publish <addon:file>"

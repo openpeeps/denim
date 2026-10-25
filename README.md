@@ -31,7 +31,20 @@ usage: denim <command> [options]
 
 commands:
   build <nim:file>      build a native .node addon from Nim
-  publish <addon:file>  publish your addon (requires npm cli)
+
+build options:
+  -y                      remove an existing denim_build directory without asking
+  --cmake                 use the internal CMake driver (faster, no npm deps)
+  --generator:<name>      CMake generator (default: Ninja if available, else Unix Makefiles)
+  --nodedir:<dir>         Node headers directory (or NODE_HEADERS env)
+  --includeDirs:<list>    extra -I header search dirs
+  --includeFiles:<list>   extra .c files to compile
+  --defines:<list>        extra -D defines
+  --cflags:<flags>        extra C compiler flags
+  --linkFlags:<flags>     extra linker flags
+  -r                      release build (-d:release --opt:speed)
+  --verbose               print the Nim and CMake/node-gyp output
+  -h, --help              show this help
 
 options:
   -h, --help            show this help
